@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "photo-web"
+version = "0.1.0"
+description = ""
+authors = ["SergRusetskiy1974 <sergrus1974@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+django = "^5.1.1"
+psycopg2 = "^2.9.9"
+cloudinary = "^1.41.0"
+python-dotenv = "^1.0.1"
+traitlets = "^5.14.3"
+pillow = "^10.4.0"
+django-cloudinary-storage = "^0.3.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
