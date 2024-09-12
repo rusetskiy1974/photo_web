@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Portfolio
+from .models import Portfolio, Review
 
 from django.http import HttpResponse
 # from goods.models import Categories
@@ -16,9 +16,11 @@ def index(request):
     return render(request, 'main/index.html', context=context)
 
 def about(request):
+    reviews = Review.objects.all()
     context = {
         'title': "About Me",
         'content': "About me",
+        'reviews': reviews,
         }
     return render(request, 'main/about.html', context=context)
 

@@ -4,6 +4,8 @@ from cloudinary.models import CloudinaryField
 from cloudinary import uploader
 from django.core.exceptions import ValidationError
 
+from users.models import User
+
 FILE_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024 * 10  # 10mb
 
 
@@ -36,3 +38,12 @@ class Portfolio(models.Model):
         except AttributeError:
             public_id = ''
         return "Photo <%s:%s>" % (self.title, public_id)
+
+
+class Review(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=150, blank=True, null=False)
+    text = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+       
