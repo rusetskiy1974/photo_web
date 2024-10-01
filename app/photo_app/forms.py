@@ -7,6 +7,7 @@ from cloudinary.compat import to_bytes
 from cloudinary.forms import CloudinaryJsFileField, CloudinaryUnsignedJsFileField
 from .models import Photo
 from django import forms
+from .utils.image_validator import file_validation
 
 
 class PhotoForm(ModelForm):
@@ -34,4 +35,4 @@ class PhotoUnsignedDirectForm(PhotoForm):
 class UploadSinglePhotoForm(forms.Form):
     title = forms.CharField(max_length=200, required=False)
     description = forms.CharField(widget=forms.Textarea, required=False)
-    image = forms.ImageField(label='Upload Image')
+    image = forms.ImageField(label='Upload Image', validators=[file_validation])

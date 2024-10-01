@@ -1,9 +1,8 @@
-from app import services
 from django.http import Http404
 from django.views.generic import DetailView, ListView
 
-from services.models import Service
-from services.utils import q_search
+from .models import Service
+from .utils import q_search
 
 
 class CatalogView(ListView):
