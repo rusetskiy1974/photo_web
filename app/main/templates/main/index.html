@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 {% load static %}
+{% load cloudinary %}  
 
 {% block navbar %}
 <ul class="rd-navbar-nav">
-    {% if not user.is_authenticated %}
+    
     <li class="active"><a href="{% url 'main:index' %}">Main</a>
     </li>
     <li><a href="{% url 'main:about' %}">About me</a>
@@ -12,6 +13,7 @@
     </li>
     <li><a href="{% url 'main:contact_me' %}">Contact Me</a>
     </li>
+    {% if not user.is_authenticated %}   
     <li><a href="{% url 'users:login' %}">Login</a>
     </li>
     <li><a href="{% url 'users:registration' %}">Registration</a>
@@ -19,9 +21,6 @@
     {%else%}
     <li><a href="{% url 'users:profile' %}">Profile</a>
     </li>
-    {% if user.is_admin or user.is_staff %}
-    <li><a href="{% url 'admin:index' %}">Admin panel</a></li>
-    {% endif %}
     <li><a href="{% url 'users:logout' %}">Logout</a>
     </li>
     {% endif %}
@@ -187,91 +186,41 @@
 <!-- Blog-->
 <section class="section section-md bg-gray-lighter text-center">
     <div class="shell">
-        <p class="heading-1">Blog</p>
-        <div class="range range-30">
+        {% if blogs %}
+        <p class="heading-1">My Blogs</p>
+        {% endif %}
+        <div class="range range-around range-30" >
+            {% for blog in blogs %}
             <div class="cell-sm-6 cell-md-4 wow fadeInLeftSmall">
                 <!-- Post boxed-->
                 <article class="post-boxed">
                     <ul class="post-boxed__meta">
                         <li>
-                            <time datetime="2019">Jul 20, 2019</time>
+                            <time datetime="{{ blog.created_at|date:'Y-m-d' }}">{{ blog.created_at|date:'M d, Y' }}</time>
                         </li>
-                        <li><a href="#">3 comments</a></li>
+                        <li><a href="{{ blog.get_absolute_url }}">{{ blog.posts.count }} comments</a></li>
                     </ul>
                     <div class="post-boxed__main">
-                        <h3 class="post-boxed__title"><a href="#">Becoming a King and Queen for a Day</a></h3>
-                        <p>For one day, the two of you are the focus of attention. The concerns of the world slip...</p>
+                        <h3 class="post-boxed__title"><a href="{{ blog.get_absolute_url }}">{{ blog.title }}</a></h3>
+                        <p>{{ blog.description|truncatewords:20 }}</p>
                     </div>
                     <div class="post-boxed__aside">
                         <div class="unit unit-horizontal unit-middle unit-spacing-xs">
-                            <div class="unit__left"><img class="post-boxed__avatar"
-                                                         src="{% static 'images/user-6-46x46.jpg' %}" alt="" width="46"
-                                                         height="46"/>
+                            <div class="unit__left">
+                                <img class="post-boxed__avatar" src="{% static 'images/user-6-46x46.jpg' %}" alt="" width="46" height="46"/>
                             </div>
                             <div class="unit__body">
-                                <h6 class="text-uppercase">by Susan Parker</h6>
+                                <h6 class="text-uppercase">by {{ blog.created_by.username }}</h6>
                             </div>
                         </div>
                     </div>
                 </article>
             </div>
-            <div class="cell-sm-6 cell-md-4 wow fadeInLeftSmall" data-wow-delay=".15s">
-                <!-- Post boxed-->
-                <article class="post-boxed">
-                    <ul class="post-boxed__meta">
-                        <li>
-                            <time datetime="2019">Jul 15, 2019</time>
-                        </li>
-                        <li><a href="#">3 comments</a></li>
-                    </ul>
-                    <div class="post-boxed__main">
-                        <h3 class="post-boxed__title"><a href="#">How to Make Great Wedding Photos</a></h3>
-                        <p>Today I’m going to answer the question that my clients ask almost after every photo shoot.
-                            It’s a question...</p>
-                    </div>
-                    <div class="post-boxed__aside">
-                        <div class="unit unit-horizontal unit-middle unit-spacing-xs">
-                            <div class="unit__left"><img class="post-boxed__avatar"
-                                                         src="{%  static 'images/user-6-46x46.jpg' %}" alt="" width="46"
-                                                         height="46"/>
-                            </div>
-                            <div class="unit__body">
-                                <h6 class="text-uppercase">by Susan Parker</h6>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-            </div>
-            <div class="cell-sm-6 cell-md-4 wow fadeInLeftSmall" data-wow-delay=".3s">
-                <!-- Post boxed-->
-                <article class="post-boxed">
-                    <ul class="post-boxed__meta">
-                        <li>
-                            <time datetime="2019">Jul 5, 2019</time>
-                        </li>
-                        <li><a href="#">3 comments</a></li>
-                    </ul>
-                    <div class="post-boxed__main">
-                        <h3 class="post-boxed__title"><a href="#">5 Most Exotic Weddings</a></h3>
-                        <p>Do you want to know where your wedding will be the most unforgettable? Read this post and
-                            you’ll find...</p>
-                    </div>
-                    <div class="post-boxed__aside">
-                        <div class="unit unit-horizontal unit-middle unit-spacing-xs">
-                            <div class="unit__left"><img class="post-boxed__avatar"
-                                                         src="{% static 'images/user-6-46x46.jpg' %}" alt="" width="46"
-                                                         height="46"/>
-                            </div>
-                            <div class="unit__body">
-                                <h6 class="text-uppercase">by Susan Parker</h6>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-            </div>
+            {% endfor %}
         </div>
     </div>
 </section>
+
 
 <!-- Book Your Photo Shoot-->
 <section class="section section-md bg-white">

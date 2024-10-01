@@ -4,7 +4,7 @@
 <html class="wide wow-animation" lang="en">
   <head>
     <!-- Site Title-->
-    <title>Home</title>rgba
+    <title>Home</title>
     <meta name="format-detection" content="telephone=no">
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -58,12 +58,12 @@
             <div class="rd-navbar-main-outer">
               <div class="rd-navbar-main">
                 <!-- RD Navbar Panel-->
-                {% if user.is_authenticated %}
+                {% comment %} {% if user.is_authenticated %}
                     <div class="rd-navbar-panel">
                         <button class="rd-navbar-toggle" data-rd-navbar-toggle=".rd-navbar-nav-wrap"><span></span></button>
                         <!-- RD Navbar Brand-->
                         <div class="rd-navbar-brand">
-                            <a class="brand" href="{% url 'users:me' %}">
+                            <a class="brand" href="{% url 'users:profile' %}">
                                 <div class="brand__name">
                                     {% if user.image %}
                                         <img class="rounded-circle" src="{{ user.image.url }}" alt="User avatar" style="width: 100px; height: 100px;">
@@ -74,7 +74,7 @@
                             </a>
                         </div>
                     </div>
-                {% else %}
+                {% else %} {% endcomment %}
                     <div class="rd-navbar-panel">
                         <button class="rd-navbar-toggle" data-rd-navbar-toggle=".rd-navbar-nav-wrap"><span></span></button>
                         <!-- RD Navbar Brand-->
@@ -87,7 +87,7 @@
                             </a>
                         </div>
                     </div>
-                {% endif %}
+                {% comment %} {% endif %} {% endcomment %}
                 <!-- RD Navbar Nav-->
                 <div class="rd-navbar-nav-wrap">
                   <div class="rd-navbar-element">

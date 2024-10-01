@@ -1,43 +1,34 @@
-from django.core.files.uploadedfile import UploadedFile
 from django.db import models
-from cloudinary.models import CloudinaryField
-from cloudinary import uploader
-from django.core.exceptions import ValidationError
 
 from users.models import User
+from photo_app.models import Photo
 
-FILE_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024 * 10  # 10mb
-
-
-def file_validation(file):
-    if not file:
-        raise ValidationError("No file selected.")
-
-    if isinstance(file, UploadedFile):
-        if file.size > FILE_UPLOAD_MAX_MEMORY_SIZE:
-            raise ValidationError("File shouldn't be larger than 10MB.")
+class Category(models.TextChoices):
+    PORTRAIT = 'PT', 'Portrait'
+    LANDSCAPE = 'LS', 'Landscape'
+    WILDLIFE = 'WL', 'Wildlife'
+    ARCHITECTURE = 'AR', 'Architecture'
+    FASHION = 'FS', 'Fashion'
 
 
 class Portfolio(models.Model):
     create_time = models.DateTimeField(auto_now_add=True)
     title = models.CharField("Title (optional)", max_length=200, blank=True)
     description = models.TextField(blank=True, null=True)
-    image = CloudinaryField('image', validators=[file_validation])
+    category = models.CharField(
+        max_length=2,
+        choices=Category.choices,
+        default=Category.PORTRAIT,
+    )
+    photographer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='portfolios')
+    photos = models.ManyToManyField(Photo, related_name='portfolios')
 
-    def delete(self, *args, **kwargs):
-        if self.image:
-            public_id = self.image.public_id
-            uploader.destroy(public_id)
-        super().delete(*args, **kwargs)
+    class Meta:
+        verbose_name_plural = "Portfolios"
 
-    """ Informative name for model """
-
-    def __unicode__(self):
-        try:
-            public_id = self.image.public_id
-        except AttributeError:
-            public_id = ''
-        return "Photo <%s:%s>" % (self.title, public_id)
+    def __str__(self):
+        return self.title or "Portfolio without title"
+    
 
 
 class Review(models.Model):

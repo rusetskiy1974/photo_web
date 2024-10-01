@@ -3,7 +3,7 @@
 
 {% block navbar %}
 <ul class="rd-navbar-nav">
-    {% if not user.is_authenticated %}
+    
     <li><a href="{% url 'main:index' %}">Main</a>
     </li>
     <li><a href="{% url 'main:about' %}">About me</a>
@@ -12,6 +12,7 @@
     </li>
     <li><a href="{% url 'main:contact_me' %}">Contact Me</a>
     </li>
+    {% if not user.is_authenticated %}
     <li><a href="{% url 'users:login' %}">Login</a>
     </li>
     <li><a href="{% url 'users:registration' %}">Registration</a>
@@ -19,9 +20,6 @@
     {%else%}
     <li><a href="{% url 'users:profile' %}">Profile</a>
     </li>
-    {% if user.is_admin or user.is_staff %}
-    <li><a href="{% url 'admin:index' %}">Admin panel</a></li>
-    {% endif %}
     <li><a href="{% url 'users:logout' %}">Logout</a>
     </li>
     {% endif %}

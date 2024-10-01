@@ -1,43 +1,18 @@
-from django.core.files.uploadedfile import UploadedFile
 from django.db import models
 from cloudinary.models import CloudinaryField
-from django.core.exceptions import ValidationError
-
-# For testing model validation
-FILE_UPLOAD_MAX_MEMORY_SIZE = 1024 * 1024 * 10  # 10mb
-
-
-def file_validation(file):
-    if not file:
-        raise ValidationError("No file selected.")
-
-    # For regular upload, we get UploadedFile instance, so we can validate it.
-    # When using direct upload from the browser, here we get an instance of the CloudinaryResource
-    # and file is already uploaded to Cloudinary.
-    # Still can perform all kinds on validations and maybe delete file, approve moderation, perform analysis, etc.
-    if isinstance(file, UploadedFile):
-        if file.size > FILE_UPLOAD_MAX_MEMORY_SIZE:
-            raise ValidationError("File shouldn't be larger than 10MB.")
-
+from cloudinary import uploader
+from .utils.image_validator import file_validation
 
 class Photo(models.Model):
-    """
-    This is the main model in the project. It holds a reference to cloudinary-stored
-    image and contains some metadata about the image.
-    """
-
-    # Misc Django Fields
     create_time = models.DateTimeField(auto_now_add=True)
     title = models.CharField("Title (optional)", max_length=200, blank=True)
+    description = models.TextField(blank=True, null=True)
+    public_id = models.CharField(max_length=255, blank=True)
 
-    # Points to a Cloudinary image
-    image = CloudinaryField('image', validators=[file_validation])
+    def delete(self, *args, **kwargs):
+        if self.public_id:
+            uploader.destroy(self.public_id)
+        super().delete(*args, **kwargs)
 
-    """ Informative name for model """
-
-    def __unicode__(self):
-        try:
-            public_id = self.image.public_id
-        except AttributeError:
-            public_id = ''
-        return "Photo <%s:%s>" % (self.title, public_id)
+    def __str__(self):
+        return f"Photo <{self.title}:{self.public_id}>"

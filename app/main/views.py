@@ -1,4 +1,6 @@
 from django.shortcuts import render
+
+from blog.models import Blog
 from .models import Portfolio, Review
 
 from django.http import HttpResponse
@@ -7,11 +9,13 @@ from django.http import HttpResponse
 
 def index(request):
     portfolio_items = Portfolio.objects.all()
+    blogs = Blog.objects.all()
 
     context = {
         'title': "Home",
         'content': "Фотостудія RMS",
-        'portfolio_items': portfolio_items
+        'portfolio_items': portfolio_items,
+        'blogs': blogs,
         }
     return render(request, 'main/index.html', context=context)
 

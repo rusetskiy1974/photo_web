@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block navbar %}
+<ul class="rd-navbar-nav">
+    {% if not user.is_authenticated %}
+    
+    <li><a href="{% url 'users:login' %}">Login</a>
+    </li>
+    <li><a href="{% url 'users:registration' %}">Registration</a>
+    </li>
+    {% else %}
+    <li><a href="{% url 'blog:blog_detail' slug=blog.slug %}">Blog</a>
+    </li>
+    <li class="active"><a href="{% url 'blog:post_create' slug=blog.slug %}">New post</a>
+    </li>
+    <li><a href="{% url 'users:profile' %}">Profile</a></li>
+    {% if user.is_admin or user.is_staff %}
+    <li><a href="{% url 'admin:index' %}">Admin panel</a></li>
+    {% endif %}
+    <li><a href="{% url 'users:logout' %}">Logout</a></li>
+    {% endif %}
+</ul>
+{% endblock %}
+
+
+{% block content %}
+<h1>Create a New Post</h1>
+
+<!-- Виведення повідомлень про помилки, якщо вони є -->
+{% if form.errors %}
+    <div class="alert alert-danger">
+        <p>There were some errors in your form:</p>
+        <ul>
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <li>{{ field.label }}: {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+<!-- Форма для створення нового поста -->
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="id_title">Title</label>
+        {{ form.title }}
+    </div>
+    
+    <div class="form-group">
+        <label for="id_content">Content</label>
+        {{ form.content }}
+    </div>
+    
+    <div class="form-group">
+        <label for="id_image">Image (optional)</label>
+        {{ form.image }}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create Post</button>
+</form>
+{% endblock %}

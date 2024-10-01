@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+
+{% load static %}
+
+{% block navbar %}
+<ul class="rd-navbar-nav">
+    <li><a href="{% url 'main:index' %}">Main</a>
+    </li>
+    {% if not user.is_authenticated %}
+    <li class="active"><a href="{% url 'blog:blog_detail' slug=blog.slug %}">Blog</a>
+    </li>
+    <li><a href="{% url 'users:login' %}">Login</a>
+    </li>
+    <li><a href="{% url 'users:registration' %}">Registration</a>
+    </li>
+    {%else%}
+    <li class="active"><a href="{% url 'blog:blog_detail' slug=blog.slug %}">Blog</a>
+    </li>
+    <li><a href="{% url 'blog:post_create' slug=blog.slug %}">New Post</a>
+    </li>
+    
+    {% comment %} <li><a href="{% url 'blog:post_edit' %}">Edit Post</a>
+    </li>
+    <li><a href="{% url 'blog:post_delete' %}">Delete Post</a>
+    </li> {% endcomment %}
+    {% endif %}
+</ul>
+{% endblock %}
+
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-11 bg-white p-4 mb-5 mx-2 rounded custom-shadow">
+    <!-- Заголовок блогу -->
+    <h1 class="text-center mb-4">{{ blog.title }}</h1>
+    
+    <!-- Опис блогу -->
+    <p class="text-center mb-4">{{ blog.description }}</p>
+    
+    <!-- Кнопка для створення нового поста (доступна лише автентифікованим користувачам) -->
+    {% if user.is_authenticated %}
+    <p class="text-center mb-4">
+        <a href="{% url 'blog:post_create' slug=blog.slug %}" class="btn btn-primary">Create New Post</a>
+      </p>
+    {% endif %}
+
+    <!-- Перевірка наявності постів у блозі -->
+    {% if blog.posts.exists %}
+        
+        <ul>
+            <!-- Прохід по всіх постах блогу -->
+            {% for post in blog.posts.all %}
+            <div class="row justify-content-center">
+              <div class="col-md-10 bg-white p-4 mb-5 mx-2 rounded custom-shadow">
+            <li class="text-center">
+                {% comment %} <h3><a href="{% url 'blog:post_detail' pk=post.pk %}">{{ post.title }}</a></h3> {% endcomment %}
+                
+                <h1>{{ post.title }}</h1>
+                      <p><strong>Author:</strong> {{ post.author.username }}</p>
+                      <p><strong>Published at:</strong> {{ post.published_at }}</p>
+
+                      <!-- Виведення зображення, якщо воно є -->
+                      {% if post.image %}
+                          <img src="{{ post.image.url }}" alt="{{ post.title }}" class="img-fluid">
+                      {% endif %}
+
+                      <!-- Виведення контенту поста -->
+                      <div style="word-wrap: break-word; overflow-wrap: break-word;">
+                          <p >{{ post.content }}</p>
+                      </div>
+
+                <p><strong>Published at:</strong> {{ post.published_at|date:"F j, Y, H:i" }}</p>
+            </li>
+            </div>
+          </div>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No posts available in this blog yet.</p>
+    {% endif %}
+      </div>
+  </div>  
+</div>
+{% endblock %}

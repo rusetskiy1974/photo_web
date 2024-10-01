@@ -21,7 +21,7 @@ def login(request):
                 if request.POST.get('next', None):
                     return HttpResponseRedirect(request.POST.get('next'))
                 
-                return HttpResponseRedirect(reverse("users:me"))
+                return HttpResponseRedirect(reverse("main:index"))
     else:
         form = UserLoginForm()
          
@@ -53,7 +53,7 @@ def registration(request):
 
 
 @login_required
-def profile(request):
+def edit_profile(request):
     if request.method == "POST":
         form = ProfileForm(
             data=request.POST, instance=request.user, files=request.FILES
@@ -69,15 +69,15 @@ def profile(request):
         "title": "Home - Профіль",
         "form": form,
     }
-    return render(request, "users/profile.html", context=context)
+    return render(request, "users/edit_profile.html", context=context)
 
 @login_required
-def me(request):
+def profile(request):
     context = {
         "title": "Home - Мій профіль",
         "user": request.user,  # Поточний користувач
     }
-    return render(request, "users/me.html", context=context)
+    return render(request, "users/profile.html", context=context)
 
 @login_required
 def logout(request):

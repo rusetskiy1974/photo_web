@@ -1,0 +1,19 @@
+{% extends "admin/change_list.html" %}
+{% load static %}
+
+{% block object-tools %}
+<div class="object-tools">
+    <ul class="object-tools-items">
+        <li>
+            <a href="{% url 'admin:upload_single_photo' %}" class="button">
+                Upload Single Photo
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'admin:upload_photos_from_directory' %}" class="button">
+                Upload Photos from Directory
+            </a>
+        </li>
+    </ul>
+</div>
+{% endblock %}
