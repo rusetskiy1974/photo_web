@@ -6,8 +6,7 @@ app_name = 'photo_app'
 
 urlpatterns = [
      # URL for listing all images:
-    path('', views.list, name='list'),
-    path('list/', views.list, name='list'),
+    path('public_list/', views.public_list, name='public_list'),
     # URL for uploading an image
     path('upload/', views.upload, name='upload'),
     # The direct upload functionality reports to this URL when an image is uploaded.

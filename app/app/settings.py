@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-# from django.conf.global_settings import AUTH_USER_MODEL, LOGIN_URL, MEDIA_URL
+from django.conf.global_settings import AUTH_USER_MODEL, LOGIN_URL, MEDIA_URL
 import os
 
 import cloudinary
@@ -38,7 +38,7 @@ CLOUDINARY_STORAGE = {
     'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
 }
 
-# DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 cloudinary.config(
     cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
@@ -86,6 +86,7 @@ INSTALLED_APPS = [
     'users',
     'blog',
     'services',
+    'reviews',
     
 ]
 
@@ -99,7 +100,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+# STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 # STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
 
 
@@ -201,11 +202,11 @@ STATICFILES_DIRS = [
 #     # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 # )
 
-# TEMPLATE_LOADERS = (
-#     'django.template.loaders.filesystem.Loader',
-#     'django.template.loaders.app_directories.Loader',
+TEMPLATE_LOADERS = (
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
 #     # 'django.template.loaders.eggs.Loader',
-# )
+)
 
 
 

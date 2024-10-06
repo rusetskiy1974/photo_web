@@ -3,7 +3,8 @@
 
 {% block navbar %}
 <ul class="rd-navbar-nav">
-    
+    <li><a href="{% url 'main:index' %}">Main</a>
+    </li>
     {% if not user.is_authenticated %}
     <li><a href="{% url 'users:login' %}">Login</a>
     </li>
@@ -14,7 +15,9 @@
     </li>
     <li><a href="{% url 'users:edit_profile' %}">Edit profile</a>
     </li>
-    <li><a href="{% url 'main:index' %}">Main</a>
+    <li><a href="{% url 'reviews:reviews_list' %}">Review</a>
+    </li>
+    <li><a href="{% url 'users:my_photos' %}">My photos</a>
     </li>
     {% if user.is_admin or user.is_staff %}
     <li><a href="{% url 'admin:index' %}">Admin panel</a></li>

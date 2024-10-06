@@ -13,7 +13,7 @@
             <h3 class="text-center">Upload Single Photo</h3>
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-                <div class="text-center mb-4">
+                <div class="text-center">
                 {{ form.as_p }}
                 <button type="submit">Upload</button>
                 </div>

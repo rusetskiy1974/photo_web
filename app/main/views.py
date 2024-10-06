@@ -1,11 +1,22 @@
 from django.shortcuts import render
+from django.views.generic import DetailView
 
+from reviews.models import Review
 from blog.models import Blog
-from .models import Portfolio, Review
+from .models import Portfolio
 
 from django.http import HttpResponse
 # from goods.models import Categories
 
+class PortfolioDetailView(DetailView):
+    model = Portfolio
+    template_name = 'main/portfolio_detail.html'  # Вкажіть правильний шлях до вашого шаблону
+    context_object_name = 'portfolio'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['portfolio'] = Portfolio.objects.get(pk=self.kwargs['pk'])
+        return context
 
 def index(request):
     portfolio_items = Portfolio.objects.all()
@@ -18,6 +29,8 @@ def index(request):
         'blogs': blogs,
         }
     return render(request, 'main/index.html', context=context)
+
+
 
 def about(request):
     reviews = Review.objects.all()

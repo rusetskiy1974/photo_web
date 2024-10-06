@@ -25,6 +25,7 @@ urlpatterns = [
     path('photo/', include('photo_app.urls', namespace='photo_app')),
     path('user/', include('users.urls', namespace='user')),
     path('blog/', include('blog.urls', namespace='blog')),
+    path('review/', include('reviews.urls', namespace='review')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

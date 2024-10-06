@@ -15,10 +15,9 @@ class BlogForm(forms.ModelForm):
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['title', 'content', 'image'] 
+        fields = ['title', 'content'] 
 
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Назва поста'}),
             'content': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Текст поста'}),
-            'image': forms.FileInput(attrs={'class': 'form-control-file'}),
         }

@@ -4,7 +4,10 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from traitlets import Instance
-from users.forms import ProfileForm, UserLoginForm, UserRegistrationForm
+from cloudinary import CloudinaryImage
+
+from photo_app.models import Photo
+from .forms import ProfileForm, UserLoginForm, UserRegistrationForm
 
 
 def login(request):
@@ -59,10 +62,14 @@ def edit_profile(request):
             data=request.POST, instance=request.user, files=request.FILES
         )
         if form.is_valid():
+            print('-----------------valid form------------------')
             form.save()
             messages.success(request, "Профайл успішно оновлено")
             return HttpResponseRedirect(reverse("users:profile"))
+        else:
+            print('----------not valid form-------------------')
     else:
+        
         form = ProfileForm(instance=request.user)
 
     context = {
@@ -84,3 +91,53 @@ def logout(request):
     messages.success(request, f"{request.user.username}, Ви вийшли з аккаунту")
     auth.logout(request)
     return redirect(reverse("main:index"))
+
+@login_required
+def my_photos(request):
+    my_photos = Photo.objects.filter(owner=request.user.id)
+
+    # Створюємо URL з трансформацією, яка накладає текст "Фотостудія RMS"
+    photos_with_text = []
+    for photo in my_photos:
+        url_with_text = CloudinaryImage(photo.public_id).build_url(transformation=[
+  {'width': 500, 'crop': "scale"},
+  {'color': "#FFFFFF80", 'overlay': {'font_family': "Times", 'font_size': 90, 'font_weight': "bold", 'text': "Photo RMS"}},
+  {'flags': "layer_apply", 'gravity': "center", 'y': 20}
+  ])
+        photos_with_text.append({
+            'photo': photo,
+            'url_with_text': url_with_text
+        })
+    context = {
+        'title': 'My photos',
+        'photos_with_text': photos_with_text,
+        
+    }
+    
+
+    return render(request, 'users/my_photos.html', context)
+
+@login_required
+def add_review(request):
+    my_photos = Photo.objects.filter(owner=request.user.id)
+
+    # Створюємо URL з трансформацією, яка накладає текст "Фотостудія RMS"
+    photos_with_text = []
+    for photo in my_photos:
+        url_with_text = CloudinaryImage(photo.public_id).build_url(transformation=[
+  {'width': 500, 'crop': "scale"},
+  {'color': "#FFFFFF80", 'overlay': {'font_family': "Times", 'font_size': 90, 'font_weight': "bold", 'text': "Photo RMS"}},
+  {'flags': "layer_apply", 'gravity': "center", 'y': 20}
+  ])
+        photos_with_text.append({
+            'photo': photo,
+            'url_with_text': url_with_text
+        })
+    context = {
+        'title': 'My photos',
+        'photos_with_text': photos_with_text,
+        
+    }
+    
+
+    return render(request, 'users/my_photos.html', context)

@@ -62,8 +62,8 @@
                       <p><strong>Published at:</strong> {{ post.published_at }}</p>
 
                       <!-- Виведення зображення, якщо воно є -->
-                      {% if post.image %}
-                          <img src="{{ post.image.url }}" alt="{{ post.title }}" class="img-fluid">
+                      {% if post.photo %}
+                          <img src="{{ post.photo.image_url }}" alt="{{ post.title }}" class="img-fluid">
                       {% endif %}
 
                       <!-- Виведення контенту поста -->

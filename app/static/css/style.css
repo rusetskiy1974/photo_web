@@ -6472,7 +6472,7 @@ html:not(.tablet):not(.mobile).ie-10 .thumb-janez__content::after, html:not(.tab
 		left: 0;
 		transform: none;
 		width: 100%;
-		height: 100%;
+		/* height: 100%; */
 		object-fit: cover;
 		object-position: center center;
 	}

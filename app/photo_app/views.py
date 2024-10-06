@@ -14,22 +14,33 @@ def filter_nones(d):
     return dict((k, v) for k, v in six.iteritems(d) if v is not None)
 
 
-def list(request):
-    defaults = dict(format="jpg", height=150, width=150)
-    defaults["class"] = "thumbnail inline"
+from cloudinary import CloudinaryImage
 
-    # The different transformations to present
-    samples = [
-        {'crop': "fill", 'radius': 10},
-        dict(crop="scale"),
-        dict(crop="fit", format="png"),
-        dict(crop="thumb", gravity="face"),
-        dict(format="png", angle=20, height=None, width=None, transformation=[
-            dict(crop="fill", gravity="north", width=150, height=150, effect="sepia"),
-        ]),
-    ]
-    samples = [filter_nones(dict(defaults, **sample)) for sample in samples]
-    return render(request, 'photo_app/list.html', dict(photos=Photo.objects.all(), samples=samples))
+def public_list(request):
+    # Отримуємо всі публічні фото (is_public=True)
+    public_photos = Photo.objects.filter(is_public=False)
+
+    # Створюємо URL з трансформацією, яка накладає текст "Фотостудія RMS"
+    photos_with_text = []
+    for photo in public_photos:
+        url_with_text = CloudinaryImage(photo.public_id).build_url(transformation=[
+  {'width': 500, 'crop': "scale"},
+  {'color': "#FFFFFF80", 'overlay': {'font_family': "Times", 'font_size': 90, 'font_weight': "bold", 'text': "Photo RMS"}},
+  {'flags': "layer_apply", 'gravity': "center", 'y': 20}
+  ])
+        photos_with_text.append({
+            'photo': photo,
+            'url_with_text': url_with_text
+        })
+    context = {
+        'title': 'Clients public photos',
+        'photos_with_text': photos_with_text,
+        
+    }
+        
+
+    return render(request, 'photo_app/public_list.html', context
+    )
 
 
 def upload(request):
