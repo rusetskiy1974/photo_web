@@ -16,6 +16,9 @@ pillow = "^10.4.0"
 django-cloudinary-storage = "^0.3.0"
 mypy = "^1.11.2"
 django-stubs = "^5.1.0"
+django-allauth = "^65.0.2"
+pyjwt = "^2.9.0"
+cryptography = "^43.0.1"
 
 
 [build-system]
