@@ -6,13 +6,8 @@ from django.urls import path, reverse
 from django.template.response import TemplateResponse
 from .models import Photo
 from cloudinary import uploader
-from .forms import UploadSinglePhotoForm
-
-
-class UploadPhotosFromDirectoryForm(forms.Form):
-    directory_path = forms.CharField(label='Directory Path', max_length=255)
-
-
+from .forms import UploadSinglePhotoForm, UploadPhotosFromDirectoryForm
+from .utils.image_validator import validate_download_file_size
 
 
 class PhotoAdmin(admin.ModelAdmin):
@@ -31,7 +26,9 @@ class PhotoAdmin(admin.ModelAdmin):
     list_display = ('title', 'create_time', 'public_id')
     search_fields = ('title',)
     list_filter = ('create_time',)
+
     
+    add_form_template = "admin/photo_add_form.html"
     change_list_template = "admin/photo_change_list.html" 
 
 
@@ -45,17 +42,27 @@ class PhotoAdmin(admin.ModelAdmin):
 
     def upload_single(self, request):
         if request.method == 'POST':
-            form = UploadSinglePhotoForm(request.POST, request.FILES)
-            if form.is_valid():
-                image_file = form.cleaned_data['image']
-                cloudinary_response = uploader.upload(image_file)
-                Photo.objects.create(
-                    title=form.cleaned_data['title'],
-                    description=form.cleaned_data['description'],
-                    public_id=cloudinary_response['public_id'],
-                )
-                self.message_user(request, "Photo uploaded successfully.")
-                return HttpResponseRedirect(request.path_info)
+            try:
+                form = UploadSinglePhotoForm(request.POST, request.FILES)
+                if form.is_valid():
+                    # Створюємо новий екземпляр моделі Photo
+                    photo = Photo(
+                        title=form.cleaned_data['title'],
+                        description=form.cleaned_data['description'],
+                        owner=form.cleaned_data['owner'],
+                    )
+                    
+                    # Використовуємо метод upload_image для завантаження фото на Cloudinary
+                    image_file = form.cleaned_data['image']
+                    photo.upload_image(image_file)
+                    
+                    # Зберігаємо фото в базі даних
+                    photo.save()
+                    
+                    self.message_user(request, "Photo uploaded successfully.")
+                    return HttpResponseRedirect(request.path_info)
+            except Exception as e:
+                self.message_user(request, f"Error uploading photo: {str(e)}", level='error')
         else:
             form = UploadSinglePhotoForm()
 
@@ -65,24 +72,44 @@ class PhotoAdmin(admin.ModelAdmin):
         }
         return TemplateResponse(request, 'admin/upload_single_photo.html', context)
 
+
     def upload_directory(self, request):
         if request.method == 'POST':
             form = UploadPhotosFromDirectoryForm(request.POST)
             if form.is_valid():
                 directory_path = form.cleaned_data['directory_path']
+                owner_id = form.cleaned_data['owner']
+                
                 if os.path.isdir(directory_path):
+                    count_photos = 0
                     for filename in os.listdir(directory_path):
-                        if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
-                            file_path = os.path.join(directory_path, filename)
-                            with open(file_path, 'rb') as f:
-                                cloudinary_response = uploader.upload(f)
-                                file_name, _ = os.path.splitext(filename)
-                                Photo.objects.create(
-                                    title=file_name,
-                                    description=file_name,
-                                    public_id=cloudinary_response['public_id']
-                                )
-                    self.message_user(request, "Photos uploaded successfully.")
+                        try:
+                            # Перевіряємо чи файл є зображенням
+                            if filename.lower().endswith(('.png', '.jpg', '.jpeg')):
+                                file_path = os.path.join(directory_path, filename)
+                                
+                                # Валідуємо розмір файлу
+                                validate_download_file_size(file_path)
+                                
+                                # Відкриваємо файл для читання у байтовому режимі
+                                with open(file_path, 'rb') as f:
+                                    # Створюємо новий екземпляр Photo
+                                    file_name, _ = os.path.splitext(filename)
+                                    photo = Photo(
+                                        title=file_name,
+                                        description=file_name,
+                                        owner=owner_id,
+                                    )
+                                    
+                                    # Використовуємо метод upload_image для завантаження фото
+                                    photo.upload_image(f)
+                                    count_photos+=1
+                                                                        
+                        except Exception as e:
+                            self.message_user(request, f"Error processing file '{filename}': {str(e)}", level='error')
+                            
+                    # Повідомляємо про успішне завантаження
+                    self.message_user(request, f"{count_photos} photos uploaded successfully.")
                     return HttpResponseRedirect(request.path_info)
                 else:
                     self.message_user(request, "Invalid directory path.", level='error')

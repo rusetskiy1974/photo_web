@@ -1,6 +1,8 @@
 from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.shortcuts import get_object_or_404
+
+from photo_app.models import Photo
 from .models import Blog, Post
 
 # 1. Список всіх блогів
@@ -30,12 +32,19 @@ class PostDetailView(DetailView):
 class PostCreateView(CreateView):
     model = Post
     template_name = 'blog/create_post.html'
-    fields = ['title', 'content', 'image']
+    fields = ['title', 'content']
 
     def form_valid(self, form):
         form.instance.author = self.request.user
         form.instance.blog = get_object_or_404(Blog, slug=self.kwargs['slug'])
-        return super().form_valid(form)
+        image_file = self.request.FILES.get('photo')
+        response = super().form_valid(form)
+
+        if image_file:
+            form.instance.attach_photo(image_file)
+
+        return response
+            
 
     def get_success_url(self):
         return reverse_lazy('blog:blog_detail', kwargs={'slug': self.kwargs['slug']})

@@ -1,0 +1,22 @@
+{% extends "admin/base_site.html" %}
+
+ 
+{% block object-tools %}
+<div>
+    <ul class="object-tools-items" style="display: flex; flex-direction: column; list-style: none; padding: 0;">
+        <li style="margin-bottom: 20px;">
+            <a href="{% url 'admin:upload_single_photo' %}" class="button">
+                Upload Single Photo
+            </a>
+        </li>
+        <li>
+            <a href="{% url 'admin:upload_photos_from_directory' %}" class="button">
+                Upload Photos from Directory
+            </a>
+        </li>
+    </ul>
+</div>
+{% endblock %}
+
+
+

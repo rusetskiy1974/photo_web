@@ -43,3 +43,11 @@ class Post(models.Model):
     def get_absolute_url(self):
         return reverse('blog:post_detail', args=[self.id])
     
+    def attach_photo(self, file):
+        """
+        Створює фото об'єкт і завантажує зображення на Cloudinary.
+        """
+        photo = Photo(owner=self.author)
+        photo.upload_image(file)
+        self.photo = photo
+        self.save()

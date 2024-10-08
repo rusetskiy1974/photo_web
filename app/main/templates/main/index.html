@@ -9,8 +9,8 @@
     </li>
     <li><a href="{% url 'main:about' %}">About me</a>
     </li>
-    <li><a href="{% url 'main:typography' %}">Typography</a>
-    </li>
+    {% comment %} <li><a href="{% url 'main:typography' %}">Typography</a>
+    </li> {% endcomment %}
     <li><a href="{% url 'main:contact_me' %}">Contact Me</a>
     </li>
     {% if not user.is_authenticated %}   
@@ -19,6 +19,8 @@
     <li><a href="{% url 'users:registration' %}">Registration</a>
     </li>
     {%else%}
+    <li><a href="{% url 'photo_app:public_list' %}">Clients public photo</a>
+    </li>
     <li><a href="{% url 'users:profile' %}">Profile</a>
     </li>
     <li><a href="{% url 'users:logout' %}">Logout</a>
@@ -109,23 +111,24 @@
 <section class="section section-md bg-white text-center">
     <div class="shell-fluid">
         <p class="heading-1">Portfolio</p>
-        <div class="isotope thumb-ruby-wrap wow fadeIn" data-isotope-layout="masonry" data-isotope-group="gallery"
-             data-lightgallery="group">
+        {% comment %} <div class="isotope thumb-ruby-wrap wow fadeIn" data-isotope-layout="masonry" data-isotope-group="gallery"
+             data-lightgallery="group"> {% endcomment %}
             <div class="row">
-                {% for item in portfolio_items %}
+                
+                {% for portfolio in portfolio_items %}
                     <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 isotope-item">
-                        <a class="thumb-ruby thumb-mixed_height-2 thumb-mixed_md" href="{{ item.image.url }}" data-lightgallery="item">
-                            <img class="thumb-ruby__image" src="{{ item.image.url }}" alt="{{ item.title }}" width="440" height="327"/>
+                        <a class="thumb-ruby thumb-mixed_height-2 thumb-mixed_md" href="{% url 'main:portfolio_detail' portfolio.id %}" data-lightgallery="portfolio">
+                            <img class="thumb-ruby__image" src="{% static portfolio.get_category_image %}" alt="{{ portfolio.title }}" width="440" height="327"/>
                             <div class="thumb-ruby__caption">
-                                <p class="thumb-ruby__title heading-3">{{ item.title }}</p>
-                                <p class="thumb-ruby__text">{{ item.description }}</p>
+                                <p class="thumb-ruby__title heading-3">{{ portfolio.title }}</p>
+                                <p class="thumb-ruby__text">{{ portfolio.description }}</p>
                             </div>
                         </a>
                     </div>
                 {% endfor %}
-                
+                                
             </div>
-        </div>
+        {% comment %} </div> {% endcomment %}
     </div>
 </section>
 

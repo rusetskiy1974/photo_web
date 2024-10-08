@@ -6,7 +6,7 @@ from django.contrib.postgres.search import (
     SearchHeadline,
 )
 
-from services.models import Service
+from .models import Service
 
 
 def q_search(query):

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load static %}
+{% load cloudinary %}  
+
+{% block navbar %}
+<ul class="rd-navbar-nav">
+    
+    <li><a href="{% url 'main:index' %}">Main</a>
+    </li>
+    <li><a href="{% url 'main:about' %}">About me</a>
+    </li>
+    <li><a href="{% url 'main:contact_me' %}">Contact Me</a>
+    </li>
+    {% comment %} <li><a href="{% url 'main:typography' %}">Typography</a>
+    </li> {% endcomment %}
+    <li  class="active"><a href="{% url 'photo_app:public_list' %}">Clients public photos</a>
+    </li>
+    {% if not user.is_authenticated %}   
+    <li><a href="{% url 'users:login' %}">Login</a>
+    </li>
+    <li><a href="{% url 'users:registration' %}">Registration</a>
+    </li>
+    {%else%}
+    <li><a href="{% url 'users:profile' %}">Profile</a>
+    </li>
+    <li><a href="{% url 'users:logout' %}">Logout</a>
+    </li>
+    {% endif %}
+</ul>
+{% endblock %}
+
+{% block content %}
+<section class="section section-md bg-white text-center">
+  <div class="shell-fluid">
+      <p class="heading-1">{{ title }}</p>
+      <div class="isotope thumb-ruby-wrap wow fadeIn" data-isotope-layout="masonry" data-isotope-group="gallery"
+           data-lightgallery="group">
+          <div class="row">
+            {% for item in photos_with_text %}
+              <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 isotope-item">
+                  <a class="thumb-ruby thumb-mixed_height-2 thumb-mixed_md" href="{{ item.url_with_text }}" data-lightgallery="item">
+                      <img class="thumb-ruby__image" src="{{ item.url_with_text }}" alt="{{ item.photo.title }}" width="440" height="327"/> <!-- Використовуємо URL з текстом -->
+                      <div class="thumb-ruby__caption">
+                          <p class="thumb-ruby__title heading-3">{{ item.photo.title }}</p>
+                          <p class="thumb-ruby__text">{{ item.photo.description }}</p>
+                      </div>
+                  </a>
+              </div>
+            {% endfor %}
+                                 
+          </div>
+      </div>
+  </div>
+</section>
+
+
+{% endblock %}

@@ -1,23 +1,24 @@
-from dataclasses import fields
-from typing import Literal
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm
-
-from users.models import User
-
+from .models import Role, User
 
 class UserLoginForm(AuthenticationForm):
     class Meta:
         model = User
         fields = ['username', 'password']
 
-    password = forms.CharField()
-    username = forms.CharField()
+    # Можеш додати кастомні атрибути до полів, наприклад, класи CSS
+    username = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Ваше ім’я користувача'
+    }))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Ваш пароль'
+    }))
 
-    
 
 class UserRegistrationForm(UserCreationForm):
-
     class Meta:
         model = User
         fields = (
@@ -30,19 +31,47 @@ class UserRegistrationForm(UserCreationForm):
             "password1",
             "password2",
         )
-    
-    first_name = forms.CharField()
-    last_name = forms.CharField()
-    username = forms.CharField()
-    email = forms.CharField()
-    phone = forms.CharField(required=False)  
-    address = forms.CharField(required=False) 
-    password1 = forms.CharField()
-    password2 = forms.CharField()
 
+    first_name = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Ваше ім’я'
+    }))
+    last_name = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Ваше прізвище'
+    }))
+    username = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Ім’я користувача'
+    }))
+    email = forms.EmailField(widget=forms.EmailInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'example@domain.com'
+    }))
+    phone = forms.CharField(required=False, widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Ваш телефон'
+    }))
+    address = forms.CharField(required=False, widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Ваша адреса'
+    }))
+    password1 = forms.CharField(widget=forms.PasswordInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Введіть пароль'
+    }))
+    password2 = forms.CharField(widget=forms.PasswordInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Підтвердьте пароль'
+    }))
 
+    # Додамо приклад кастомної валідації для телефону
+    def clean_phone(self):
+        phone = self.cleaned_data.get('phone')
+        if phone and not phone.isdigit():
+            raise forms.ValidationError('Телефон повинен містити тільки цифри.')
+        return phone
 
-    
 
 class ProfileForm(UserChangeForm):
     class Meta:
@@ -54,51 +83,40 @@ class ProfileForm(UserChangeForm):
             "username",
             "email",
             "phone",
-            "address",)
+            "address",
+        )
 
-    image = forms.ImageField(required=False)
-    first_name = forms.CharField()
-    last_name = forms.CharField()
-    username = forms.CharField()
-    email = forms.CharField()
-    phone = forms.CharField(required=False)
-    address = forms.CharField(required=False)
+    image = forms.ImageField(required=False, widget=forms.FileInput(attrs={
+        'class': 'form-control-file'
+    }))
+    first_name = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Ваше ім’я'
+    }))
+    last_name = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Ваше прізвище'
+    }))
+    username = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Ім’я користувача'
+    }))
+    email = forms.EmailField(widget=forms.EmailInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'example@domain.com'
+    }))
+    phone = forms.CharField(required=False, widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Ваш телефон'
+    }))
+    address = forms.CharField(required=False, widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Ваша адреса'
+    }))
 
-
-
-    # image = forms.ImageField(
-    #     widget=forms.FileInput(attrs={"class": "form-control mt-3"}), required=False
-    # )
-    # first_name = forms.CharField(
-    #     widget=forms.TextInput(
-    #         attrs={
-    #             "class": "form-control",
-    #             "placeholder": "Введите ваше имя",
-    #         }
-    #     )
-    # )
-    # last_name = forms.CharField(
-    #     widget=forms.TextInput(
-    #         attrs={
-    #             "class": "form-control",
-    #             "placeholder": "Введите вашу фамилию",
-    #         }
-    #     )
-    # )
-    # username = forms.CharField(
-    #     widget=forms.TextInput(
-    #         attrs={
-    #             "class": "form-control",
-    #             "placeholder": "Введите ваше имя пользователя",
-    #         }
-    #     )
-    # )
-    # email = forms.CharField(
-    #     widget=forms.EmailInput(
-    #         attrs={
-    #             "class": "form-control",
-    #             "placeholder": "Введите ваш email *youremail@example.com",
-    #             # 'readonly': True,
-    #         }
-    #     ),
-    # )    
+    # Додамо ту ж кастомну валідацію для телефону
+    def clean_phone(self):
+        phone = self.cleaned_data.get('phone')
+        if phone and not phone.isdigit():
+            raise forms.ValidationError('Телефон повинен містити тільки цифри.')
+        return phone

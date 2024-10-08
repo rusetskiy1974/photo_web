@@ -26,40 +26,41 @@
 
 
 {% block content %}
-<h1>Create a New Post</h1>
-
-<!-- Виведення повідомлень про помилки, якщо вони є -->
-{% if form.errors %}
-    <div class="alert alert-danger">
-        <p>There were some errors in your form:</p>
-        <ul>
-            {% for field in form %}
-                {% for error in field.errors %}
-                    <li>{{ field.label }}: {{ error }}</li>
-                {% endfor %}
-            {% endfor %}
-        </ul>
-    </div>
-{% endif %}
 
 <!-- Форма для створення нового поста -->
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <div class="form-group">
-        <label for="id_title">Title</label>
-        {{ form.title }}
-    </div>
-    
-    <div class="form-group">
-        <label for="id_content">Content</label>
-        {{ form.content }}
-    </div>
-    
-    <div class="form-group">
-        <label for="id_image">Image (optional)</label>
-        {{ form.image }}
-    </div>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <h2 class="text-center mb-4">Create a New Post</h2>
+        <div class="col-md-8 bg-white p-4 mb-5 mx-2 rounded custom-shadow">
+            
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-12 mb-3 text-center">
+                        <label for="id_title">Title</label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                            <div class="alert alert-danger alert-dismissible fade show">{{ form.title.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-12 mb-10 text-center">
+                        <label for="id_title">Content</label>
+                        {{ form.content }}
+                        {% if form.content.errors %}
+                            <div class="alert alert-danger alert-dismissible fade show">{{ form.content.errors }}</div>
+                        {% endif %}
+                    </div>
+                                                 
+                    <!-- Поле для завантаження фото окремо, не з форми -->
+                    <div class="col-md-12 mb-10 text-center">
+                        <label for="id_photo">Image (optional)</label>
+                        <input type="file" name="photo" id="id_photo" class="form-control">
+                    </div>
 
-    <button type="submit" class="btn btn-primary">Create Post</button>
-</form>
+                    <button type="submit" class="btn btn-primary">Create Post</button>
+                </div>    
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}

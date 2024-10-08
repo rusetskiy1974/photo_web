@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block navbar %}
+<ul class="rd-navbar-nav">
+    <li><a href="{% url 'main:index' %}">Main</a>
+    </li>
+    <li><a href="{% url 'users:profile' %}">My Profile</a>
+    </li>
+    <li><a href="{% url 'users:edit_profile' %}">Edit profile</a>
+    </li>
+    <li class="active"><a href="{% url 'users:my_photos' %}">My photos</a>
+    </li>
+    {% if user.is_admin or user.is_staff %}
+    <li><a href="{% url 'admin:index' %}">Admin panel</a></li>
+    {% endif %}
+    
+</ul>
+{% endblock %}
+
+{% block content %}
+<section class="section section-md bg-white text-center">
+  <div class="shell-fluid">
+      <p class="heading-2">{{ title }}</p>
+      
+      <!-- Форма для вибору фото -->
+      <form method="POST" action="{% url 'users:handle_photos' %}">
+        {% csrf_token %}  <!-- Для безпеки форми -->
+        
+        <!-- Чекбокс для вибору всіх фото -->
+        <div class="checkbox-container mb-3">
+            <input type="checkbox" id="select-all" class="photo-checkbox"/>
+            <label for="select-all">Вибрати всі фото</label>
+        </div>
+
+        <div class="isotope thumb-ruby-wrap wow fadeIn" data-isotope-layout="masonry" data-isotope-group="gallery"
+             data-lightgallery="group">
+            <div class="row">
+              {% for item in photos_with_text %}
+                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 isotope-item">
+                    <div class="photo-item">
+                        <!-- Чекбокс для вибору фото -->
+                        <div class="checkbox-container">
+                            <input type="checkbox" name="photo_ids"  value="{{ item.photo.id }}" id="photo_{{ item.photo.id }}" class="photo-checkbox">
+                            <label for="photo_{{ item.photo.id }}">Вибрати</label>
+                        </div>
+                        <!-- Фото з описом -->
+                        <a class="thumb-ruby thumb-mixed_height-2 thumb-mixed_md" href="{{ item.url_with_text }}" data-lightgallery="item">
+                            <img class="thumb-ruby__image" src="{{ item.url_with_text }}" alt="{{ item.photo.title }}" width="440" height="327"/>
+                            <div class="thumb-ruby__caption">
+                                <p class="thumb-ruby__title heading-3">{{ item.photo.title }}</p>
+                                <p class="thumb-ruby__text">{{ item.photo.description }}</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+              {% endfor %}
+            </div>
+        </div>
+
+        <!-- Кнопки для публікації або завантаження вибраних фото -->
+        <div class="mt-4">
+            <button type="submit" name="action" value="publish" class="btn btn-dark" style="width: 30%;">Зробити публічними</button>
+        </div>   
+        <div class="mt-4"> 
+            <button type="submit" name="action" value="download" class="btn btn-dark" style="width: 30%;">Завантажити вибрані фото</button>
+        </div>
+      </form>
+  </div>
+</section>
+
+<!-- Додаємо JavaScript для функції "Вибрати всі" -->
+<script>
+    document.getElementById('select-all').addEventListener('change', function() {
+        var checkboxes = document.querySelectorAll('.photo-checkbox');
+        for (var checkbox of checkboxes) {
+            checkbox.checked = this.checked;
+        }
+    });
+</script>
+{% endblock %}

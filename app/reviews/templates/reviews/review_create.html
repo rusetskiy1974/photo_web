@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load static %}
+{% load cloudinary %}  
+
+{% block navbar %}
+<ul class="rd-navbar-nav">
+    
+    <li><a href="{% url 'main:index' %}">Main</a>
+    </li>
+    <li><a href="{% url 'users:profile' %}">Profile</a>
+    </li>
+    <li><a href="{% url 'review:reviews_list' %}">Review list</a>
+    </li>
+    <li><a href="{% url 'review:review_create' %}">Review create</a>
+    </li>
+    {% if review.id %}
+    <li class="active"><a href="{% url 'review:review_detail' review.id %}">Review detail</a>
+    </li>
+    <li><a href="{% url 'review:review_edit' review.id %}">Review edit</a>
+    </li>
+    <li><a href="{% url 'review:review_delete' review.id %}">Review delete</a>
+    </li>
+    {% endif %}
+</ul>
+{% endblock %}
+
+
+{% block content %}
+
+<!-- Форма для створення нового review -->
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <h2 class="text-center mb-4">{{ title }}</h2>
+        <div class="col-md-8 bg-white p-4 mb-5 mx-2 rounded custom-shadow">
+            
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-12 mb-3 text-center">
+                        <label for="id_title">{{ form.title.label_tag }}</label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                            <div class="alert alert-danger alert-dismissible fade show">{{ form.title.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-12 mb-10 text-center">
+                        <label for="id_text">{{ form.text.label_tag }}</label>
+                        {{ form.text }}
+                        {% if form.text.errors %}
+                            <div class="alert alert-danger alert-dismissible fade show">{{ form.text.errors }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="text-center">
+                    <button type="submit" class="btn btn-primary " style="width: 40%;">Confirm</button>
+                    </div>
+                </div>    
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -79,6 +79,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites', 
     'cloudinary',
     'cloudinary_storage',
     'main',
@@ -86,6 +87,12 @@ INSTALLED_APPS = [
     'users',
     'blog',
     'services',
+    'reviews',
+    # all auth configurations
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google'
     
 ]
 
@@ -97,10 +104,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 # STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
-STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
+# STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
 
 
 ROOT_URLCONF = 'app.urls'
@@ -168,7 +176,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-SITE_ID = 1
+SITE_ID = 2
 
 TIME_ZONE = 'UTC'
 
@@ -181,6 +189,10 @@ USE_L10N = True
 MEDIA_URL = '/media/'
 
 MEDIA_ROOT = BASE_DIR / 'media'
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+SOCIALACCOUNT_AUTO_SIGNUP = True
 
 
 # Static files (CSS, JavaScript, Images)
@@ -206,9 +218,28 @@ TEMPLATE_LOADERS = (
     'django.template.loaders.app_directories.Loader',
 #     # 'django.template.loaders.eggs.Loader',
 )
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend'
+]
 
 
-
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE' : [
+            'profile',
+            'email'
+        ],
+        'APP': {
+            'client_id': os.getenv('GOOGLE_CLIENT_ID'),
+            'secret': os.getenv('GOOGLE_CLIENT_SECRET'),
+        },
+        'AUTH_PARAMS': {
+            'access_type':'online',
+        },
+        'REDIRECT_URI': 'http://localhost:8000/accounts/google/login/callback/',
+    }
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
