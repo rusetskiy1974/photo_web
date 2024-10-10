@@ -2,30 +2,7 @@
 {% load static %}
 
 {% block navbar %}
-<ul class="rd-navbar-nav">
-    <li><a href="{% url 'main:index' %}">Main</a>
-    </li>
-    {% if not user.is_authenticated %}
-    <li><a href="{% url 'users:login' %}">Login</a>
-    </li>
-    <li><a href="{% url 'users:registration' %}">Registration</a>
-    </li>
-    {%else%}
-    <li><a href="{% url 'users:profile' %}">My Profile</a>
-    </li>
-    <li class="active"><a href="{% url 'users:edit_profile' %}">Edit Profile</a>
-    </li>
-    <li><a href="{% url 'users:my_photos' %}">My photos</a>
-    </li>
-    <li><a href="{% url 'reviews:reviews_list' %}">Reviews</a>
-    </li>
-    {% if user.is_admin or user.is_staff %}
-    <li><a href="{% url 'admin:index' %}">Admin panel</a></li>
-    {% endif %}
-    <li><a href="{% url 'users:logout' %}">Logout</a>
-    </li>
-    {% endif %}
-</ul>
+    {% include 'includes/navbar_profile.html' %}
 {% endblock %}
 
 {% block content %}

@@ -1,0 +1,30 @@
+<ul class="rd-navbar-nav">
+    <li class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}">
+        <a href="{% url 'main:index' %}">Main</a>
+    </li>
+    <li class="{% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+        <a href="{% url 'users:profile' %}">Profile</a>
+    </li>
+    {% if review is None %}
+    <li class="{% if request.resolver_match.url_name == 'reviews_list' %}active{% endif %}">
+        <a href="{% url 'review:reviews_list' %}">My Reviews</a>
+    </li>
+    
+    <li class="{% if request.resolver_match.url_name == 'review_create' %}active{% endif %}">
+        <a href="{% url 'review:review_create' %}">Create Review</a>
+    </li>
+    
+    {% else %}
+        <li class="{% if request.resolver_match.url_name == 'review_detail' %}active{% endif %}">
+            <a href="{% url 'review:review_detail' review.id %}">Review Detail</a>
+        </li>
+        
+        <li class="{% if request.resolver_match.url_name == 'review_edit'%}active{% endif %}">
+            <a href="{% url 'review:review_edit' review.id %}">Review Edit</a>
+        </li>
+        
+        <li class="{% if request.resolver_match.url_name == 'review_delete' %}active{% endif %}">
+            <a href="{% url 'review:review_delete' review.id %}">Review Delete</a>
+        </li>
+    {% endif %}
+</ul>
