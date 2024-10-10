@@ -3,18 +3,7 @@
 {% load cloudinary %}  
 
 {% block navbar %}
-<ul class="rd-navbar-nav">
-    
-    <li><a href="{% url 'users:profile' %}">Profile</a>
-    </li>
-    <li><a href="{% url 'review:review_detail' review.id %}">Review detail</a>
-    </li>
-    <li><a href="{% url 'review:review_edit' review.id %}">Review edit</a>
-    </li>
-    <li><a href="{% url 'review:review_delete' review.id %}">Review delete</a>
-    </li>
-    
-</ul>
+    {% include 'includes/navbar_review.html' %}
 {% endblock %}
 
 {% block content %}

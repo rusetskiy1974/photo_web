@@ -2,20 +2,7 @@
 {% load static %}
 
 {% block navbar %}
-<ul class="rd-navbar-nav">
-    <li><a href="{% url 'main:index' %}">Main</a>
-    </li>
-    <li><a href="{% url 'users:profile' %}">My Profile</a>
-    </li>
-    <li><a href="{% url 'users:edit_profile' %}">Edit profile</a>
-    </li>
-    <li class="active"><a href="{% url 'users:my_photos' %}">My photos</a>
-    </li>
-    {% if user.is_admin or user.is_staff %}
-    <li><a href="{% url 'admin:index' %}">Admin panel</a></li>
-    {% endif %}
-    
-</ul>
+    {% include 'includes/navbar_profile.html' %}
 {% endblock %}
 
 {% block content %}
@@ -60,10 +47,10 @@
 
         <!-- Кнопки для публікації або завантаження вибраних фото -->
         <div class="mt-4">
-            <button type="submit" name="action" value="publish" class="btn btn-dark" style="width: 30%;">Зробити публічними</button>
+            <button type="submit" name="action" value="publish" class="btn btn-dark" style="width: 50%;">Зробити публічними</button>
         </div>   
         <div class="mt-4"> 
-            <button type="submit" name="action" value="download" class="btn btn-dark" style="width: 30%;">Завантажити вибрані фото</button>
+            <button type="submit" name="action" value="download" class="btn btn-dark" style="width: 50%;">Завантажити вибрані фото</button>
         </div>
       </form>
   </div>

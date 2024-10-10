@@ -6,6 +6,7 @@ app_name ='users'
 
 urlpatterns = [
     path('login/', views.login, name='login'),
+    
     # path('accounts/google/login/', views.google_login_auto_redirect, name='google_login_auto_redirect'),
     path('registration/', views.registration, name='registration'),
     path('profile/', views.profile, name='profile'),

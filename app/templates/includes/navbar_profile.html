@@ -1,0 +1,35 @@
+<ul class="rd-navbar-nav">
+    <li class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}">
+        <a href="{% url 'main:index' %}">Main</a>
+    </li>
+    
+    {% if not user.is_authenticated %}
+        <li class="{% if request.resolver_match.url_name == 'login' %}active{% endif %}">
+            <a href="{% url 'users:login' %}">Login</a>
+        </li>
+        <li class="{% if request.resolver_match.url_name == 'registration' %}active{% endif %}">
+            <a href="{% url 'users:registration' %}">Registration</a>
+        </li>
+    {% else %}
+        <li class="{% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+            <a href="{% url 'users:profile' %}">My Profile</a>
+        </li>
+        <li class="{% if request.resolver_match.url_name == 'edit_profile' %}active{% endif %}">
+            <a href="{% url 'users:edit_profile' %}">Edit profile</a>
+        </li>
+        <li class="{% if request.resolver_match.url_name == 'my_photos' %}active{% endif %}">
+            <a href="{% url 'users:my_photos' %}">My photos</a>
+        </li>
+        <li class="{% if request.resolver_match.url_name == 'reviews_list' %}active{% endif %}">
+            <a href="{% url 'reviews:reviews_list' %}">Review</a>
+        </li>
+        {% if user.is_admin or user.is_staff %}
+            <li class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}">
+                <a href="{% url 'admin:index' %}">Admin panel</a>
+            </li>
+        {% endif %}
+        <li>
+            <a href="{% url 'users:logout' %}">Logout</a>
+        </li>
+    {% endif %}
+</ul>

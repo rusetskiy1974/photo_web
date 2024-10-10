@@ -3,30 +3,7 @@
 {% load cloudinary %}  
 
 {% block navbar %}
-<ul class="rd-navbar-nav">
-    
-    <li><a href="{% url 'main:index' %}">Main</a>
-    </li>
-    <li><a href="{% url 'main:about' %}">About me</a>
-    </li>
-    <li><a href="{% url 'main:contact_me' %}">Contact Me</a>
-    </li>
-    {% comment %} <li><a href="{% url 'main:typography' %}">Typography</a>
-    </li> {% endcomment %}
-    <li  class="active"><a href="{% url 'photo_app:public_list' %}">Clients public photos</a>
-    </li>
-    {% if not user.is_authenticated %}   
-    <li><a href="{% url 'users:login' %}">Login</a>
-    </li>
-    <li><a href="{% url 'users:registration' %}">Registration</a>
-    </li>
-    {%else%}
-    <li><a href="{% url 'users:profile' %}">Profile</a>
-    </li>
-    <li><a href="{% url 'users:logout' %}">Logout</a>
-    </li>
-    {% endif %}
-</ul>
+    {% include 'includes/navbar_main.html' %}
 {% endblock %}
 
 {% block content %}

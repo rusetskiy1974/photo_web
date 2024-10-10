@@ -7,7 +7,7 @@ from .forms import ReviewForm
 def reviews_list(request):
     reviews = Review.objects.filter(user=request.user)
     context = {
-        'title': 'Reviews list',
+        'title': 'List Reviews',
         'reviews': reviews,
     }
     return render(request, 'reviews/reviews_list.html', context)
