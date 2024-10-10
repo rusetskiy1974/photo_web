@@ -1,6 +1,7 @@
 import json
 import zipfile
 import io
+from django.core.paginator import Paginator
 import requests
 
 import six
@@ -12,13 +13,13 @@ from django.contrib.auth.decorators import login_required
 
 from .forms import PhotoForm, PhotoDirectForm, PhotoUnsignedDirectForm
 from .models import Photo
+from users.utils import mark_photos
 
 
 def filter_nones(d):
     return dict((k, v) for k, v in six.iteritems(d) if v is not None)
 
 
-from cloudinary import CloudinaryImage
 
 @login_required
 def public_list(request):
@@ -26,23 +27,17 @@ def public_list(request):
     public_photos = Photo.objects.filter(is_public=True)
 
     # Створюємо URL з трансформацією, яка накладає текст "Фотостудія RMS"
-    photos_with_text = []
-    for photo in public_photos:
-        url_with_text = CloudinaryImage(photo.public_id).build_url(transformation=[
-  {'width': 500, 'crop': "scale"},
-  {'color': "#FFFFFF80", 'overlay': {'font_family': "Times", 'font_size': 90, 'font_weight': "bold", 'text': "Photo RMS"}},
-  {'flags': "layer_apply", 'gravity': "center", 'y': 20}
-  ])
-        photos_with_text.append({
-            'photo': photo,
-            'url_with_text': url_with_text
-        })
+    photos_with_text = mark_photos(public_photos)
+    
+    # Пагінація
+    paginator = Paginator(photos_with_text, 8)  # 8 фото на сторінку
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     context = {
         'title': 'Clients public photos',
-        'photos_with_text': photos_with_text,
-        
+        'page_obj': page_obj,  # Замість всіх фото передаємо тільки поточну сторінку
     }
-        
 
     return render(request, 'photo_app/public_list.html', context)
 
@@ -128,3 +123,4 @@ def download_multiple_photos(request):
     response['Content-Disposition'] = 'attachment; filename="photos.zip"'
 
     return response
+

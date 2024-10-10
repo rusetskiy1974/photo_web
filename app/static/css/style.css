@@ -2539,6 +2539,45 @@ a.box-triangle__aside:hover .box-triangle__image {
 	}
 }
 
+.star {
+	font-size: 20px; /* Збільшує розмір зірок */
+	cursor: pointer; /* Робить зірочки клікабельними */
+	color: gold; /* Колір зірок */
+	margin: 2px; /* Відстань між зірками */
+}
+
+.pagination-wrapper {
+    display: flex;
+    justify-content: center;  /* Вирівнює пагінацію по центру */
+    margin: 20px 0;           /* Відступи зверху і знизу */
+}
+
+.pagination .step-links {
+    font-size: 1.2em;         /* Збільшує розмір шрифту */
+    font-weight: bold;        /* Жирний текст */
+    display: inline-block;
+}
+
+.pagination .step-links a {
+    display: inline-block;
+    padding: 5px 14px;
+    background-color: #ffffff;
+    border: 2px solid #dddddd;
+    border-radius: 15px;      /* Колір посилань */
+}
+
+.pagination .step-links a:hover {
+    text-decoration: underline;  /* Підкреслення при наведенні */
+}
+
+.pagination .current {
+    margin: 0 10px;              /* Відступ для поточної сторінки */
+    font-size: 1.3em;            /* Трохи більший шрифт для поточної сторінки */
+}
+
+
+
+
 .photo-checkbox {
     transform: scale(1.5); /* Збільшити чекбокс на 50% */
     margin-right: 10px;

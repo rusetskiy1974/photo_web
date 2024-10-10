@@ -6,6 +6,7 @@
     {% include 'includes/navbar_main.html' %}
 {% endblock %}
 
+
 {% block content %}
 <section class="section section-md bg-white text-center">
   <div class="shell-fluid">
@@ -13,22 +14,71 @@
       <div class="isotope thumb-ruby-wrap wow fadeIn" data-isotope-layout="masonry" data-isotope-group="gallery"
            data-lightgallery="group">
           <div class="row">
-            {% for item in photos_with_text %}
+            {% for item in page_obj %}
               <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 isotope-item">
                   <a class="thumb-ruby thumb-mixed_height-2 thumb-mixed_md" href="{{ item.url_with_text }}" data-lightgallery="item">
-                      <img class="thumb-ruby__image" src="{{ item.url_with_text }}" alt="{{ item.photo.title }}" width="440" height="327"/> <!-- Використовуємо URL з текстом -->
+                      <img class="thumb-ruby__image" src="{{ item.url_with_text }}" alt="{{ item.photo.title }}" width="440" height="327"/>
                       <div class="thumb-ruby__caption">
                           <p class="thumb-ruby__title heading-3">{{ item.photo.title }}</p>
                           <p class="thumb-ruby__text">{{ item.photo.description }}</p>
                       </div>
                   </a>
+                  <!-- Область для відображення середнього рейтингу -->
+                  <div class="rating">
+                      <p>Average Rating:</p>
+                      <div class="average-star-rating" data-average-rating="{{ item.photo.average_rating }}">
+                          <span class="star" data-value="1">☆</span>
+                          <span class="star" data-value="2">☆</span>
+                          <span class="star" data-value="3">☆</span>
+                          <span class="star" data-value="4">☆</span>
+                          <span class="star" data-value="5">☆</span>
+                      </div>
+                      <p>Rating: {{ item.photo.average_rating }} / 5</p> <!-- Показуємо точний середній рейтинг -->
+                  </div>
               </div>
             {% endfor %}
-                                 
           </div>
       </div>
+</div>
+<div class="pagination-wrapper">
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
   </div>
 </section>
 
+<script>
+    // JavaScript для відображення середнього рейтингу
+    document.addEventListener("DOMContentLoaded", function () {
+        const ratingBlocks = document.querySelectorAll('.average-star-rating');
+        ratingBlocks.forEach(function (ratingBlock) {
+            const stars = ratingBlock.querySelectorAll('.star');
+            const averageRating = ratingBlock.getAttribute('data-average-rating');
 
-{% endblock %}
+            // Оновлюємо зірочки, щоб показати середній рейтинг
+            highlightStars(stars, averageRating);
+        });
+
+        function highlightStars(stars, rating) {
+            stars.forEach(function (star) {
+                star.textContent = star.getAttribute('data-value') <= rating ? '★' : '☆';
+            });
+        }
+    });
+</script>
+{% endblock content %}
+

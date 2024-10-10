@@ -2,12 +2,14 @@ import io
 import zipfile
 from django.contrib.auth.decorators import login_required
 from django.contrib import auth, messages
+from cloudinary import CloudinaryImage
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_list_or_404, redirect, render
 from django.urls import reverse
 import requests
 from traitlets import Instance
-from cloudinary import CloudinaryImage
+from .utils import mark_photos
+
 
 from photo_app.models import Photo
 from .utils import download_photos_as_zip as download_photos
@@ -99,17 +101,7 @@ def my_photos(request):
     my_photos = Photo.objects.filter(owner=request.user.id)
 
     # Створюємо URL з трансформацією, яка накладає текст "Фотостудія RMS"
-    photos_with_text = []
-    for photo in my_photos:
-        url_with_text = CloudinaryImage(photo.public_id).build_url(transformation=[
-  {'width': 500, 'crop': "scale"},
-  {'color': "#FFFFFF80", 'overlay': {'font_family': "Times", 'font_size': 90, 'font_weight': "bold", 'text': "Photo RMS"}},
-  {'flags': "layer_apply", 'gravity': "center", 'y': 20}
-  ])
-        photos_with_text.append({
-            'photo': photo,
-            'url_with_text': url_with_text
-        })
+    photos_with_text = mark_photos(my_photos)
     context = {
         'title': 'My photos',
         'photos_with_text': photos_with_text,
@@ -119,29 +111,7 @@ def my_photos(request):
 
     return render(request, 'users/my_photos.html', context)
 
-@login_required
-def add_review(request):
-    my_photos = Photo.objects.filter(owner=request.user.id)
 
-    # Створюємо URL з трансформацією, яка накладає текст "Фотостудія RMS"
-    photos_with_text = []
-    for photo in my_photos:
-        url_with_text = CloudinaryImage(photo.public_id).build_url(transformation=[
-  {'width': 500, 'crop': "scale"},
-  {'color': "#FFFFFF80", 'overlay': {'font_family': "Times", 'font_size': 90, 'font_weight': "bold", 'text': "Photo RMS"}},
-  {'flags': "layer_apply", 'gravity': "center", 'y': 20}
-  ])
-        photos_with_text.append({
-            'photo': photo,
-            'url_with_text': url_with_text
-        })
-    context = {
-        'title': 'My photos',
-        'photos_with_text': photos_with_text,
-        
-    }
-    
-    return render(request, 'users/my_photos.html', context)
 
 @login_required
 def handle_photos(request):
