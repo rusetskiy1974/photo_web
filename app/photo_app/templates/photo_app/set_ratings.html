@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load static %}
+{% load cloudinary %}
+{% load custom_filters %}  <!-- Фільтр get_item має бути реалізований у вашому проекті -->
+
+{% block navbar %}
+    {% include 'includes/navbar_main.html' %}
+{% endblock %}
+
+{% block content %}
+<section class="section section-md bg-white text-center">
+  <div class="shell-fluid">
+      <p class="heading-1">{{ title }}</p>
+      <div class="isotope thumb-ruby-wrap wow fadeIn" data-isotope-layout="masonry" data-isotope-group="gallery"
+           data-lightgallery="group">
+          <div class="row">
+            {% for item in page_obj %}
+              <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 isotope-item">
+                  <a class="thumb-ruby thumb-mixed_height-2 thumb-mixed_md" href="{{ item.url_with_text }}" data-lightgallery="item">
+                      <img class="thumb-ruby__image" src="{{ item.url_with_text }}" alt="{{ item.photo.title }}" width="440" height="327"/>
+                      <div class="thumb-ruby__caption">
+                          <p class="thumb-ruby__title heading-3">{{ item.photo.title }}</p>
+                          <p class="thumb-ruby__text">{{ item.photo.description }}</p>
+                      </div>
+                  </a>
+
+                  <!-- Область для відображення рейтингу фото -->
+                  <div class="rating">
+                    <p>Rate this photo:</p>
+                    <div class="star-rating" data-photo-id="{{ item.photo.id }}">
+                        <!-- Відображення зірок -->
+                        <span class="star" data-value="1">☆</span>
+                        <span class="star" data-value="2">☆</span>
+                        <span class="star" data-value="3">☆</span>
+                        <span class="star" data-value="4">☆</span>
+                        <span class="star" data-value="5">☆</span>
+                    </div>
+
+                    <!-- Відображення рейтингу, який надав користувач -->
+                    {% if user_ratings|get_item:item.photo.id %}
+                        <p class="user-rating-display">Ваша оцінка: <span id="user-rating-{{ item.photo.id }}">{{ user_ratings|get_item:item.photo.id }}</span></p>
+                    {% else %}
+                        <p class="user-rating-display">Ваша оцінка: <span id="user-rating-{{ item.photo.id }}">Н/A</span></p>
+                    {% endif %}
+                  </div>
+              </div>
+            {% endfor %}
+          </div>
+      </div>
+  </div>
+
+  <!-- Пагінація -->
+  <div class="pagination-wrapper">
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+  </div>
+</section>
+
+<!-- Підключаємо файл JS для рейтингу -->
+<script src="{% static 'js/set_rating.js' %}"></script>
+{% endblock content %}

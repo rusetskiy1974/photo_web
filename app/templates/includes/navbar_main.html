@@ -19,6 +19,11 @@
     <li class="{% if request.resolver_match.url_name == 'public_list' %}active{% endif %}">
         <a href="{% url 'photo_app:public_list' %}">Public photo</a>
     </li>
+
+    <li class="{% if request.resolver_match.url_name == 'ratings' %}active{% endif %}">
+        <a href="{% url 'photo_app:ratings' %}">Ratings</a>
+    </li>
+
     <li class="{% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
         <a href="{% url 'users:profile' %}">Profile</a>
     </li>

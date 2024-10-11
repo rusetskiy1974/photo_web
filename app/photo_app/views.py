@@ -7,12 +7,13 @@ import requests
 import six
 from cloudinary import api  # Only required for creating upload presets on the fly
 from cloudinary.forms import cl_init_js_callbacks
-from django.http import HttpResponse
-from django.shortcuts import get_list_or_404, render
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import get_list_or_404, get_object_or_404, render
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 
 from .forms import PhotoForm, PhotoDirectForm, PhotoUnsignedDirectForm
-from .models import Photo
+from .models import Photo, Rating
 from users.utils import mark_photos
 
 
@@ -40,6 +41,65 @@ def public_list(request):
     }
 
     return render(request, 'photo_app/public_list.html', context)
+
+
+@login_required
+def set_ratings(request):
+    # Отримуємо всі публічні фото (is_public=True)
+    public_photos = Photo.objects.filter(is_public=True)
+
+    # Створюємо URL з трансформацією, яка накладає текст "Фотостудія RMS"
+    photos_with_text = mark_photos(public_photos)
+
+    user_photo_ratings = Rating.objects.filter(user=request.user, photo__in=public_photos)
+
+    user_rating_dict = {rating.photo.id: rating.value for rating in user_photo_ratings}
+    
+    # Пагінація
+    paginator = Paginator(photos_with_text, 8)  # 8 фото на сторінку
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        'title': 'Clients public photos',
+        'page_obj': page_obj,  # Замість всіх фото передаємо тільки поточну сторінку
+        'user_ratings': user_rating_dict,
+    }
+
+    return render(request, 'photo_app/set_ratings.html', context)
+
+
+@login_required
+@require_POST  # Цей декоратор сам гарантує, що метод POST
+def rate_photo(request, photo_id):
+    """
+    Обробляє POST-запит для оцінки фото.
+    """
+    photo = get_object_or_404(Photo, id=photo_id)  # Отримуємо фото за id або повертаємо 404
+
+    try:
+        data = json.loads(request.body)  # Парсимо JSON-дані
+        rating_value = int(data.get('rating'))  # Отримуємо значення рейтингу з JSON
+
+        # Перевіряємо, чи існує вже оцінка від цього користувача для цього фото
+        rating, created = Rating.objects.get_or_create(
+            photo=photo, 
+            user=request.user,
+            defaults={'value': rating_value}
+        )
+
+        # Якщо оцінка вже існує, оновлюємо її
+        if not created:
+            rating.value = rating_value
+            rating.save()
+
+        return JsonResponse({
+            'success': True,
+            'user_rating': rating.value,  # Повертаємо рейтинг, який надав користувач
+        })
+    except (ValueError, TypeError):
+        return JsonResponse({'error': 'Invalid rating value'}, status=400)
+
 
 
 def upload(request):

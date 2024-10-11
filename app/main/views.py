@@ -1,6 +1,8 @@
+import json
 from django.shortcuts import get_object_or_404, render
 from django.views.generic import DetailView
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 
 from photo_app.models import Photo, Rating
 from reviews.models import Review
@@ -84,32 +86,4 @@ def contact(request) -> HttpResponse:
     }
     return render(request, 'main/contact_me.html', context=context)
 
-@login_required
-def rate_photo(request, photo_id):
-    """
-    Обробляє POST-запит для оцінки фото.
-    """
-    photo = get_object_or_404(Photo, id=photo_id)
 
-    if request.method == 'POST':
-        rating_value = int(request.POST.get('rating'))  # Отримуємо значення оцінки з POST-запиту
-
-        # Перевіряємо, чи існує вже оцінка від цього користувача
-        rating, created = Rating.objects.get_or_create(
-            photo=photo, 
-            user=request.user,
-            defaults={'value': rating_value}
-        )
-
-        # Якщо оцінка вже існує, оновлюємо її
-        if not created:
-            rating.value = rating_value
-            rating.save()
-
-        return JsonResponse({
-            'success': True,
-            'message': 'Rating has been submitted successfully',
-            'average_rating': photo.average_rating(),  # Повертаємо оновлений середній рейтинг
-        })
-
-    return JsonResponse({'error': 'Invalid request method'}, status=400)
