@@ -97,6 +97,21 @@
                       <li><a class="icon icon-sm fa fa-pinterest icon-style-camera" href="#"><span></span><span></span><span></span><span></span></a></li>
                     </ul>
                   </div>
+                  {% comment %} <div class="rd-navbar-element">
+                  <form action="{% url 'set_language' %}" method="post">
+                    {% csrf_token %}
+                    <select name="language">
+                        {% get_current_language as LANGUAGE_CODE %}
+                        {% get_available_languages as LANGUAGES %}
+                        {% for lang_code, lang_name in LANGUAGES %}
+                            <option value="{{ lang_code }}"{% if lang_code == LANGUAGE_CODE %} selected{% endif %}>
+                                {{ lang_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit">{% trans "Change language" %}</button>
+                  </form>
+                  </div> {% endcomment %}
                   <!-- RD Navbar Nav-->
                   {% block navbar %}
                   {% endblock %}

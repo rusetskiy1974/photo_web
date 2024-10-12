@@ -1,16 +1,18 @@
 import json
 import zipfile
 import io
-from django.core.paginator import Paginator
-import requests
-
 import six
-from cloudinary import api  # Only required for creating upload presets on the fly
-from cloudinary.forms import cl_init_js_callbacks
+import requests
+from django.db.models.functions import Coalesce
+from django.core.paginator import Paginator
+from django.db.models import Avg, FloatField, F
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_list_or_404, get_object_or_404, render
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
+
+from cloudinary import api  # Only required for creating upload presets on the fly
+from cloudinary.forms import cl_init_js_callbacks
 
 from .forms import PhotoForm, PhotoDirectForm, PhotoUnsignedDirectForm
 from .models import Photo, Rating
@@ -24,12 +26,14 @@ def filter_nones(d):
 
 @login_required
 def public_list(request):
-    # Отримуємо всі публічні фото (is_public=True)
-    public_photos = Photo.objects.filter(is_public=True)
+    # Отримуємо всі публічні фото та обчислюємо середній рейтинг (null для відсутніх рейтингів замінюємо на 0)
+    public_photos = Photo.objects.filter(is_public=True).annotate(
+        avg_rating=Coalesce(Avg('ratings__value'), 0.0, output_field=FloatField())  # Вказуємо, що це FloatField
+    ).order_by(F('avg_rating').desc(nulls_last=True))  # Сортуємо за рейтингом, фото без рейтингу йдуть останні
 
     # Створюємо URL з трансформацією, яка накладає текст "Фотостудія RMS"
     photos_with_text = mark_photos(public_photos, request.user)
-    
+
     # Пагінація
     paginator = Paginator(photos_with_text, 8)  # 8 фото на сторінку
     page_number = request.GET.get('page')

@@ -12,32 +12,40 @@
       
       <!-- Форма для вибору фото -->
       <form method="POST" action="{% url 'users:handle_photos' %}">
-        {% csrf_token %}  <!-- Для безпеки форми -->
-        
+        {% csrf_token %}
+    
         <!-- Чекбокс для вибору всіх фото -->
         <div class="checkbox-container mb-3">
             <input type="checkbox" id="select-all" class="photo-checkbox"/>
             <label for="select-all">Select all photos</label>
         </div>
-
+    
+        <!-- Чекбокси для вибору фото на поточній сторінці -->
         <div class="isotope thumb-ruby-wrap wow fadeIn" data-isotope-layout="masonry" data-isotope-group="gallery"
              data-lightgallery="group">
             <div class="row">
-              {% for item in photos_with_text %}
+              {% for item in page_obj %}
                 <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 isotope-item">
                     <div class="photo-item">
-                        
-                        <!-- Фото з описом -->
                         <a class="thumb-ruby thumb-mixed_height-2 thumb-mixed_md" href="{{ item.url_with_text }}" data-lightgallery="item">
                             <img class="thumb-ruby__image" src="{{ item.url_with_text }}" alt="{{ item.photo.title }}" width="440" height="327"/>
                             <div class="thumb-ruby__caption">
                                 <p class="thumb-ruby__title heading-3">{{ item.photo.title }}</p>
                                 <p class="thumb-ruby__text">{{ item.photo.description }}</p>
+
+                                <!-- Додаємо мітку "Public", якщо фото публічне -->
+                                
+                                <div class="photo-status" style="position: absolute; bottom: 10px; left: 10px; font-size: 18px; font-weight: bold;">
+                                    {% if item.photo.is_public %}
+                                        <span class="badge badge-success">Public</span>
+                                    {% else %}
+                                        <span class="badge badge-secondary">Private</span>
+                                    {% endif %}
+                                </div>
                             </div>
                         </a>
-                        <!-- Чекбокс для вибору фото -->
                         <div class="checkbox-container">
-                            <input type="checkbox" name="photo_ids"  value="{{ item.photo.id }}" id="photo_{{ item.photo.id }}" class="photo-checkbox">
+                            <input type="checkbox" name="photo_ids" value="{{ item.photo.id }}" id="photo_{{ item.photo.id }}" class="photo-checkbox">
                             <label for="photo_{{ item.photo.id }}">Select</label>
                         </div>
                     </div>
@@ -45,25 +53,77 @@
               {% endfor %}
             </div>
         </div>
-
+    
+        <!-- Пагінація -->
+        <div class="pagination-wrapper">
+            <div class="pagination">
+                <span class="step-links">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1">&laquo; first</a>
+                        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                    {% endif %}
+    
+                    <span class="current">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                    </span>
+    
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}">next</a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    
+        <!-- Приховане поле для всіх ID фото -->
+        <input type="hidden" name="all_photo_ids" id="all-photo-ids" value="{{ all_photo_ids|join:',' }}">
+    
         <!-- Кнопки для публікації або завантаження вибраних фото -->
         <div class="mt-4">
             <button type="submit" name="action" value="publish" class="btn btn-dark" style="width: 30%;">Make Public</button>
         </div>   
+        <div class="mt-4">
+            <button type="submit" name="action" value="private" class="btn btn-dark" style="width: 30%;">Make Private</button>
+        </div>   
         <div class="mt-4"> 
             <button type="submit" name="action" value="download" class="btn btn-dark" style="width: 30%;">Download Photos</button>
         </div>
-      </form>
-  </div>
-</section>
-
-<!-- Додаємо JavaScript для функції "Вибрати всі" -->
-<script>
-    document.getElementById('select-all').addEventListener('change', function() {
-        var checkboxes = document.querySelectorAll('.photo-checkbox');
-        for (var checkbox of checkboxes) {
-            checkbox.checked = this.checked;
-        }
-    });
-</script>
+    </form>
+    
+    <!-- JavaScript для вибору всіх фото -->
+    <script>
+        document.getElementById('select-all').addEventListener('change', function() {
+            var checkboxes = document.querySelectorAll('.photo-checkbox');
+            var allPhotoIds = document.getElementById('all-photo-ids').value.split(',');
+    
+            // Якщо вибрано "всі", додаємо усі ID до форми
+            if (this.checked) {
+                checkboxes.forEach(function(checkbox) {
+                    checkbox.checked = true;
+                });
+                allPhotoIds.forEach(function(photoId) {
+                    // Створюємо приховані поля для кожного ID, якщо їх ще немає
+                    if (!document.getElementById('hidden-photo-' + photoId)) {
+                        var hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.name = 'photo_ids';
+                        hiddenInput.id = 'hidden-photo-' + photoId;
+                        hiddenInput.value = photoId;
+                        document.querySelector('form').appendChild(hiddenInput);
+                    }
+                });
+            } else {
+                // Якщо знято вибір "всі", видаляємо приховані поля
+                checkboxes.forEach(function(checkbox) {
+                    checkbox.checked = false;
+                });
+                allPhotoIds.forEach(function(photoId) {
+                    var hiddenInput = document.getElementById('hidden-photo-' + photoId);
+                    if (hiddenInput) {
+                        hiddenInput.remove();
+                    }
+                });
+            }
+        });
+    </script>
 {% endblock %}

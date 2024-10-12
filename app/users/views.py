@@ -3,6 +3,7 @@ import zipfile
 from django.contrib.auth.decorators import login_required
 from django.contrib import auth, messages
 from cloudinary import CloudinaryImage
+from django.core.paginator import Paginator
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_list_or_404, redirect, render
 from django.urls import reverse
@@ -96,20 +97,31 @@ def logout(request):
     auth.logout(request)
     return redirect(reverse("main:index"))
 
+from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
+
 @login_required
 def my_photos(request):
     my_photos = Photo.objects.filter(owner=request.user.id)
 
     # Створюємо URL з трансформацією, яка накладає текст "Фотостудія RMS"
     photos_with_text = mark_photos(my_photos, request.user)
+
+    paginator = Paginator(photos_with_text, 8)  # 8 фото на сторінку
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    # Отримуємо всі ID фотографій
+    all_photo_ids = my_photos.values_list('id', flat=True)
+
     context = {
         'title': 'My photos',
-        'photos_with_text': photos_with_text,
-        
+        'page_obj': page_obj,   # Пагінація для відображення фото на поточній сторінці
+        'all_photo_ids': all_photo_ids,  # Передаємо всі ID фото
     }
-    
 
     return render(request, 'users/my_photos.html', context)
+
 
 
 
@@ -130,7 +142,15 @@ def handle_photos(request):
         for photo in photos:
             photo.is_public = True
             photo.save()
-        messages.success(request, "Вибрані фото стали публічними.")
+        messages.success(request, "Selected photos became public.")
+        return HttpResponseRedirect(reverse('users:my_photos'))
+    
+    elif action == 'private':
+        # Робимо фото публічними
+        for photo in photos:
+            photo.is_public = False
+            photo.save()
+        messages.success(request, "Selected photos became private.")
         return HttpResponseRedirect(reverse('users:my_photos'))
     
     elif action == 'download':
