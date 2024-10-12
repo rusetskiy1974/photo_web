@@ -11,7 +11,7 @@
     </li>
     
     <li class="{% if request.resolver_match.url_name == 'review_create' %}active{% endif %}">
-        <a href="{% url 'review:review_create' %}">Create Review</a>
+        <a href="{% url 'review:review_create' %}">Add Review</a>
     </li>
     
     {% else %}

@@ -28,7 +28,7 @@ def public_list(request):
     public_photos = Photo.objects.filter(is_public=True)
 
     # Створюємо URL з трансформацією, яка накладає текст "Фотостудія RMS"
-    photos_with_text = mark_photos(public_photos)
+    photos_with_text = mark_photos(public_photos, request.user)
     
     # Пагінація
     paginator = Paginator(photos_with_text, 8)  # 8 фото на сторінку
@@ -49,21 +49,17 @@ def set_ratings(request):
     public_photos = Photo.objects.filter(is_public=True)
 
     # Створюємо URL з трансформацією, яка накладає текст "Фотостудія RMS"
-    photos_with_text = mark_photos(public_photos)
+    photos_with_text = mark_photos(public_photos, request.user)
 
-    user_photo_ratings = Rating.objects.filter(user=request.user, photo__in=public_photos)
-
-    user_rating_dict = {rating.photo.id: rating.value for rating in user_photo_ratings}
-    
     # Пагінація
     paginator = Paginator(photos_with_text, 8)  # 8 фото на сторінку
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
     context = {
-        'title': 'Clients public photos',
+        'title': 'Set Ratings for photos',
         'page_obj': page_obj,  # Замість всіх фото передаємо тільки поточну сторінку
-        'user_ratings': user_rating_dict,
+        
     }
 
     return render(request, 'photo_app/set_ratings.html', context)

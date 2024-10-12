@@ -2539,12 +2539,30 @@ a.box-triangle__aside:hover .box-triangle__image {
 	}
 }
 
+
+
 .star {
-	font-size: 20px; /* Збільшує розмір зірок */
-	cursor: pointer; /* Робить зірочки клікабельними */
-	color: gold; /* Колір зірок */
-	margin: 2px; /* Відстань між зірками */
+    position: relative;
+    font-size: 30px;
+    color: gold;
 }
+
+.star::before {
+    content: '☆'; /* Порожня зірка */
+    position: absolute;
+    left: 0;
+}
+
+.star.half::after {
+    content: '★'; /* Повна зірка */
+    position: absolute;
+    left: 0;
+    width: 50%;  /* Половина */
+    overflow: hidden;
+}
+
+
+
 
 .pagination-wrapper {
     display: flex;

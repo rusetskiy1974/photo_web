@@ -173,6 +173,17 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
+LANGUAGES = [
+    ('en', 'English'),
+    ('uk', 'Ukrainian'),
+    ('pl', 'Polish'),
+    # додайте більше мов за потреби
+]
+
+LOCALE_PATHS = [
+    BASE_DIR / 'locale',  # Директорія для зберігання файлів перекладів
+]
+
 
 LANGUAGE_CODE = 'en-us'
 

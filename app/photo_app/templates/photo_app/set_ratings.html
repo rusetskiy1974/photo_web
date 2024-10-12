@@ -27,8 +27,7 @@
                   <!-- Область для відображення рейтингу фото -->
                   <div class="rating">
                     <p>Rate this photo:</p>
-                    <div class="star-rating" data-photo-id="{{ item.photo.id }}">
-                        <!-- Відображення зірок -->
+                    <div class="user-star-rating" data-photo-id="{{ item.photo.id }}" data-user-rating="{{ item.rating.value }}">
                         <span class="star" data-value="1">☆</span>
                         <span class="star" data-value="2">☆</span>
                         <span class="star" data-value="3">☆</span>
@@ -36,12 +35,15 @@
                         <span class="star" data-value="5">☆</span>
                     </div>
 
-                    <!-- Відображення рейтингу, який надав користувач -->
-                    {% if user_ratings|get_item:item.photo.id %}
-                        <p class="user-rating-display">Ваша оцінка: <span id="user-rating-{{ item.photo.id }}">{{ user_ratings|get_item:item.photo.id }}</span></p>
-                    {% else %}
-                        <p class="user-rating-display">Ваша оцінка: <span id="user-rating-{{ item.photo.id }}">Н/A</span></p>
-                    {% endif %}
+                    <p>Rating: 
+                        <span id="user-rating-{{ item.photo.id }}">
+                            {% if item.rating.value %}
+                                {{ item.rating.value }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </span>
+                    </p>
                   </div>
               </div>
             {% endfor %}
@@ -73,4 +75,5 @@
 
 <!-- Підключаємо файл JS для рейтингу -->
 <script src="{% static 'js/set_rating.js' %}"></script>
+{% comment %} <script src="{% static 'js/set_rating1.js' %}"></script> {% endcomment %}
 {% endblock content %}

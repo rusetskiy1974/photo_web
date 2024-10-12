@@ -17,7 +17,7 @@
         <!-- Чекбокс для вибору всіх фото -->
         <div class="checkbox-container mb-3">
             <input type="checkbox" id="select-all" class="photo-checkbox"/>
-            <label for="select-all">Вибрати всі фото</label>
+            <label for="select-all">Select all photos</label>
         </div>
 
         <div class="isotope thumb-ruby-wrap wow fadeIn" data-isotope-layout="masonry" data-isotope-group="gallery"
@@ -26,11 +26,7 @@
               {% for item in photos_with_text %}
                 <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 isotope-item">
                     <div class="photo-item">
-                        <!-- Чекбокс для вибору фото -->
-                        <div class="checkbox-container">
-                            <input type="checkbox" name="photo_ids"  value="{{ item.photo.id }}" id="photo_{{ item.photo.id }}" class="photo-checkbox">
-                            <label for="photo_{{ item.photo.id }}">Вибрати</label>
-                        </div>
+                        
                         <!-- Фото з описом -->
                         <a class="thumb-ruby thumb-mixed_height-2 thumb-mixed_md" href="{{ item.url_with_text }}" data-lightgallery="item">
                             <img class="thumb-ruby__image" src="{{ item.url_with_text }}" alt="{{ item.photo.title }}" width="440" height="327"/>
@@ -39,6 +35,11 @@
                                 <p class="thumb-ruby__text">{{ item.photo.description }}</p>
                             </div>
                         </a>
+                        <!-- Чекбокс для вибору фото -->
+                        <div class="checkbox-container">
+                            <input type="checkbox" name="photo_ids"  value="{{ item.photo.id }}" id="photo_{{ item.photo.id }}" class="photo-checkbox">
+                            <label for="photo_{{ item.photo.id }}">Select</label>
+                        </div>
                     </div>
                 </div>
               {% endfor %}
@@ -47,10 +48,10 @@
 
         <!-- Кнопки для публікації або завантаження вибраних фото -->
         <div class="mt-4">
-            <button type="submit" name="action" value="publish" class="btn btn-dark" style="width: 50%;">Зробити публічними</button>
+            <button type="submit" name="action" value="publish" class="btn btn-dark" style="width: 30%;">Make Public</button>
         </div>   
         <div class="mt-4"> 
-            <button type="submit" name="action" value="download" class="btn btn-dark" style="width: 50%;">Завантажити вибрані фото</button>
+            <button type="submit" name="action" value="download" class="btn btn-dark" style="width: 30%;">Download Photos</button>
         </div>
       </form>
   </div>

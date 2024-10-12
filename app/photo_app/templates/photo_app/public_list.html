@@ -62,23 +62,33 @@
 </section>
 
 <script>
-    // JavaScript для відображення середнього рейтингу
     document.addEventListener("DOMContentLoaded", function () {
         const ratingBlocks = document.querySelectorAll('.average-star-rating');
         ratingBlocks.forEach(function (ratingBlock) {
             const stars = ratingBlock.querySelectorAll('.star');
-            const averageRating = ratingBlock.getAttribute('data-average-rating');
-
+            const averageRating = parseFloat(ratingBlock.getAttribute('data-average-rating'));
+    
             // Оновлюємо зірочки, щоб показати середній рейтинг
             highlightStars(stars, averageRating);
         });
-
+    
         function highlightStars(stars, rating) {
             stars.forEach(function (star) {
-                star.textContent = star.getAttribute('data-value') <= rating ? '★' : '☆';
+                const starValue = parseInt(star.getAttribute('data-value'));
+    
+                if (rating >= starValue) {
+                    star.classList.remove('half');
+                    star.textContent = '★';  // Повна зірка
+                } else if (rating >= starValue - 0.5) {
+                    star.classList.add('half');  // Напівзаповнена зірка
+                } else {
+                    star.classList.remove('half');
+                    star.textContent = '☆';  // Порожня зірка
+                }
             });
         }
     });
+    
 </script>
 {% endblock content %}
 

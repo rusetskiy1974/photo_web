@@ -101,7 +101,7 @@ def my_photos(request):
     my_photos = Photo.objects.filter(owner=request.user.id)
 
     # Створюємо URL з трансформацією, яка накладає текст "Фотостудія RMS"
-    photos_with_text = mark_photos(my_photos)
+    photos_with_text = mark_photos(my_photos, request.user)
     context = {
         'title': 'My photos',
         'photos_with_text': photos_with_text,
