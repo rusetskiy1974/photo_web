@@ -1,7 +1,6 @@
 from django.db import models
 from django.urls import reverse
 
-from users.models import User
 from photo_app.models import Photo
 
 class Category(models.TextChoices):
@@ -22,6 +21,17 @@ class Category(models.TextChoices):
         }
         return images.get(category_code, 'categories/default.jpg')  # Повертає зображення або за замовчуванням
 
+    @classmethod
+    def get_full_name(cls, category_code):
+        names = {
+            cls.PORTRAIT: 'Portrait',
+            cls.LANDSCAPE: 'Landscape',
+            cls.WILDLIFE: 'Wildlife',
+            cls.ARCHITECTURE: 'Architecture',
+            cls.FASHION: 'Fashion',
+        }
+        return names.get(category_code, 'Unknown Category')  # Повертає повну назву категорії
+
 
 class Portfolio(models.Model):
     create_time = models.DateTimeField(auto_now_add=True)
@@ -39,9 +49,17 @@ class Portfolio(models.Model):
 
     def __str__(self):
         return self.title or "Portfolio without title"
-    
+
     def get_category_image(self):
         return Category.get_image(self.category)
-    
+
     def get_absolute_url(self):
-        return reverse('main:portfolio_detail', args=[self.id])    
+        return reverse('main:portfolio_detail', args=[self.id])
+
+    def save(self, *args, **kwargs):
+        # Якщо title або description не задано, встановлюємо їх за замовчуванням
+        if not self.title:
+            self.title = Category.get_full_name(self.category)
+        if not self.description:
+            self.description = f"This portfolio contains {self.title} photos."
+        super().save(*args, **kwargs)  # Викликаємо метод з батьківського класу
