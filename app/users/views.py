@@ -125,63 +125,88 @@ def my_photos(request):
 
 
 
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from photo_app.models import Photo
+
 @login_required
 def handle_photos(request):
-    photo_ids = request.POST.getlist('photo_ids')
-    
-    if not photo_ids:
-        messages.warning(request, "Не вибрано жодного фото.")
-        return HttpResponseRedirect(reverse('users:my_photos'))
+    if request.method == 'POST':
+        # Отримуємо список вибраних фото з форми
+        photo_ids = request.POST.get('photo_ids', '')  # Стягуємо всі ID вибраних фото як рядок
+        if photo_ids:
+            # Розділяємо рядок з ID на список чисел
+            photo_ids = photo_ids.split(',')
+            try:
+                # Перетворюємо кожен елемент у список цілих чисел
+                photo_ids = [int(photo_id) for photo_id in photo_ids]
+                
+                # Знаходимо відповідні фото
+                selected_photos = Photo.objects.filter(id__in=photo_ids)
+                
+                # Обробка дій в залежності від кнопки
+                action = request.POST.get('action')
+                
+                if action == 'publish':
+                    selected_photos.update(is_public=True)
+                    messages.success(request, f"{selected_photos.count()} photos were made public.")
+                elif action == 'private':
+                    selected_photos.update(is_public=False)
+                    messages.success(request, f"{selected_photos.count()} photos were made private.")
+                elif action == 'download':
+                    # Логіка завантаження фото, якщо потрібно
+                    messages.success(request, f"{selected_photos.count()} photos were prepared for download.")
+                    
+                return redirect('users:my_photos')  # Перенаправляємо на список фото після обробки
+                
+            except ValueError:
+                messages.error(request, "Invalid photo IDs. Please try again.")  # Передаємо аргументи request і повідомлення
+        else:
+            messages.warning(request, "No photos were selected.")  # Тут також передаємо request
+            
+    return redirect('users:my_photos')  # Перенаправляємо на список фото в разі помилки
 
-    photos = get_list_or_404(Photo, id__in=photo_ids, owner=request.user)
-    
-    action = request.POST.get('action')
-
-    if action == 'publish':
-        # Робимо фото публічними
-        for photo in photos:
-            photo.is_public = True
-            photo.save()
-        messages.success(request, "Selected photos became public.")
-        return HttpResponseRedirect(reverse('users:my_photos'))
-    
-    elif action == 'private':
-        # Робимо фото публічними
-        for photo in photos:
-            photo.is_public = False
-            photo.save()
-        messages.success(request, "Selected photos became private.")
-        return HttpResponseRedirect(reverse('users:my_photos'))
-    
-    elif action == 'download':
-        
-        return download_photos(photos)
-
-    else:
-        messages.error(request, "Невідома дія.")
-        return HttpResponseRedirect(reverse('users:my_photos'))
 
 @login_required
-def add_photo_public(request):
-    photo_ids = request.GET.getlist('photo_ids')
-    
-    if not photo_ids:
-        messages.warning(request, "Не вибрано жодного фото.")
-        return HttpResponseRedirect(reverse('users:my_photos'))
-    
-    # Отримуємо всі фото за їх id
-    photos = get_list_or_404(Photo, id__in=photo_ids, owner=request.user)
-    
+def handle_photos(request):
     if request.method == 'POST':
-        # Для кожного фото встановлюємо значення поля is_public
-        for photo in photos:
-            photo.is_public = True  # Встановлюємо статус публічності
-            photo.save()  # Зберігаємо зміни
+        # Отримуємо список вибраних фото з форми
+        selected_photo_ids = request.POST.get('selected_photo_ids', '')
+        obj_page = request.POST.get('obj_page', '1')  # Отримуємо поточну сторінку або дефолтну сторінку 1
+        
+        if selected_photo_ids:
+            # Розділяємо рядок з ID на список чисел
+            selected_photo_ids = selected_photo_ids.split(',')
+            try:
+                # Перетворюємо кожен елемент у список цілих чисел
+                selected_photo_ids = [int(photo_id) for photo_id in selected_photo_ids]
+                
+                # Знаходимо відповідні фото
+                selected_photos = Photo.objects.filter(id__in=selected_photo_ids)
+                
+                # Обробка дій в залежності від кнопки
+                action = request.POST.get('action')
+                
+                if action == 'publish':
+                    selected_photos.update(is_public=True)
+                    messages.success(request, f"{selected_photos.count()} photos were made public.")
+                elif action == 'private':
+                    selected_photos.update(is_public=False)
+                    messages.success(request, f"{selected_photos.count()} photos were made private.")
+                elif action == 'download':
+                    # Логіка завантаження фото, якщо потрібно
+                    messages.success(request, f"{selected_photos.count()} photos were prepared for download.")
+                    
+                # Повертаємо на ту саму сторінку пагінації
+                return redirect(f"{reverse('users:my_photos')}?page={obj_page}")
             
-        messages.success(request, "Вибрані фото стали публічними.")
-        return HttpResponseRedirect(reverse('users:my_photos'))
+            except ValueError:
+                messages.error(request, "Invalid photo IDs. Please try again.")  # Передаємо аргументи request і повідомлення
+        else:
+            messages.warning(request, "No photos were selected.")  # Тут також передаємо request
+    
+    return redirect(f"{reverse('users:my_photos')}?page={obj_page}")  # Перенаправляємо на ту ж сторінку
 
-    return render(request, 'users/my_photos.html', {'photos': photos})
     
 # def google_login_auto_redirect(request):
 #     # Додаткові дії, якщо потрібно

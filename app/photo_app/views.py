@@ -5,7 +5,7 @@ import six
 import requests
 from django.db.models.functions import Coalesce
 from django.core.paginator import Paginator
-from django.db.models import Avg, FloatField, F
+from django.db.models import Avg, FloatField, F, OuterRef, Subquery, Value
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_list_or_404, get_object_or_404, render
 from django.contrib.auth.decorators import login_required
@@ -49,9 +49,20 @@ def public_list(request):
 
 @login_required
 def set_ratings(request):
+    user = request.user
     # Отримуємо всі публічні фото (is_public=True)
-    public_photos = Photo.objects.filter(is_public=True)
-
+    user_ratings = Rating.objects.filter(
+    photo=OuterRef('pk'),  # Порівнюємо з полем "photo"
+    user=user  # Рейтинг для поточного користувача
+).values('value')[:1]
+    
+    public_photos = Photo.objects.filter(is_public=True).annotate(
+    user_rating=Coalesce(
+        Subquery(user_ratings),  # Рейтинг від користувача, якщо є
+        Value(0)  # Якщо немає, підставляємо 0
+    )
+).order_by('-user_rating')
+    
     # Створюємо URL з трансформацією, яка накладає текст "Фотостудія RMS"
     photos_with_text = mark_photos(public_photos, request.user)
 

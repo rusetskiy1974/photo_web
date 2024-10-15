@@ -13,20 +13,21 @@
       <!-- Форма для вибору фото -->
       <form method="POST" action="{% url 'users:handle_photos' %}">
         {% csrf_token %}
-    
-        <!-- Чекбокс для вибору всіх фото -->
-        <div class="checkbox-container mb-3">
-            <input type="checkbox" id="select-all" class="photo-checkbox"/>
-            <label for="select-all">Select all photos</label>
+
+        <!-- Кнопка для вибору всіх фото -->
+        <div class="mb-3">
+            <button type="button" id="select-all-btn" class="btn btn-outline-primary">
+                <i class="fas fa-check-square"></i> Select all photos
+            </button>
         </div>
     
-        <!-- Чекбокси для вибору фото на поточній сторінці -->
+        <!-- Картки для вибору фото -->
         <div class="isotope thumb-ruby-wrap wow fadeIn" data-isotope-layout="masonry" data-isotope-group="gallery"
              data-lightgallery="group">
             <div class="row">
               {% for item in page_obj %}
                 <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 isotope-item">
-                    <div class="photo-item">
+                    <div class="photo-item" data-photo-id="{{ item.photo.id }}">
                         <a class="thumb-ruby thumb-mixed_height-2 thumb-mixed_md" href="{{ item.url_with_text }}" data-lightgallery="item">
                             <img class="thumb-ruby__image" src="{{ item.url_with_text }}" alt="{{ item.photo.title }}" width="440" height="327"/>
                             <div class="thumb-ruby__caption">
@@ -34,20 +35,15 @@
                                 <p class="thumb-ruby__text">{{ item.photo.description }}</p>
 
                                 <!-- Додаємо мітку "Public", якщо фото публічне -->
-                                
                                 <div class="photo-status" style="position: absolute; bottom: 10px; left: 10px; font-size: 18px; font-weight: bold;">
                                     {% if item.photo.is_public %}
                                         <span class="badge badge-success">Public</span>
                                     {% else %}
-                                        <span class="badge badge-secondary">Private</span>
+                                        <span class="badge badge-dark">Private</span> <!-- Змінили на badge-dark -->
                                     {% endif %}
                                 </div>
                             </div>
                         </a>
-                        <div class="checkbox-container">
-                            <input type="checkbox" name="photo_ids" value="{{ item.photo.id }}" id="photo_{{ item.photo.id }}" class="photo-checkbox">
-                            <label for="photo_{{ item.photo.id }}">Select</label>
-                        </div>
                     </div>
                 </div>
               {% endfor %}
@@ -62,11 +58,11 @@
                         <a href="?page=1">&laquo; first</a>
                         <a href="?page={{ page_obj.previous_page_number }}">previous</a>
                     {% endif %}
-    
+
                     <span class="current">
                         Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
                     </span>
-    
+
                     {% if page_obj.has_next %}
                         <a href="?page={{ page_obj.next_page_number }}">next</a>
                         <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
@@ -75,8 +71,14 @@
             </div>
         </div>
     
-        <!-- Приховане поле для всіх ID фото -->
-        <input type="hidden" name="all_photo_ids" id="all-photo-ids" value="{{ all_photo_ids|join:',' }}">
+        <!-- Приховане поле для всіх ID вибраних фото -->
+        
+        <input type="hidden" name="photo_ids" id="all-photos" value="{{ all_photo_ids|join:',' }}">
+
+        <!-- Приховане поле для вибраних фото (динамічне) -->
+        <input type="hidden" name="selected_photo_ids" id="selected-photo-ids" value="">
+        
+        <input type="hidden" name="obj_page" value="{{ request.GET.page }}">
     
         <!-- Кнопки для публікації або завантаження вибраних фото -->
         <div class="mt-4">
@@ -90,40 +92,114 @@
         </div>
     </form>
     
-    <!-- JavaScript для вибору всіх фото -->
+    <!-- JavaScript для вибору карток та вибору всіх фото -->
     <script>
-        document.getElementById('select-all').addEventListener('change', function() {
-            var checkboxes = document.querySelectorAll('.photo-checkbox');
-            var allPhotoIds = document.getElementById('all-photo-ids').value.split(',');
-    
-            // Якщо вибрано "всі", додаємо усі ID до форми
-            if (this.checked) {
-                checkboxes.forEach(function(checkbox) {
-                    checkbox.checked = true;
-                });
-                allPhotoIds.forEach(function(photoId) {
-                    // Створюємо приховані поля для кожного ID, якщо їх ще немає
-                    if (!document.getElementById('hidden-photo-' + photoId)) {
-                        var hiddenInput = document.createElement('input');
-                        hiddenInput.type = 'hidden';
-                        hiddenInput.name = 'photo_ids';
-                        hiddenInput.id = 'hidden-photo-' + photoId;
-                        hiddenInput.value = photoId;
-                        document.querySelector('form').appendChild(hiddenInput);
-                    }
-                });
-            } else {
-                // Якщо знято вибір "всі", видаляємо приховані поля
-                checkboxes.forEach(function(checkbox) {
-                    checkbox.checked = false;
-                });
-                allPhotoIds.forEach(function(photoId) {
-                    var hiddenInput = document.getElementById('hidden-photo-' + photoId);
-                    if (hiddenInput) {
-                        hiddenInput.remove();
-                    }
-                });
-            }
+        const selectedPhotos = new Set();
+        const selectedPhotosField = document.getElementById('selected-photo-ids');  // Поле для вибраних фото
+        const allPhotosField = document.getElementById('all-photos');  // Незмінне поле для всіх фото
+        const selectAllBtn = document.getElementById('select-all-btn');
+
+        // Функція для оновлення прихованого поля з вибраними фото
+        function updateSelectedPhotosField() {
+            selectedPhotosField.value = Array.from(selectedPhotos).join(',');
+        }
+
+        // Логіка для вибору/зняття вибору окремих карток
+        document.querySelectorAll('.photo-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                const photoId = this.getAttribute('data-photo-id');
+
+                if (selectedPhotos.has(photoId)) {
+                    selectedPhotos.delete(photoId);
+                    this.classList.remove('selected');
+                } else {
+                    selectedPhotos.add(photoId);
+                    this.classList.add('selected');
+                }
+
+                updateSelectedPhotosField();  // Оновлюємо поле для вибраних фото
+
+                // Оновлюємо стан кнопки "Select all"
+                if (selectedPhotos.size === document.querySelectorAll('.photo-item').length) {
+                    selectAllBtn.innerHTML = '<i class="fas fa-times"></i> Deselect all photos';
+                    selectAllBtn.classList.remove('btn-outline-primary');
+                    selectAllBtn.classList.add('btn-success');
+                    selectAllBtn.dataset.selected = 'true';
+                } else {
+                    selectAllBtn.innerHTML = '<i class="fas fa-check-square"></i> Select all photos';
+                    selectAllBtn.classList.remove('btn-success');
+                    selectAllBtn.classList.add('btn-outline-primary');
+                    selectAllBtn.dataset.selected = 'false';
+                }
+            });
         });
+
+        // Логіка для вибору всіх карток кнопкою
+        selectAllBtn.addEventListener('click', function() {
+            const allPhotoIds = allPhotosField.value.split(',');  // Масив усіх фото з прихованого поля
+            const allItems = document.querySelectorAll('.photo-item');  // Фото на поточній сторінці
+            const selectAllChecked = this.dataset.selected === 'true';  // Перевіряємо, чи всі фото вже вибрані
+
+            if (!selectAllChecked) {
+                // Додаємо всі фото до вибраних
+                allPhotoIds.forEach(photoId => {
+                    selectedPhotos.add(photoId);  // Додаємо кожне фото до множини вибраних
+                });
+
+                // Вибираємо всі фото на поточній сторінці
+                allItems.forEach(item => {
+                    item.classList.add('selected');  // Візуально відзначаємо їх
+                });
+
+                // Оновлюємо кнопку
+                this.innerHTML = '<i class="fas fa-times"></i> Deselect all photos';
+                this.classList.remove('btn-outline-primary');
+                this.classList.add('btn-success');
+                this.dataset.selected = 'true';
+            } else {
+                // Очищуємо вибір всіх фото
+                allPhotoIds.forEach(photoId => {
+                    selectedPhotos.delete(photoId);  // Видаляємо фото з множини вибраних
+                });
+
+                // Знімаємо вибір з фото на поточній сторінці
+                allItems.forEach(item => {
+                    item.classList.remove('selected');  // Візуально знімаємо вибір
+                });
+
+                // Оновлюємо кнопку
+                this.innerHTML = '<i class="fas fa-check-square"></i> Select all photos';
+                this.classList.remove('btn-success');
+                this.classList.add('btn-outline-primary');
+                this.dataset.selected = 'false';
+            }
+
+            updateSelectedPhotosField();  // Оновлюємо поле для вибраних фото
+        });
+
     </script>
+
+    <style>
+        /* Стилі для вибраних карток */
+        .photo-item.selected {
+            border: 5px solid #007bff;
+            transition: border 0.3s ease;
+        }
+
+        /* Додаткові стилі для покращення вигляду карток */
+        .photo-item {
+            cursor: pointer;
+            position: relative;
+        }
+
+        .photo-item .thumb-ruby__caption {
+            position: relative;
+            padding: 10px;
+        }
+
+        .photo-status .badge {
+            font-size: 16px; /* Зменшили шрифт мітки */
+        }
+    </style>
+</section>
 {% endblock %}
