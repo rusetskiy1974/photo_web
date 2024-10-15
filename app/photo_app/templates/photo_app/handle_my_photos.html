@@ -11,7 +11,7 @@
       <p class="heading-2">{{ title }}</p>
       
       <!-- Форма для вибору фото -->
-      <form method="POST" action="{% url 'users:handle_photos' %}">
+      <form method="POST" action="{% url 'photo_app:handle_photos' %}">
         {% csrf_token %}
 
         <!-- Кнопка для вибору всіх фото -->
@@ -28,7 +28,7 @@
               {% for item in page_obj %}
                 <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 isotope-item">
                     <div class="photo-item" data-photo-id="{{ item.photo.id }}">
-                        <a class="thumb-ruby thumb-mixed_height-2 thumb-mixed_md" href="{{ item.url_with_text }}" data-lightgallery="item">
+                        <a class="thumb-ruby thumb-mixed_height-2 thumb-mixed_md">
                             <img class="thumb-ruby__image" src="{{ item.url_with_text }}" alt="{{ item.photo.title }}" width="440" height="327"/>
                             <div class="thumb-ruby__caption">
                                 <p class="thumb-ruby__title heading-3">{{ item.photo.title }}</p>
@@ -87,6 +87,9 @@
         <div class="mt-4">
             <button type="submit" name="action" value="private" class="btn btn-dark" style="width: 30%;">Make Private</button>
         </div>   
+        <div class="mt-4"> 
+            <button type="submit" name="action" value="cloudinary_transformation" class="btn btn-dark" style="width: 30%;">Cloudinary Transformations Photos</button>
+        </div>
         <div class="mt-4"> 
             <button type="submit" name="action" value="download" class="btn btn-dark" style="width: 30%;">Download Photos</button>
         </div>

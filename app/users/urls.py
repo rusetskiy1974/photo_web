@@ -12,7 +12,6 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('edit_profile/', views.edit_profile, name='edit_profile'),
     path('logout/', views.logout, name='logout'),
-    path('my_photos/', views.my_photos, name='my_photos'),
-    path('handle_photos/', views.handle_photos, name='handle_photos'),
+    
     
 ]

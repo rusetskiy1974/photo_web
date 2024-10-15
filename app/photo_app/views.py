@@ -1,13 +1,15 @@
 import json
 import zipfile
 import io
+from django.contrib import messages
+from django.urls import reverse
 import six
 import requests
 from django.db.models.functions import Coalesce
 from django.core.paginator import Paginator
 from django.db.models import Avg, FloatField, F, OuterRef, Subquery, Value
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import get_list_or_404, get_object_or_404, render
+from django.shortcuts import get_list_or_404, get_object_or_404, redirect, render
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 
@@ -16,7 +18,7 @@ from cloudinary.forms import cl_init_js_callbacks
 
 from .forms import PhotoForm, PhotoDirectForm, PhotoUnsignedDirectForm
 from .models import Photo, Rating
-from users.utils import mark_photos
+from .utils.utils import mark_photos, cloudinary_sepia
 
 
 def filter_nones(d):
@@ -195,3 +197,101 @@ def download_multiple_photos(request):
 
     return response
 
+
+@login_required
+def my_photos(request):
+    my_photos = Photo.objects.filter(owner=request.user.id)
+
+    # Створюємо URL з трансформацією, яка накладає текст "Фотостудія RMS"
+    photos_with_text = mark_photos(my_photos, request.user)
+
+    paginator = Paginator(photos_with_text, 8)  # 8 фото на сторінку
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    # Отримуємо всі ID фотографій
+    all_photo_ids = my_photos.values_list('id', flat=True)
+
+    context = {
+        'title': 'My photos',
+        'page_obj': page_obj,   # Пагінація для відображення фото на поточній сторінці
+        'all_photo_ids': all_photo_ids,  # Передаємо всі ID фото
+    }
+
+    return render(request, 'photo_app/my_photos.html', context)
+
+@login_required
+def handle_my_photos(request):
+    my_photos = Photo.objects.filter(owner=request.user.id)
+
+    # Створюємо URL з трансформацією, яка накладає текст "Фотостудія RMS"
+    photos_with_text = mark_photos(my_photos, request.user)
+
+    paginator = Paginator(photos_with_text, 8)  # 8 фото на сторінку
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    # Отримуємо всі ID фотографій
+    all_photo_ids = my_photos.values_list('id', flat=True)
+
+    context = {
+        'title': 'Handle photos',
+        'page_obj': page_obj,   # Пагінація для відображення фото на поточній сторінці
+        'all_photo_ids': all_photo_ids,  # Передаємо всі ID фото
+    }
+
+    return render(request, 'photo_app/handle_my_photos.html', context)
+
+
+@login_required
+def handle_photos(request):
+    if request.method == 'POST':
+        # Отримуємо список вибраних фото з форми
+        selected_photo_ids = request.POST.get('selected_photo_ids', '')
+        obj_page = request.POST.get('obj_page', '1')  # Отримуємо поточну сторінку або дефолтну сторінку 1
+        
+        if selected_photo_ids:
+            # Розділяємо рядок з ID на список чисел
+            selected_photo_ids = selected_photo_ids.split(',')
+            try:
+                # Перетворюємо кожен елемент у список цілих чисел
+                selected_photo_ids = [int(photo_id) for photo_id in selected_photo_ids]
+                
+                # Знаходимо відповідні фото
+                selected_photos = Photo.objects.filter(id__in=selected_photo_ids)
+                
+                # Обробка дій в залежності від кнопки
+                action = request.POST.get('action')
+                
+                if action == 'publish':
+                    selected_photos.update(is_public=True)
+                    messages.success(request, f"{selected_photos.count()} photos were made public.")
+                elif action == 'private':
+                    selected_photos.update(is_public=False)
+                    messages.success(request, f"{selected_photos.count()} photos were made private.")
+                elif action == 'cloudinary_transformation':  
+                    photo_sepia=cloudinary_sepia(selected_photos)
+                    context = {
+                        'title': 'Cloudinary Transformation',
+                        'photo_sepia':photo_sepia
+                        }
+                    return render(request, 'photo_app/transforms.html', context)
+                    
+                elif action == 'download':
+                    # Логіка завантаження фото, якщо потрібно
+                    messages.success(request, f"{selected_photos.count()} photos were prepared for download.")
+                    
+                # Повертаємо на ту саму сторінку пагінації
+                return redirect(f"{reverse('photo_app:handle_my_photos')}?page={obj_page}")
+            
+            except ValueError:
+                messages.error(request, "Invalid photo IDs. Please try again.")  # Передаємо аргументи request і повідомлення
+        else:
+            messages.warning(request, "No photos were selected.")  # Тут також передаємо request
+    
+    return redirect(f"{reverse('photo_app:handle_my_photos')}?page={obj_page}")  # Перенаправляємо на ту ж сторінку
+
+    
+@login_required()
+def transforms(request):
+    pass

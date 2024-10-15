@@ -1,21 +1,11 @@
-import io
-import zipfile
 from django.contrib.auth.decorators import login_required
 from django.contrib import auth, messages
-from cloudinary import CloudinaryImage
-from django.core.paginator import Paginator
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_list_or_404, redirect, render
+from django.http import HttpResponseRedirect
+from django.shortcuts import redirect, render
 from django.urls import reverse
-import requests
-from traitlets import Instance
-from .utils import mark_photos
-
 
 from photo_app.models import Photo
-from .utils import download_photos_as_zip as download_photos
 from .forms import ProfileForm, UserLoginForm, UserRegistrationForm
-from allauth.socialaccount.providers.google.views import OAuth2LoginView
 
 
 def login(request):
@@ -100,27 +90,6 @@ def logout(request):
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 
-@login_required
-def my_photos(request):
-    my_photos = Photo.objects.filter(owner=request.user.id)
-
-    # Створюємо URL з трансформацією, яка накладає текст "Фотостудія RMS"
-    photos_with_text = mark_photos(my_photos, request.user)
-
-    paginator = Paginator(photos_with_text, 8)  # 8 фото на сторінку
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
-
-    # Отримуємо всі ID фотографій
-    all_photo_ids = my_photos.values_list('id', flat=True)
-
-    context = {
-        'title': 'My photos',
-        'page_obj': page_obj,   # Пагінація для відображення фото на поточній сторінці
-        'all_photo_ids': all_photo_ids,  # Передаємо всі ID фото
-    }
-
-    return render(request, 'users/my_photos.html', context)
 
 
 

@@ -14,14 +14,11 @@
         <li class="{% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
             <a href="{% url 'users:profile' %}">My Profile</a>
         </li>
-        <li class="{% if request.resolver_match.url_name == 'edit_profile' %}active{% endif %}">
-            <a href="{% url 'users:edit_profile' %}">Edit profile</a>
-        </li>
         <li class="{% if request.resolver_match.url_name == 'my_photos' %}active{% endif %}">
             <a href="{% url 'photo_app:my_photos' %}">My photos</a>
         </li>
-        <li class="{% if request.resolver_match.url_name == 'reviews_list' %}active{% endif %}">
-            <a href="{% url 'reviews:reviews_list' %}">Review</a>
+        <li class="{% if request.resolver_match.url_name == 'handle_my_photos' %}active{% endif %}">
+            <a href="{% url 'photo_app:handle_my_photos' %}">Handle Photos</a>
         </li>
         {% if user.is_admin or user.is_staff %}
             <li class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}">

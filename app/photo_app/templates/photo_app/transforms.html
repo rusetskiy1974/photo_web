@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block navbar %}
+    {% include 'includes/navbar_transformations.html' %}
+{% endblock %}
+
+{% block content %}
+<section class="section section-md bg-white text-center">
+  <div class="shell-fluid">
+      <p class="heading-2">{{ title }}</p>
+      
+        <div class="isotope thumb-ruby-wrap wow fadeIn" data-isotope-layout="masonry" data-isotope-group="gallery"
+             data-lightgallery="group">
+            <div class="row">
+              {% for item in photo_sepia %}
+                <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 isotope-item">
+                    <div class="photo-item" data-photo-id="{{ item.photo.id }}">
+                        <a class="thumb-ruby thumb-mixed_height-2 thumb-mixed_md" href="{{ item.url_sepia }}" data-lightgallery="item">
+                            <img class="thumb-ruby__image" src="{{ item.url_sepia }}" alt="{{ item.photo.title }}" width="440" height="327"/>
+                            <div class="thumb-ruby__caption">
+                                <p class="thumb-ruby__title heading-3">{{ item.photo.title }}</p>
+                                <p class="thumb-ruby__text">{{ item.photo.description }}</p>
+
+                            </div>
+                        </a>
+                    </div>
+                </div>
+              {% endfor %}
+            </div>
+        </div>
+    
+        <!-- Пагінація -->
+        <div class="pagination-wrapper">
+            <div class="pagination">
+                <span class="step-links">
+                    {% if page_obj.has_previous %}
+                        <a href="?page=1">&laquo; first</a>
+                        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                    {% endif %}
+
+                    <span class="current">
+                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                    </span>
+
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}">next</a>
+                        <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+    </form>
+    
+</section>
+{% endblock %}

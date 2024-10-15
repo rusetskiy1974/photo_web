@@ -39,3 +39,18 @@ def mark_photos(photos: list[Photo], user) -> list[Photo]:
             'rating': rating,
         })
     return photos_with_text    
+
+def cloudinary_sepia(photos: list[Photo]) -> list[Photo]:
+    photos_sepia = []
+    for photo in photos:
+        url_sepia = CloudinaryImage(photo.public_id).build_url(transformation=[
+            {'width': 500, 'crop': "scale"},
+            {'effect': "sepia"},  # Додаємо ефект сепії
+            {'color': "#FFFFFF80", 'overlay': {'font_family': "Times", 'font_size': 90, 'font_weight': "bold", 'text': "Photo RMS"}},
+            {'flags': "layer_apply", 'gravity': "center", 'y': 20}
+        ])
+        photos_sepia.append({
+            'photo': photo,
+            'url_sepia': url_sepia,
+        })
+    return photos_sepia
