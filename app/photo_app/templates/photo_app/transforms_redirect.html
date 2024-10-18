@@ -1,0 +1,9 @@
+<form id="redirect_form" action="{% url 'photo_app:transforms' %}" method="post">
+    {% csrf_token %}
+    <input type="hidden" name="selected_photo_ids" value="{{ selected_photo_ids }}">
+    <input type="hidden" name="transformation_type" value="{{ transformation_type }}">
+</form>
+
+<script type="text/javascript">
+    document.getElementById('redirect_form').submit();
+</script>

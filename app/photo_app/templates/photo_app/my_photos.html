@@ -16,8 +16,8 @@
               {% for item in page_obj %}
                 <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 isotope-item">
                     <div class="photo-item" data-photo-id="{{ item.photo.id }}">
-                        <a class="thumb-ruby thumb-mixed_height-2 thumb-mixed_md" href="{{ item.url_with_text }}" data-lightgallery="item">
-                            <img class="thumb-ruby__image" src="{{ item.url_with_text }}" alt="{{ item.photo.title }}" width="440" height="327"/>
+                        <a class="thumb-ruby thumb-mixed_height-2 thumb-mixed_md" href="{{ item.url_transform }}" data-lightgallery="item">
+                            <img class="thumb-ruby__image" src="{{ item.url_transform }}" alt="{{ item.photo.title }}" width="440" height="327"/>
                             <div class="thumb-ruby__caption">
                                 <p class="thumb-ruby__title heading-3">{{ item.photo.title }}</p>
                                 <p class="thumb-ruby__text">{{ item.photo.description }}</p>

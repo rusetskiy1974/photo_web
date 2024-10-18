@@ -18,7 +18,7 @@ from cloudinary.forms import cl_init_js_callbacks
 
 from .forms import PhotoForm, PhotoDirectForm, PhotoUnsignedDirectForm
 from .models import Photo, Rating
-from .utils.utils import mark_photos, cloudinary_sepia
+from .utils.utils import TRANSFORMS, mark_photos, cloudinary_transform
 
 
 def filter_nones(d):
@@ -245,20 +245,22 @@ def handle_my_photos(request):
 
 @login_required
 def handle_photos(request):
+    # Отримуємо поточну сторінку з GET або POST запитів
+    obj_page = request.GET.get('page', request.POST.get('obj_page', '1'))  # Отримуємо поточну сторінку або 1 за замовчуванням
+
     if request.method == 'POST':
         # Отримуємо список вибраних фото з форми
         selected_photo_ids = request.POST.get('selected_photo_ids', '')
-        obj_page = request.POST.get('obj_page', '1')  # Отримуємо поточну сторінку або дефолтну сторінку 1
         
         if selected_photo_ids:
             # Розділяємо рядок з ID на список чисел
-            selected_photo_ids = selected_photo_ids.split(',')
+            selected_photo_ids_list = selected_photo_ids.split(',')
             try:
                 # Перетворюємо кожен елемент у список цілих чисел
-                selected_photo_ids = [int(photo_id) for photo_id in selected_photo_ids]
+                # selected_photo_ids = [int(photo_id) for photo_id in selected_photo_ids if photo_id]
                 
                 # Знаходимо відповідні фото
-                selected_photos = Photo.objects.filter(id__in=selected_photo_ids)
+                selected_photos = Photo.objects.filter(id__in=selected_photo_ids_list)
                 
                 # Обробка дій в залежності від кнопки
                 action = request.POST.get('action')
@@ -266,32 +268,131 @@ def handle_photos(request):
                 if action == 'publish':
                     selected_photos.update(is_public=True)
                     messages.success(request, f"{selected_photos.count()} photos were made public.")
+
                 elif action == 'private':
                     selected_photos.update(is_public=False)
                     messages.success(request, f"{selected_photos.count()} photos were made private.")
+
                 elif action == 'cloudinary_transformation':  
-                    photo_sepia=cloudinary_sepia(selected_photos)
+                    # selected_photo_ids_list = selected_photo_ids.split(',')
+                    # selected_photos = Photo.objects.filter(id__in=selected_photo_ids_list)
+                    type_transformation = list(TRANSFORMS.keys())
+                    transformation_type = 'mark_photos'
+                    paginator = Paginator(selected_photos, 8)
+                    page_number = request.GET.get('page', '1')
+                    page_obj = paginator.get_page(page_number)
+
                     context = {
-                        'title': 'Cloudinary Transformation',
-                        'photo_sepia':photo_sepia
-                        }
-                    return render(request, 'photo_app/transforms.html', context)
-                    
+                        # 'title': 'Cloudinary Transformation',
+                        # 'page_obj': page_obj,
+                        'selected_photo_ids': selected_photo_ids,
+                        # 'type_transformation': type_transformation,
+                        'transformation_type': transformation_type,
+                        
+                    }
+                    # return render(request, 'photo_app/transforms.html', context)
+                    # return redirect(f"{reverse('photo_app:transforms')}?transformation_type={transformation_type}&selected_photo_ids={selected_photo_ids}")
+                    return render(request, 'photo_app/transforms_redirect.html', context)
+                
                 elif action == 'download':
                     # Логіка завантаження фото, якщо потрібно
                     messages.success(request, f"{selected_photos.count()} photos were prepared for download.")
-                    
-                # Повертаємо на ту саму сторінку пагінації
+                
+                # Повертаємо на ту саму сторінку пагінації після дії
                 return redirect(f"{reverse('photo_app:handle_my_photos')}?page={obj_page}")
             
             except ValueError:
-                messages.error(request, "Invalid photo IDs. Please try again.")  # Передаємо аргументи request і повідомлення
+                messages.error(request, "Invalid photo IDs. Please try again.")
         else:
-            messages.warning(request, "No photos were selected.")  # Тут також передаємо request
+            messages.warning(request, "No photos were selected.")
     
-    return redirect(f"{reverse('photo_app:handle_my_photos')}?page={obj_page}")  # Перенаправляємо на ту ж сторінку
+    # Якщо метод GET або POST без валідних даних, перенаправляємо на сторінку
+    return redirect(f"{reverse('photo_app:handle_my_photos')}?page={obj_page}")
 
     
-@login_required()
+@login_required
 def transforms(request):
-    pass
+    # Отримуємо параметри сторінки та типу трансформації
+    obj_page = request.GET.get('obj_page', request.POST.get('page', '1'))
+    selected_photo_ids = request.POST.get('selected_photo_ids', '')
+    # transformation_type = request.GET.get('transformation_type', request.session.get('transformation_type', None))
+
+    # Перевіряємо наявність `transformation_type`, щоб уникнути помилки
+    # if not transformation_type:
+    #     messages.error(request, "Transformation type is missing.")
+    #     return redirect(f"{reverse('photo_app:handle_my_photos')}")  # Якщо тип трансформації не знайдено
+
+    if request.method == 'POST':
+        
+        selected_photo_ids_list = selected_photo_ids.split(',')
+        transformation_type = request.POST.get('transformation_type')
+
+        if selected_photo_ids:
+            try:
+                # Отримуємо фото по ID
+                selected_photos = Photo.objects.filter(id__in=selected_photo_ids_list)
+                
+                # if not selected_photos.exists():
+                #     messages.error(request, "No photos selected.")
+                #     return redirect(f"{reverse('photo_app:handle_my_photos')}?page={obj_page}")
+                
+                # Застосовуємо трансформацію
+                photos_for_transforms = cloudinary_transform(selected_photos, transformation_type)
+
+                # Зберігаємо ID трансформованих фото в сесії для подальшого використання
+                request.session['selected_photo_ids'] = selected_photo_ids
+                request.session['transformation_type'] = transformation_type
+
+                # Пагінація
+                paginator = Paginator(photos_for_transforms, 8)  # 8 фото на сторінку
+                page_obj = paginator.get_page(obj_page)
+
+                context = {
+                    'title': f'Cloudinary Transformation: {transformation_type}',
+                    'page_obj': page_obj,
+                    'type_transformation': list(TRANSFORMS.keys()),  
+                    'obj_page': obj_page,
+                    'selected_photo_ids': selected_photo_ids,
+                    'transformation_type': transformation_type,
+                }
+
+                return render(request, 'photo_app/transforms.html', context)
+
+            except ValueError:
+                messages.error(request, "Invalid photo IDs.")
+                return redirect(f"{reverse('photo_app:handle_my_photos')}?page={obj_page}")
+
+        else:
+            messages.warning(request, "No photos selected.")
+            return redirect(f"{reverse('photo_app:handle_my_photos')}?page={obj_page}")
+
+    elif request.method == 'GET':
+        # Відновлюємо фото з трансформаціями з сесії
+        # selected_photo_ids = request.GET.get('selected_photo_ids')
+        selected_photo_ids = request.session.get('selected_photo_ids', [])
+        transformation_type = request.GET.get('transformation_type')
+        selected_photo_ids_list = selected_photo_ids.split(',')
+        
+        selected_photos = Photo.objects.filter(id__in=selected_photo_ids_list)
+
+        
+        # Застосовуємо трансформацію
+        photos_with_transforms = cloudinary_transform(selected_photos, transformation_type)
+        
+        paginator = Paginator(photos_with_transforms, 8)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        
+
+        context = {
+            'title': f'Cloudinary Transformation: {transformation_type}',
+            'page_obj': page_obj,
+            'type_transformation': list(TRANSFORMS.keys()),
+            'obj_page': obj_page,
+            'selected_photo_ids': selected_photo_ids,
+            'transformation_type': transformation_type,
+        }
+
+        return render(request, 'photo_app/transforms.html', context)
+
+    return redirect(f"{reverse('photo_app:handle_my_photos')}?page={obj_page}")

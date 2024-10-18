@@ -9,15 +9,37 @@
 <section class="section section-md bg-white text-center">
   <div class="shell-fluid">
       <p class="heading-2">{{ title }}</p>
-      
-        <div class="isotope thumb-ruby-wrap wow fadeIn" data-isotope-layout="masonry" data-isotope-group="gallery"
-             data-lightgallery="group">
-            <div class="row">
-              {% for item in photo_sepia %}
+        <!-- Динамічні кнопки для вибору трансформації -->
+      <div class="btn-group" role="group" aria-label="Transformation types">
+        <form method="post" action="{% url 'photo_app:transforms' %}">
+            {% csrf_token %}
+            <!-- Ідентифікатори фото -->
+            
+            <input type="hidden" name="selected_photo_ids" value="{{ selected_photo_ids }}">
+            
+            <!-- Поточна сторінка -->
+            <input type="hidden" name="page" value="{{ page_obj.number }}">
+        
+            <!-- Вибраний тип трансформації -->
+            <input type="hidden" name="transformation_type" value="{{ transformation_type }}">
+        
+            <!-- Динамічні кнопки на основі значень з type_transformation -->
+            {% for transformation in type_transformation %}
+                <button type="submit" name="transformation_type" value="{{ transformation }}" class="btn btn-primary">
+                    {{ transformation|capfirst }}
+                </button>
+            {% endfor %}
+        </form>
+      </div>
+      <input type="hidden" name="obj_page" value="{{ request.GET.page }}">
+        {% comment %} <div class="isotope thumb-ruby-wrap wow fadeIn" data-isotope-layout="masonry" data-isotope-group="gallery"
+             data-lightgallery="group"> {% endcomment %}
+            <div class="range range-around range-30" >
+              {% for item in page_obj %}
                 <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 isotope-item">
                     <div class="photo-item" data-photo-id="{{ item.photo.id }}">
-                        <a class="thumb-ruby thumb-mixed_height-2 thumb-mixed_md" href="{{ item.url_sepia }}" data-lightgallery="item">
-                            <img class="thumb-ruby__image" src="{{ item.url_sepia }}" alt="{{ item.photo.title }}" width="440" height="327"/>
+                        <a class="thumb-ruby thumb-mixed_height-2 thumb-mixed_md" href="{{ item.url_transform }}" data-lightgallery="item">
+                            <img class="thumb-ruby__image" src="{{ item.url_transform }}" alt="{{ item.photo.title }}" width="440" height="327"/>
                             <div class="thumb-ruby__caption">
                                 <p class="thumb-ruby__title heading-3">{{ item.photo.title }}</p>
                                 <p class="thumb-ruby__text">{{ item.photo.description }}</p>
@@ -28,29 +50,30 @@
                 </div>
               {% endfor %}
             </div>
-        </div>
-    
+        {% comment %} </div> {% endcomment %}
         <!-- Пагінація -->
-        <div class="pagination-wrapper">
-            <div class="pagination">
-                <span class="step-links">
-                    {% if page_obj.has_previous %}
-                        <a href="?page=1">&laquo; first</a>
-                        <a href="?page={{ page_obj.previous_page_number }}">previous</a>
-                    {% endif %}
+<div class="pagination-wrapper">
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1&transformation_type={{ transformation_type }}">&laquo; first</a>
+                <a href="?page={{ page_obj.previous_page_number }}&transformation_type={{ transformation_type }}">previous</a>
+            {% endif %}
 
-                    <span class="current">
-                        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
-                    </span>
+            <span class="current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+            </span>
 
-                    {% if page_obj.has_next %}
-                        <a href="?page={{ page_obj.next_page_number }}">next</a>
-                        <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
-                    {% endif %}
-                </span>
-            </div>
-        </div>
-    </form>
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}&transformation_type={{ transformation_type }}">next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}&transformation_type={{ transformation_type }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+</div>
+
+    </div>    
+    {% comment %} </form> {% endcomment %}
     
 </section>
 {% endblock %}
