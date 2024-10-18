@@ -24,11 +24,13 @@
             <input type="hidden" name="transformation_type" value="{{ transformation_type }}">
         
             <!-- Динамічні кнопки на основі значень з type_transformation -->
-            {% for transformation in type_transformation %}
-                <button type="submit" name="transformation_type" value="{{ transformation }}" class="btn btn-primary">
-                    {{ transformation|capfirst }}
-                </button>
-            {% endfor %}
+            {% comment %} <div class="btn-group-flex"> {% endcomment %}
+                {% for transformation in type_transformation %}
+                    <button type="submit" name="transformation_type" value="{{ transformation }}" class="btn btn-primary">
+                        {{ transformation|capfirst }}
+                    </button>
+                {% endfor %}
+            {% comment %} </div>     {% endcomment %}
         </form>
       </div>
       <input type="hidden" name="obj_page" value="{{ request.GET.page }}">

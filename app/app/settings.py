@@ -66,7 +66,8 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['https://ae3a-94-254-219-3.ngrok-free.app', '*']
+CSRF_TRUSTED_ORIGINS = ['https://ae3a-94-254-219-3.ngrok-free.app']
 
 
 # Application definition

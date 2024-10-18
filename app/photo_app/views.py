@@ -274,24 +274,13 @@ def handle_photos(request):
                     messages.success(request, f"{selected_photos.count()} photos were made private.")
 
                 elif action == 'cloudinary_transformation':  
-                    # selected_photo_ids_list = selected_photo_ids.split(',')
-                    # selected_photos = Photo.objects.filter(id__in=selected_photo_ids_list)
-                    type_transformation = list(TRANSFORMS.keys())
                     transformation_type = 'mark_photos'
-                    paginator = Paginator(selected_photos, 8)
-                    page_number = request.GET.get('page', '1')
-                    page_obj = paginator.get_page(page_number)
-
+                    
                     context = {
-                        # 'title': 'Cloudinary Transformation',
-                        # 'page_obj': page_obj,
                         'selected_photo_ids': selected_photo_ids,
-                        # 'type_transformation': type_transformation,
                         'transformation_type': transformation_type,
-                        
                     }
-                    # return render(request, 'photo_app/transforms.html', context)
-                    # return redirect(f"{reverse('photo_app:transforms')}?transformation_type={transformation_type}&selected_photo_ids={selected_photo_ids}")
+                    
                     return render(request, 'photo_app/transforms_redirect.html', context)
                 
                 elif action == 'download':

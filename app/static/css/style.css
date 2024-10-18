@@ -2539,6 +2539,19 @@ a.box-triangle__aside:hover .box-triangle__image {
 	}
 }
 
+/* Контейнер для кнопок */
+.btn-group-flex {
+    display: flex;
+    flex-wrap: wrap;      /* Дозволяє кнопкам переноситися на нові рядки */
+    gap: 15px 20px;       /* Відступи між кнопками: перший — по вертикалі, другий — по горизонталі */
+    justify-content: flex-start;  /* Вирівнювання кнопок по лівому краю */
+}
+
+/* Оформлення для самих кнопок */
+.btn-group-flex .btn {
+    padding: 10px 20px;  /* Внутрішні відступи для кнопок */
+}
+
 
 
 .star {
