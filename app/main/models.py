@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.db import models
 from django.urls import reverse
 
@@ -10,6 +12,10 @@ class Category(models.TextChoices):
     WILDLIFE = 'WL', 'Wildlife'
     ARCHITECTURE = 'AR', 'Architecture'
     FASHION = 'FS', 'Fashion'
+
+    # @property
+    # def choices(self) -> Any:
+
 
     @classmethod
     def get_image(cls, category_code):
@@ -42,6 +48,12 @@ class Portfolio(models.Model):
     
     def get_category_image(self):
         return Category.get_image(self.category)
+
     
     def get_absolute_url(self):
-        return reverse('main:portfolio_detail', args=[self.id])    
+        return reverse('main:portfolio_detail', args=[self.id])
+
+    def save(self, *args, **kwargs):
+        if not self.title:
+            self.title = Category(self.category).label
+        super().save(*args, **kwargs)

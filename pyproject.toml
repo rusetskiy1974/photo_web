@@ -6,9 +6,8 @@ authors = ["SergRusetskiy1974 <sergrus1974@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.12"
 django = "^5.1.1"
-psycopg2 = "^2.9.9"
 cloudinary = "^1.41.0"
 python-dotenv = "^1.0.1"
 traitlets = "^5.14.3"
@@ -19,6 +18,9 @@ django-stubs = "^5.1.0"
 django-allauth = "^65.0.2"
 pyjwt = "^2.9.0"
 cryptography = "^43.0.1"
+psycopg2-binary = "2.9.9"
+gunicorn = "^23.0.0"
+whitenoise = "^6.9.0"
 
 
 [build-system]

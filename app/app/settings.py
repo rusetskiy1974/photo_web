@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-from django.conf.global_settings import AUTH_USER_MODEL, LOGIN_URL, MEDIA_URL
+# from django.conf.global_settings import AUTH_USER_MODEL, LOGIN_URL, MEDIA_URL
 import os
 
 import cloudinary
@@ -67,7 +67,7 @@ ADMINS = (
 MANAGERS = ADMINS
 
 ALLOWED_HOSTS = []
-
+# ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 # Application definition
 
@@ -105,11 +105,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
-# STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
+STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 # STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
-
+# STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 ROOT_URLCONF = 'app.urls'
 
@@ -143,10 +144,10 @@ WSGI_APPLICATION = 'app.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'postgres1',
+        'NAME': 'photo_web',
         'USER': 'postgres',
         'PASSWORD': '567234',
-        'HOST': '127.0.0.1',
+        'HOST': 'postgres',
         'PORT': '5432',
     }
 }
@@ -186,9 +187,11 @@ USE_TZ = True
 
 USE_L10N = True
 
-MEDIA_URL = '/media/'
+
 
 MEDIA_ROOT = BASE_DIR / 'media'
+
+MEDIA_URL: str = '/media/'
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
@@ -201,9 +204,11 @@ SOCIALACCOUNT_AUTO_SIGNUP = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    BASE_DIR /'static',
+    os.path.join(BASE_DIR, 'static'),
+    # BASE_DIR /'static',
     # BASE_DIR / 'photo_app/static',
 ]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # List of finder classes that know how to find static files in
 # various locations.

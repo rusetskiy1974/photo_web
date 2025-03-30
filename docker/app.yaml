@@ -1,0 +1,20 @@
+services:
+  photo_web:
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    container_name: photo_web
+    ports:
+      - "8000:8000"
+#    command: "uvicorn src.app:app --reload --use-colors --host 0.0.0.0 --port 8000"
+    command: gunicorn app.wsgi:application --chdir app --bind 0.0.0.0:8000
+    env_file:
+      - ../.env
+    volumes:
+      - ../:/app/
+    networks:
+      - net
+
+networks:
+  net:
+    driver: bridge

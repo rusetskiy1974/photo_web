@@ -43,3 +43,4 @@ venv.bak/
 *.sublime-project
 *.sublime-workspace
 *.orig
+*.media
