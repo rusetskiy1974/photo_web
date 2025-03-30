@@ -35,7 +35,7 @@ class PhotoUnsignedDirectForm(PhotoForm):
 
 
 class UploadOwner(forms.Form):
-    owner = forms.ModelChoiceField(
+    owner: forms.ModelChoiceField = forms.ModelChoiceField(
         queryset=User.objects.filter(role=Role.CLIENT),
         required=False,  # Не обов'язкове
         # label="Виберіть користувача",  # Текст для поля

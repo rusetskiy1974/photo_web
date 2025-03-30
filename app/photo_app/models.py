@@ -17,18 +17,18 @@ class RatingChoices(IntEnum):
 
 
 class Photo(models.Model):
-    create_time = models.DateTimeField(auto_now_add=True)
-    title = models.CharField("Title (optional)", max_length=200, blank=True)
-    description = models.TextField(blank=True, null=True)
-    public_id = models.CharField(max_length=255, blank=True, verbose_name="Cloudinary public_id")
-    image_url = models.URLField(max_length=500, blank=True, verbose_name="Cloudinary Image URL")
-    owner = models.ForeignKey(User,  
+    create_time: models.DateTimeField = models.DateTimeField(auto_now_add=True)
+    title: models.CharField = models.CharField("Title (optional)", max_length=200, blank=True)
+    description: models.TextField = models.TextField(blank=True, null=True)
+    public_id: models.CharField = models.CharField(max_length=255, blank=True, verbose_name="Cloudinary public_id")
+    image_url: models.URLField = models.URLField(max_length=500, blank=True, verbose_name="Cloudinary Image URL")
+    owner: models.ForeignKey = models.ForeignKey(User,
         on_delete=models.CASCADE,   
         null=True,   
         blank=True,   
         related_name='photos',  # Це дозволяє доступ до фотографій через user.photos.all()
     )
-    is_public = models.BooleanField(default=False, verbose_name="Публічне фото")
+    is_public: models.BooleanField = models.BooleanField(default=False, verbose_name="Публічне фото")
     
 
     def upload_image(self, file):
@@ -57,9 +57,9 @@ class Photo(models.Model):
 
 
 class Rating(models.Model):
-    photo = models.ForeignKey(Photo, related_name='ratings', on_delete=models.CASCADE)
-    user = models.ForeignKey(User, related_name='ratings', on_delete=models.CASCADE)
-    value = models.IntegerField(choices=RatingChoices.choices()) 
+    photo: models.ForeignKey = models.ForeignKey(Photo, related_name='ratings', on_delete=models.CASCADE)
+    user: models.ForeignKey = models.ForeignKey(User, related_name='ratings', on_delete=models.CASCADE)
+    value: models.IntegerField = models.IntegerField(choices=RatingChoices.choices())
 
     class Meta:
         unique_together = ('photo', 'user')

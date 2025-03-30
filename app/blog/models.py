@@ -6,11 +6,11 @@ from users.models import User
 from django.utils.text import slugify
 
 class Blog(models.Model):
-    title = models.CharField(max_length=200)
-    slug = models.SlugField(max_length=200, unique=True, blank=True)
-    description = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)  # Адміністратор, що створив блог
+    title: models.CharField = models.CharField(max_length=200)
+    slug: models.SlugField = models.SlugField(max_length=200, unique=True, blank=True)
+    description: models.TextField = models.TextField()
+    created_at: models.DateTimeField = models.DateTimeField(auto_now_add=True)
+    created_by: models.ForeignKey = models.ForeignKey(User, on_delete=models.CASCADE)  # Адміністратор, що створив блог
 
 
     def save(self, *args, **kwargs):
@@ -25,14 +25,14 @@ class Blog(models.Model):
         return reverse('blog:blog_detail', args=[self.slug])
 
 class Post(models.Model):
-    title = models.CharField(max_length=200, blank=True, null=True)
-    content = models.TextField(blank=True, null=True)
-    photo = models.OneToOneField(Photo, on_delete=models.SET_NULL, null=True, blank=True)
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
-    published_at = models.DateTimeField(default=timezone.now)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    blog = models.ForeignKey(Blog, on_delete=models.CASCADE, related_name='posts')
+    title: models.CharField = models.CharField(max_length=200, blank=True, null=True)
+    content: models.TextField = models.TextField(blank=True, null=True)
+    photo: models.OneToOneField = models.OneToOneField(Photo, on_delete=models.SET_NULL, null=True, blank=True)
+    author: models.ForeignKey = models.ForeignKey(User, on_delete=models.CASCADE)
+    published_at: models.DateTimeField = models.DateTimeField(default=timezone.now)
+    created_at:models.DateTimeField = models.DateTimeField(auto_now_add=True)
+    updated_at: models.DateTimeField = models.DateTimeField(auto_now=True)
+    blog: models.ForeignKey = models.ForeignKey(Blog, on_delete=models.CASCADE, related_name='posts')
 
     class Meta:
         ordering = ['-published_at']

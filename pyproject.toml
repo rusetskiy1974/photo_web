@@ -23,6 +23,10 @@ gunicorn = "^23.0.0"
 whitenoise = "^6.9.0"
 
 
+[tool.poetry.group.dev.dependencies]
+types-requests = "^2.32.0.20250328"
+types-six = "^1.17.0.20250304"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

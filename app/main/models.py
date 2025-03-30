@@ -30,15 +30,15 @@ class Category(models.TextChoices):
 
 
 class Portfolio(models.Model):
-    create_time = models.DateTimeField(auto_now_add=True)
-    title = models.CharField("Title (optional)", max_length=200, blank=True)
-    description = models.TextField(blank=True, null=True)
-    category = models.CharField(
+    create_time: models.DateTimeField = models.DateTimeField(auto_now_add=True)
+    title: models.CharField = models.CharField("Title (optional)", max_length=200, blank=True)
+    description: models.TextField = models.TextField(blank=True, null=True)
+    category: models.CharField = models.CharField(
         max_length=2,
         choices=Category.choices,
         default=Category.PORTRAIT,
     )
-    photos = models.ManyToManyField(Photo, related_name='portfolios', blank=True)
+    photos: models.ManyToManyField = models.ManyToManyField(Photo, related_name='portfolios', blank=True)
 
     class Meta:
         verbose_name_plural = "Portfolios"
@@ -49,7 +49,6 @@ class Portfolio(models.Model):
     def get_category_image(self):
         return Category.get_image(self.category)
 
-    
     def get_absolute_url(self):
         return reverse('main:portfolio_detail', args=[self.id])
 

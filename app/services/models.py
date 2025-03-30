@@ -5,8 +5,8 @@ from django.utils.text import slugify
 from users.models import User
 
 class Category(models.Model):
-    name = models.CharField(max_length=150, unique=True, verbose_name='Назва')
-    slug = models.SlugField(max_length=200, unique=True, blank=True, null=True, verbose_name='URL')
+    name: models.CharField = models.CharField(max_length=150, unique=True, verbose_name='Назва')
+    slug: models.SlugField = models.SlugField(max_length=200, unique=True, blank=True, null=True, verbose_name='URL')
 
     class Meta:
         db_table = 'category'
@@ -19,15 +19,15 @@ class Category(models.Model):
 
 
 class Service(models.Model):
-    name = models.CharField(max_length=150, unique=True, verbose_name='Назва')
-    slug = models.SlugField(max_length=200, unique=True, blank=True, null=True, verbose_name='URL')
-    description = models.TextField(blank=True, null=True, verbose_name='Опис')
-    image = models.ImageField(upload_to='services/', blank=True, null=True, verbose_name='Зображення')
-    price = models.DecimalField(default=0.00, max_digits=7, decimal_places=2, verbose_name='Ціна')
-    category = models.ForeignKey(to=Category, on_delete=models.CASCADE, verbose_name='Категорія')
-    duration = models.DurationField(verbose_name='Тривалість')
-    created_by = models.ForeignKey(to=User, on_delete=models.CASCADE, verbose_name='Виконавець')   
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата створення')
+    name: models.CharField = models.CharField(max_length=150, unique=True, verbose_name='Назва')
+    slug: models.SlugField = models.SlugField(max_length=200, unique=True, blank=True, null=True, verbose_name='URL')
+    description: models.TextField = models.TextField(blank=True, null=True, verbose_name='Опис')
+    image: models.ImageField = models.ImageField(upload_to='services/', blank=True, null=True, verbose_name='Зображення')
+    price: models.DecimalField = models.DecimalField(default=0.00, max_digits=7, decimal_places=2, verbose_name='Ціна')
+    category: models.ForeignKey = models.ForeignKey(to=Category, on_delete=models.CASCADE, verbose_name='Категорія')
+    duration: models.DurationField = models.DurationField(verbose_name='Тривалість')
+    created_by: models.ForeignKey = models.ForeignKey(to=User, on_delete=models.CASCADE, verbose_name='Виконавець')
+    created_at: models.DateTimeField = models.DateTimeField(auto_now_add=True, verbose_name='Дата створення')
 
     class Meta:
         db_table = 'services'

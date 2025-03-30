@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import include, path
 from django.views.generic import TemplateView
 from django.contrib.auth.views import LogoutView 
-from app import settings
+from . import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
