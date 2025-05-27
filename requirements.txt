@@ -17,4 +17,4 @@ requests==2.32.3
 sqlparse==0.5.1
 urllib3==2.2.2
 whitenoise==6.9.0
-bcc==0.30.0
+bcc==0.1.10
