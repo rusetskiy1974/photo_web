@@ -18,12 +18,13 @@
     <link rel="stylesheet" href="{% static 'css/my_css.css' %}">
     {% comment %} <!--[if lt IE 10]-->
     <div style="background: #212121; padding: 10px 0; box-shadow: 3px 3px 5px 0 rgba(0,0,0,.3); clear: both; text-align:center; position: relative; z-index:1;">
-        <a href="http://windows.microsoft.com/en-US/internet-explorer/"><img
-                src="{% static 'images/ie8-panel/warning_bar_0000_us.jpg' %}" border="0" height="42" width="820"
+        <a href="http://windows.microsoft.com/en-US/internet-explorer/">
+            <img src="{% static 'images/ie8-panel/warning_bar_0000_us.jpg' %}" border="0" height="42" width="820"
                 alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today."></a>
     </div>
     <script src="js/html5shiv.min.js"></script>
-    <!--[endif]--> {% endcomment %}
+    <!--[endif]-->
+    {% endcomment %}
 </head>
 <body>
 <!-- Page Loader-->
@@ -51,12 +52,12 @@
 </div>
 <!-- Page-->
 <div class="page">
-    <a class="section section-banner"
-       style="background-image: url({%static 'images/background-02-1920x60_mono.png' %}); background-image: -webkit-image-set( url({% static 'images/background-02-1920x60_mono.png' %}) 1x, url({% static 'images/background-02-3840x120_mono.png' %}) 2x )">
-        <img src="{% static 'images/foreground-02-1600x60.png' %}"
-             srcset="{% static 'images/foreground-02-1600x60.png' %} 1x, {% static 'images/foreground-02-3200x120.png' %} 2x"
-             alt="" width="1600" height="310">
-    </a>
+<!--    <a class="section section-banner"-->
+<!--       style="background-image: url({%static 'images/background-02-1920x60_mono.png' %}); background-image: -webkit-image-set( url({% static 'images/background-02-1920x60_mono.png' %}) 1x, url({% static 'images/background-02-3840x120_mono.png' %}) 2x )">-->
+<!--        <img src="{% static 'images/foreground-02-1600x60.png' %}"-->
+<!--             srcset="{% static 'images/foreground-02-1600x60.png' %} 1x, {% static 'images/foreground-02-3200x120.png' %} 2x"-->
+<!--             alt="" width="1600" height="310">-->
+<!--    </a>-->
     <!-- Page header-->
     <header class="section page-header">
         <!-- RD Navbar-->
@@ -69,7 +70,7 @@
                 <div class="rd-navbar-main-outer">
                     <div class="rd-navbar-main">
                         <!-- RD Navbar Panel-->
-                        {% comment %} {% if user.is_authenticated %}
+                        {% if user.is_authenticated %}
                         <div class="rd-navbar-panel">
                             <button class="rd-navbar-toggle" data-rd-navbar-toggle=".rd-navbar-nav-wrap"><span></span>
                             </button>
@@ -79,7 +80,7 @@
                                     <div class="brand__name">
                                         {% if user.image %}
                                         <img class="rounded-circle" src="{{ user.image.url }}" alt="User avatar"
-                                             style="width: 100px; height: 100px;">
+                                             style="width: 200px; height: 200px;">
                                         {% else %}
                                         <img class="rounded-circle" src="{% static 'images/Not found image.png' %}"
                                              alt="Default avatar" style="width: 100px; height: 100px;">
@@ -88,7 +89,7 @@
                                 </a>
                             </div>
                         </div>
-                        {% else %} {% endcomment %}
+                        {% else %}
                         <div class="rd-navbar-panel">
                             <button class="rd-navbar-toggle" data-rd-navbar-toggle=".rd-navbar-nav-wrap"><span></span>
                             </button>
@@ -96,13 +97,13 @@
                             <div class="rd-navbar-brand">
                                 <a class="brand" href="{% url 'main:index' %}">
                                 <div class="brand__name">
-                                    <img class="brand__logo-dark" src="{% static 'images/Untitled.png' %}"/>
-                                    <img class="brand__logo-light" src="{% static 'images/Untitled.png' %}"/>
+                                    <img class="brand__logo-dark" src="{% static 'images/Maria_logo.png' %}"/>
+                                    <img class="brand__logo-light" src="{% static 'images/Maria_logo_light.png' %}"/>
                                 </div>
                                 </a>
                             </div>
                         </div>
-                        {% comment %} {% endif %} {% endcomment %}
+                        {% endif %}
                         <!-- RD Navbar Nav-->
                         <div class="rd-navbar-nav-wrap">
                             <div class="rd-navbar-element">
@@ -128,12 +129,13 @@
     {% block content %}
     {% endblock %}
 
-    <!-- Page Footer--><a class="section section-banner"
-                          style="background-image: url({%static 'images/background-02-1920x60.jpg' %}); background-image: -webkit-image-set( url({% static 'images/background-02-1920x60.jpg' %}) 1x, url({% static 'images/background-02-3840x120.jpg' %}) 2x )">
-    <img src="{% static 'images/foreground-02-1600x60.png' %}"
-         srcset="{% static 'images/foreground-02-1600x60.png' %} 1x, {% static 'images/foreground-02-3200x120.png' %} 2x"
-         alt="" width="1600" height="310">
-</a>
+    <!-- Page Footer-->
+<!--    <a class="section section-banner"-->
+<!--                          style="background-image: url({%static 'images/background-02-1920x60.jpg' %}); background-image: -webkit-image-set( url({% static 'images/background-02-1920x60.jpg' %}) 1x, url({% static 'images/background-02-3840x120.jpg' %}) 2x )">-->
+<!--    <img src="{% static 'images/foreground-02-1600x60.png' %}"-->
+<!--         srcset="{% static 'images/foreground-02-1600x60.png' %} 1x, {% static 'images/foreground-02-3200x120.png' %} 2x"-->
+<!--         alt="" width="1600" height="310">-->
+<!--    </a>-->
     <footer class="footer-centered section bg-gray-darker">
         <div class="shell">
             <div class="range range-sm-center">
@@ -179,7 +181,8 @@
 <script src="{% static 'js/core.min.js' %}"></script>
 <script src="{% static 'js/script.js' %}"></script>
 {% comment %}
-<script src="{% static 'js/jquery/jquery-3.7.0.min.js' %}"></script> {% endcomment %}
+<script src="{% static 'js/jquery/jquery-3.7.0.min.js' %}"></script>
+{% endcomment %}
 <script src="{% static 'js/jquery-events.js' %}"></script>
 <script src="{% static 'js/jquery-ajax.js' %}"></script>
 <script src="{% static 'js/bootstrap/bootstrap.bundle.min.js' %}"></script>
