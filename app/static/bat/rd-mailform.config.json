@@ -1,8 +1,8 @@
 {
   "useSmtp": false,
-  "host": "stmp.gmail.com",
+  "host": "smtp.meta.ua",
   "port": 465,
-  "username": "demo@gmail.com",
-  "password": "demopassword",
-  "recipientEmail": "demo@gmail.com"
+  "username": "sergrus.1974@meta.ua",
+  "password": "Cthtuf_2011",
+  "recipientEmail": "sergrus.1974@meta.ua"
 }
