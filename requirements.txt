@@ -28,3 +28,11 @@ typing-extensions==4.12.2 ; python_version >= "3.12" and python_version < "4.0"
 tzdata==2024.1 ; python_version >= "3.12" and python_version < "4.0" and sys_platform == "win32"
 urllib3==2.2.2 ; python_version >= "3.12" and python_version < "4.0"
 whitenoise==6.9.0 ; python_version >= "3.12" and python_version < "4.0"
+
+Django~=5.1.1
+cloudinary~=1.41.0
+python-dotenv~=1.0.1
+requests~=2.32.3
+traitlets~=5.14.3
+django-allauth~=65.0.2
+six~=1.16.0
