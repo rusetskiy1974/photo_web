@@ -23,3 +23,4 @@ COPY app .
 #RUN python manage.py collectstatic --noinput --settings=app.settings
 
 EXPOSE 8000
+CMD gunicorn --bind :8000 --workers 2 app.wsgi
