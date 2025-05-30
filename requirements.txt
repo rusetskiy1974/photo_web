@@ -29,3 +29,5 @@ types-six==1.17.0.20250304
 typing_extensions==4.12.2
 urllib3==2.2.2
 whitenoise==6.9.0
+
+django-environ~=0.12.0
