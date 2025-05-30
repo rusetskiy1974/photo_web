@@ -13,14 +13,17 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 # from django.conf.global_settings import AUTH_USER_MODEL, LOGIN_URL, MEDIA_URL
 import os
+import environ
 
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
-from cloudinary_storage.storage import RawMediaCloudinaryStorage, MediaCloudinaryStorage
+# from cloudinary_storage.storage import RawMediaCloudinaryStorage, MediaCloudinaryStorage
 from dotenv import load_dotenv
 
 load_dotenv()
+env = environ.Env()
+environ.Env.read_env()
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -33,19 +36,27 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
+# CLOUDINARY_STORAGE = {
+#     'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME'),
+#     'API_KEY': env('CLOUDINARY_API_KEY'),
+#     'API_SECRET': env('CLOUDINARY_API_SECRET'),
+# }
+
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
     'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
     'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
 }
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
 
 cloudinary.config(
-    cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
-    api_key=os.getenv('CLOUDINARY_API_KEY'),
-    api_secret=os.getenv('CLOUDINARY_API_SECRET')
+    cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME', 'demo'),
+    api_key=os.getenv('CLOUDINARY_API_KEY', '12345'),
+    api_secret=os.getenv('CLOUDINARY_API_SECRET', 'abcdefg')
 )
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -59,7 +70,7 @@ SECRET_KEY = 'django-insecure-t4hdbgche&_*!uwb$im0iheqer87v5)sg!0n604j9^=rq)7sgq
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-TEMPLATE_DEBUG = DEBUG
+# TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     # ('admin', 'sergrus1974@gmail.com'),
