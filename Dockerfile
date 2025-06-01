@@ -53,7 +53,7 @@ EXPOSE ${PORT}
 
 # Optional: collect static files at runtime
 #CMD ["python", "app/manage.py", "collectstatic", "--noinput"]
-RUN python app/manage.py collectstatic --noinput
+#RUN python app/manage.py collectstatic --noinput
 
 # Start Gunicorn
 CMD ["gunicorn", "--chdir", "app", "--bind", ":8000", "app.wsgi:application"]
