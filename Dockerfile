@@ -56,5 +56,5 @@ EXPOSE ${PORT}
 RUN python app/manage.py collectstatic --noinput
 
 # Start Gunicorn
-#CMD ["gunicorn", "--chdir", "app", "--bind", ":8000", "app.wsgi:application"]
-CMD bash -c "python app/manage.py collectstatic --noinput && gunicorn --chdir app --bind :8000 app.wsgi:application"
+CMD ["gunicorn", "--chdir", "app", "--bind", ":8000", "app.wsgi:application"]
+#CMD bash -c "python app/manage.py collectstatic --noinput && gunicorn --chdir app --bind :8000 app.wsgi:application"

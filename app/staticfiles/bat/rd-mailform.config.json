@@ -1,0 +1,8 @@
+{
+  "useSmtp": false,
+  "host": "smtp.meta.ua",
+  "port": 465,
+  "username": "sergrus.1974@meta.ua",
+  "password": "Cthtuf_2011",
+  "recipientEmail": "sergrus.1974@meta.ua"
+}

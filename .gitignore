@@ -18,7 +18,7 @@ build/
 *.pyd
 __pycache__/
 media/
-staticfiles/
+#staticfiles/
 
 # Environment variables
 .env
