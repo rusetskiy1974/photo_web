@@ -78,8 +78,8 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-# ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,[::1]").split(",")
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,[::1]").split(",")
+# ALLOWED_HOSTS = ['*']
 
 # Application definition
 
