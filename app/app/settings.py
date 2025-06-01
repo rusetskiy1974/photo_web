@@ -122,7 +122,7 @@ MIDDLEWARE = [
 
 # STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 # STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
-# STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 ROOT_URLCONF = 'app.urls'
 
