@@ -1,60 +1,58 @@
-FROM python:3-alpine AS builder
+FROM python:3.12-slim AS builder
 
 WORKDIR /app
 
-# Install build dependencies
-RUN apk add --no-cache \
+# Install system dependencies for psycopg2 and others
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
     gcc \
-    musl-dev \
+    libpq-dev \
+    build-essential \
     libffi-dev \
-    make \
-    libjpeg \
-    zlib-dev \
-    jpeg-dev \
-    python3-dev \
-    py3-pip \
-    py3-setuptools \
-    py3-wheel \
-    py3-cffi \
+    libjpeg-dev \
+    zlib1g-dev \
     libxml2-dev \
-    libxslt-dev \
-    postgresql-dev \
-    libpq
+    libxslt1-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Create virtual environment
-RUN python3 -m venv venv
-ENV VIRTUAL_ENV=/app/venv
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+# Install pipenv or poetry if needed (optional)
+# RUN pip install poetry
 
 # Install Python dependencies
 COPY requirements.txt .
-RUN pip install --upgrade pip && pip install -r requirements.txt
-
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
 
 # Stage 2: Final image
-FROM python:3-alpine AS runner
+FROM python:3.12-slim AS runner
 
 WORKDIR /app
 
-# Install system dependencies (needed by Python packages)
-RUN apk add --no-cache libffi
+# Install system dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    libpq-dev \
+    libffi-dev \
+    libjpeg-dev \
+    zlib1g-dev \
+    libxml2-dev \
+    libxslt1-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy virtual environment from builder
-COPY --from=builder /app/venv venv
+# Copy installed Python packages from builder
+COPY --from=builder /usr/local /usr/local
 
 # Copy Django project
 COPY app app
 
 # Set environment variables
-ENV VIRTUAL_ENV=/app/venv
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 ENV DJANGO_SETTINGS_MODULE=app.settings
 ENV PORT=8000
 
 EXPOSE ${PORT}
 
-# Collect static files at runtime (optional)
-CMD ["python", "app/manage.py", "collectstatic", "--noinput"]
+# Optional: collect static files at runtime
+# CMD ["python", "app/manage.py", "collectstatic", "--noinput"]
 
 # Start Gunicorn
 CMD ["gunicorn", "--chdir", "app", "--bind", ":8000", "app.wsgi:application"]
