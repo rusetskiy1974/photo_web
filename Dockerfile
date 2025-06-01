@@ -1,10 +1,24 @@
-# Stage 1: Build dependencies
 FROM python:3-alpine AS builder
 
 WORKDIR /app
 
-# Install system dependencies
-RUN apk add --no-cache gcc musl-dev libffi-dev
+# Install build dependencies
+RUN apk add --no-cache \
+    gcc \
+    musl-dev \
+    libffi-dev \
+    make \
+    libjpeg \
+    zlib-dev \
+    jpeg-dev \
+    python3-dev \
+    py3-pip \
+    py3-setuptools \
+    py3-wheel \
+    py3-cffi \
+    libxml2-dev \
+    libxslt-dev \
+    postgresql-dev
 
 # Create virtual environment
 RUN python3 -m venv venv
@@ -14,6 +28,7 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 # Install Python dependencies
 COPY requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt
+
 
 # Stage 2: Final image
 FROM python:3-alpine AS runner
