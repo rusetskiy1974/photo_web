@@ -242,9 +242,9 @@ SOCIALACCOUNT_AUTO_SIGNUP = True
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
-    # os.path.join(BASE_DIR, 'static'),
-    BASE_DIR /'static',
-    BASE_DIR / 'photo_app/static',
+    os.path.join(BASE_DIR, 'static'),
+    # BASE_DIR /'static',
+    # BASE_DIR / 'photo_app/static',
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
