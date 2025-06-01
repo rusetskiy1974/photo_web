@@ -18,7 +18,8 @@ RUN apk add --no-cache \
     py3-cffi \
     libxml2-dev \
     libxslt-dev \
-    postgresql-dev
+    postgresql-dev \
+    libpq
 
 # Create virtual environment
 RUN python3 -m venv venv

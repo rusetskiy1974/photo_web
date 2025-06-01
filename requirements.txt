@@ -15,7 +15,7 @@ mypy==1.11.2
 mypy-extensions==1.0.0
 packaging==24.2
 pillow==10.4.0
-psycopg2-binary==2.9.9
+psycopg2
 pycparser==2.22
 PyJWT==2.9.0
 python-dotenv==1.0.1
