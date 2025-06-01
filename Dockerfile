@@ -52,7 +52,8 @@ ENV PORT=8000
 EXPOSE ${PORT}
 
 # Optional: collect static files at runtime
-CMD ["python", "app/manage.py", "collectstatic", "--noinput"]
+#CMD ["python", "app/manage.py", "collectstatic", "--noinput"]
+RUN python app/manage.py collectstatic --noinput
 
 # Start Gunicorn
 CMD ["gunicorn", "--chdir", "app", "--bind", ":8000", "app.wsgi:application"]
