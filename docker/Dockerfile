@@ -23,7 +23,8 @@ ENV DJANGO_SETTINGS_MODULE=app.settings
 
 COPY app .
 
-#RUN python manage.py collectstatic #--noinput    # --settings=app.settings
+RUN python manage.py collectstatic --noinput    # --settings=app.settings
 
 EXPOSE 8000
-CMD gunicorn --chdir app --bind 0.0.0.0:8000 app.wsgi:application
+
+CMD gunicorn --chdir app  app.wsgi:application

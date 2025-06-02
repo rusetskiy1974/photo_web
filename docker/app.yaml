@@ -9,8 +9,8 @@ services:
     ports:
       - "8000:8000"
 #    command: "uvicorn src.app:app --reload --use-colors --host 0.0.0.0 --port 8000"
-    command: gunicorn --chdir app --bind 0.0.0.0:8000 app.wsgi:application
-#    command: python app/manage.py runserver 0.0.0.0:8000
+#    command: gunicorn --chdir app --bind 0.0.0.0:8000 app.wsgi:application
+    command: python app/manage.py runserver 0.0.0.0:8000
     env_file:
       - ../.env
 
