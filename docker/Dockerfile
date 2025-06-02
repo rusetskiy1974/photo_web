@@ -27,4 +27,4 @@ RUN python manage.py collectstatic --noinput    # --settings=app.settings
 
 EXPOSE 8000
 
-CMD gunicorn --chdir app  app.wsgi:application
+CMD gunicorn app/app.wsgi:application --workers 1 --timeout 120
