@@ -59,11 +59,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = 'django-insecure-t4hdbgche&_*!uwb$im0iheqer87v5)sg!0n604j9^=rq)7sgq'
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'unsafe-default-for-dev')
 CSRF_TRUSTED_ORIGINS = ["*"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get('DJANGO_DEBUG', '') == 'True'
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -72,8 +72,8 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-# ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,[::1]").split(",")
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,[::1]").split(",")
+# ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -209,7 +209,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-SITE_ID = 2
+SITE_ID = 1
 
 TIME_ZONE = 'UTC'
 
@@ -233,7 +233,7 @@ SOCIALACCOUNT_AUTO_SIGNUP = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     # os.path.join(BASE_DIR, 'static'),
