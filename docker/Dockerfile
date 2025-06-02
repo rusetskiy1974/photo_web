@@ -25,6 +25,6 @@ COPY app .
 
 RUN python manage.py collectstatic --noinput    # --settings=app.settings
 
-EXPOSE 8000
+#EXPOSE 8000
 
 CMD gunicorn app.wsgi:application --workers 1 --timeout 120
