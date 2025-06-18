@@ -15,6 +15,7 @@ class Category(models.TextChoices):
 
     # @property
     # def choices(self) -> Any:
+    #     return
 
 
     @classmethod

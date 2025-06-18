@@ -23,8 +23,8 @@ ENV DJANGO_SETTINGS_MODULE=app.settings
 
 COPY app .
 
-RUN python manage.py collectstatic --noinput    # --settings=app.settings
+#RUN python manage.py collectstatic --noinput    # --settings=app.settings
 
-#EXPOSE 8000
+EXPOSE 8000
 
-CMD gunicorn app.wsgi:application --workers 1 --timeout 120
+#CMD gunicorn app.wsgi:application

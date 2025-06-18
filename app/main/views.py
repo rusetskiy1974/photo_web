@@ -1,11 +1,16 @@
+from django.contrib import messages
 from django.shortcuts import render
 from django.views.generic import DetailView
+from django.core.mail import send_mail
+
+# from django.shortcuts import render, redirect
+from django.core.mail import EmailMessage
 
 from reviews.models import Review
 from blog.models import Blog
 from .models import Portfolio
 from cloudinary import CloudinaryImage
-
+from .forms import ContactForm
 from django.http import HttpResponse
 # from goods.models import Categories
 
@@ -75,9 +80,64 @@ def typography(request) -> HttpResponse:
     }
     return render(request, 'main/typography.html', context=context)
 
-def contact(request) -> HttpResponse:
-    context = {
-        'title': "Contact",
-        'content': "Contact",
-    }
-    return render(request, 'main/contact_me.html', context=context)
+# def contact(request) -> HttpResponse:
+#     context = {
+#         'title': "Contact",
+#         'content': "Contact",
+#     }
+#     return render(request, 'main/contact_me.html', context=context)
+
+
+
+
+
+# def contact(request):
+#     if request.method == 'POST':
+#         form = ContactForm(request.POST)
+#         if form.is_valid():
+#             subject = 'New message from site visitor'
+#             message = f"Name: {form.cleaned_data['name']}\n" \
+#                       f"Email: {form.cleaned_data['email']}\n" \
+#                       f"Date: {form.cleaned_data.get('date')}\n" \
+#                       f"Message:\n{form.cleaned_data['message']}"
+#             # from_email = form.cleaned_data['email']
+#             from_email = form.cleaned_data['email']
+#             recipient = ['sergrus.1974@meta.ua']
+#
+#             send_mail(subject, message, from_email, recipient)
+#             return render(request, 'main/contact_me.html')
+#     else:
+#         form = ContactForm()
+#
+#     return render(request, 'main/contact_me.html', {'form': form})
+
+
+
+def contact(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            try:
+                email = EmailMessage(
+                    subject="New Contact Request",
+                    body=(
+                        f"Date: {form.cleaned_data['date']}\n"
+                        f"Name: {form.cleaned_data['name']}\n"
+                        f"Email: {form.cleaned_data['email']}\n"
+                        f"Message:\n{form.cleaned_data['message']}"
+                    ),
+                    from_email='sergrus.1974@meta.ua',
+                    to=['sergrus.1974@meta.ua'],
+                    reply_to=[form.cleaned_data['email']],
+                )
+                email.send()
+                messages.success(request, "Email sent successfully.")
+                return render(request, 'main/contact_me.html', {
+                    'form': ContactForm(),
+                })
+            except Exception as e:
+                messages.error(request, f"Email sending failed: {e}")
+    else:
+        form = ContactForm()
+        messages.warning(request, "Error while sending Email")
+    return render(request, 'main/contact_me.html', {'form': form})

@@ -1,5 +1,5 @@
 {
-  "useSmtp": false,
+  "useSmtp": true,
   "host": "smtp.meta.ua",
   "port": 465,
   "username": "sergrus.1974@meta.ua",

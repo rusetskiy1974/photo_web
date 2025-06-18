@@ -1,4 +1,9 @@
 <?php
+file_put_contents('test-log.txt', "PHP START\n", FILE_APPEND);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+// file_put_contents('test-log.txt', "Form executed\n", FILE_APPEND);
 
 $formConfigFile = file_get_contents("rd-mailform.config.json");
 $formConfig = json_decode($formConfigFile, true);
@@ -140,8 +145,17 @@ try {
     $mail->send();
 
     die('MF000');
+// } catch (phpmailerException $e) {
+//     die('MF254');
+// } catch (Exception $e) {
+//     die('MF255');
+// }
+
 } catch (phpmailerException $e) {
-    die('MF254');
+    file_put_contents('test-log.txt', "PHPMailer error: " . $e->getMessage() . "\n", FILE_APPEND);
+    die('MF254: ' . $e->getMessage());
 } catch (Exception $e) {
-    die('MF255');
+    file_put_contents('test-log.txt', "Exception: " . $e->getMessage() . "\n", FILE_APPEND);
+    die('MF255: ' . $e->getMessage());
 }
+

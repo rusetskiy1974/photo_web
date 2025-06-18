@@ -1083,8 +1083,14 @@ $document.ready(function () {
 						grecaptcha.reset();
 					}
 
-					result = result.length === 5 ? result : 'MF255';
-					output.text(msg[result]);
+//					result = result.length === 5 ? result : 'MF255';
+//					output.text(msg[result]);
+                    if (msg.hasOwnProperty(result)) {
+                        output.text(msg[result]);
+                    } else {
+                        console.warn("Unexpected response from server:", result);
+                        output.text("Error: " + result);
+                    }
 
 					if (result === "MF000") {
 						if (output.hasClass("snackbars")) {
