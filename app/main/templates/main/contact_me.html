@@ -12,7 +12,7 @@
     <div class="shell">
         <h1 class="breadcrumbs-custom__title">Contact Me</h1>
         <ul class="breadcrumbs-custom__path">
-            <li><a href="index.html">Home</a></li>
+            <li><a href="{% url 'main:index' %}">Home</a></li>
             <li class="active">Contact Me</li>
         </ul>
     </div>
@@ -27,51 +27,12 @@
                 <p><span class="box-width-2">I am available 24/7 by fax, e-mail or by phone. You can also use a quick contact form to ask a question about my services.</span>
                 </p>
                 <div class="layout-columns">
-                    <div class="layout-columns__main">
-                        <div class="layout-columns__main-inner">
-                            <!-- RD Mailform-->
-<!--                            <form class="rd-mailform" data-form-output="form-output-global" data-form-type="contact"-->
-<!--                                  method="post" action="{% static 'bat/rd-mailform.php' %}">-->
-<!--                                <div class="form-wrap">-->
-<!--                                    <input class="form-input" id="contact-date" type="text" data-time-picker="date"-->
-<!--                                           name="date" data-constraints="@Required">-->
-<!--                                    <label class="form-label" for="contact-date">Event Date</label>-->
-<!--                                </div>-->
-<!--                                <div class="form-wrap">-->
-<!--                                    <input class="form-input" id="contact-name" type="text" name="name"-->
-<!--                                           data-constraints="@Required">-->
-<!--                                    <label class="form-label" for="contact-name">Your Name</label>-->
-<!--                                </div>-->
-<!--                                <div class="form-wrap">-->
-<!--                                    <input class="form-input" id="contact-email" type="email" name="email"-->
-<!--                                           data-constraints="@Email @Required">-->
-<!--                                    <label class="form-label" for="contact-email">E-mail</label>-->
-<!--                                </div>-->
-<!--                                <div class="form-wrap">-->
-<!--                                    <label class="form-label" for="contact-message">Your Message</label>-->
-<!--                                    <textarea class="form-input" id="contact-message" name="message"-->
-<!--                                              data-constraints="@Required"></textarea>-->
-<!--                                </div>-->
-<!--                                <div class="form-wrap form-button offset-1">-->
-<!--                                    <button class="button button-block button-primary-outline button-ujarak"-->
-<!--                                            type="submit">make an appointment-->
-<!--                                    </button>-->
-<!--                                </div>-->
-<!--                            </form>-->
-                            <div class="box-line__main">
-                            <form method="post" action="">
-                                {% csrf_token %}
-                                {{ form.as_p }}
-                                <div class="form-wrap form-button offset-1">
-                                    <button class="button button-block button-primary-outline button-ujarak"
-                                            type="submit">Make an appointment
-                                    </button>
-                                </div>
-                            </form>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="layout-columns__aside">
+                    <!-- RD Mailform-->
+                    {% block mailform %}
+                    {% include 'includes/mailform.html' %}
+                    {% endblock %}
+
+                    <div class="cell-sm-10 cell-md-6 wow fadeInRight">
                         <div class="layout-columns__aside-item">
                             <p class="heading-5">Socials</p>
                             <div class="divider-modern"></div>
@@ -117,12 +78,3 @@
 </section>
 {% endblock %}
 
-
-</div>
-<!-- Global Mailform Output-->
-<div class="snackbars" id="form-output-global"></div>
-<!-- Javascript-->
-<script src="js/core.min.js"></script>
-<script src="js/script.js"></script>
-</body>
-</html>

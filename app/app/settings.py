@@ -13,7 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 # from django.conf.global_settings import AUTH_USER_MODEL, LOGIN_URL, MEDIA_URL
 import os
-
+import logging
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
@@ -21,17 +21,38 @@ import cloudinary.api
 from dotenv import load_dotenv
 
 load_dotenv()
+logging.basicConfig(level=logging.DEBUG)
+
+GOOGLE_OAUTH_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
+if not GOOGLE_OAUTH_CLIENT_ID:
+    raise ValueError(
+        'GOOGLE_OAUTH_CLIENT_ID is missing.'
+        'Have you put it in a file at core/.env ?'
+    )
+
+SECURE_REFERRER_POLICY = 'no-referrer-when-downgrade'
+SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"
 
 
+# Email configs for meta.ua
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.meta.ua'
+# EMAIL_PORT = 465
+# EMAIL_STARTTLS = False
+# EMAIL_USE_SSL = True
+# EMAIL_USE_TLS = False
+# EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+# EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# email configs
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.meta.ua'
-EMAIL_PORT = 465
-EMAIL_STARTTLS = False
-EMAIL_USE_SSL = True
-EMAIL_USE_TLS = False
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = str(os.getenv('EMAIL_USER_GOOGLE'))
+EMAIL_HOST_PASSWORD = str(os.getenv('EMAIL_PASSWORD_GOOGLE'))
+
 
 
 CLOUDINARY_STORAGE = {
@@ -147,28 +168,28 @@ WSGI_APPLICATION = 'app.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'photo_web',
-#         'USER': 'postgres',
-#         'PASSWORD': '567234',
-#         'HOST': 'postgres',
-#         'PORT': '5432',
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('PORT'),
-        'OPTIONS': {'sslmode': 'require'},
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'photo_web',
+        'USER': 'postgres',
+        'PASSWORD': '567234',
+        'HOST': 'postgres',
+        'PORT': '5432',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.getenv('DB_NAME'),
+#         'USER': os.getenv('DB_USER'),
+#         'PASSWORD': os.getenv('DB_PASSWORD'),
+#         'HOST': os.getenv('DB_HOST'),
+#         'PORT': os.getenv('PORT'),
+#         'OPTIONS': {'sslmode': 'require'},
+#     }
+# }
 
 # DATABASES = {
 #     'default': {
@@ -290,3 +311,4 @@ SOCIALACCOUNT_PROVIDERS = {
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.User'
 LOGIN_URL = "/user/login"
+DEFAULT_DOMAIN = '127.0.0.1:8000'

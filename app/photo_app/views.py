@@ -12,6 +12,9 @@ from django.contrib.auth.decorators import login_required
 
 from .forms import PhotoForm, PhotoDirectForm, PhotoUnsignedDirectForm
 from .models import Photo
+import cloudinary.uploader
+
+# cloudinary.uploader.upload('app/static/images/Maria_logo.png', public_id='logo')
 
 
 def filter_nones(d):
@@ -27,6 +30,7 @@ def public_list(request):
 
     # Створюємо URL з трансформацією, яка накладає текст "Фотостудія RMS"
     photos_with_text = []
+    photos_with_overlay = []
     for photo in public_photos:
         url_with_text = CloudinaryImage(photo.public_id).build_url(transformation=[
   {'width': 500, 'crop': "scale"},
@@ -37,9 +41,20 @@ def public_list(request):
             'photo': photo,
             'url_with_text': url_with_text
         })
+        # Apply transparent image overlay to all public photos
+        url = CloudinaryImage(photo.public_id).build_url(transformation=[
+            {'width': 500, 'crop': 'scale'},  # Scale image
+            {'color': '#FFFFFF80','overlay': 'logo', 'opacity': 30, 'width': 0.55, 'flags': 'relative'}
+        ])
+        print(url)
+
+        photos_with_overlay.append({
+            'photo': photo,
+            'url_with_text': url
+        })
     context = {
         'title': 'Clients public photos',
-        'photos_with_text': photos_with_text,
+        'photos_with_text': photos_with_overlay,
         
     }
         

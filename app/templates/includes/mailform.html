@@ -1,0 +1,15 @@
+<div class="cell-sm-10 cell-md-6 wow fadeInLeft">
+    <article class="box-line"><span></span><span></span><span></span><span></span>
+        <div class="box-line__main">
+            <form method="post" action="">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div class="form-wrap form-button offset-1">
+                    <button class="button button-block button-primary-outline button-ujarak"
+                            type="submit">Make an appointment
+                    </button>
+                </div>
+            </form>
+        </div>
+    </article>
+</div>

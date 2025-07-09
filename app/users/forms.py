@@ -72,6 +72,12 @@ class UserRegistrationForm(UserCreationForm):
             raise forms.ValidationError('Телефон повинен містити тільки цифри.')
         return phone
 
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError('Користувач із такою електронною поштою вже існує.')
+        return email
+
 
 class ProfileForm(UserChangeForm):
     class Meta:

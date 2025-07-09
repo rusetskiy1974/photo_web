@@ -1,10 +1,15 @@
-import io
+import os
+
+from google.oauth2 import id_token
 import zipfile
 from django.contrib.auth.decorators import login_required
 from django.contrib import auth, messages
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_list_or_404, redirect, render
 from django.urls import reverse
+from django.contrib.auth.views import PasswordResetView
+from django.contrib.messages.views import SuccessMessageMixin
+from django.urls import reverse_lazy
 import requests
 from traitlets import Instance
 from cloudinary import CloudinaryImage
@@ -13,6 +18,43 @@ from photo_app.models import Photo
 from .utils import download_photos_as_zip as download_photos
 from .forms import ProfileForm, UserLoginForm, UserRegistrationForm
 from allauth.socialaccount.providers.google.views import OAuth2LoginView
+from django.views.decorators.csrf import csrf_exempt
+
+
+
+@csrf_exempt
+def sign_in_with_google(request):
+    return render(request, 'users/sign_in_with_google.html')
+
+@csrf_exempt
+def auth_receiver(request):
+    """
+    Google calls this URL after the user has signed in with their Google account.
+    """
+    print('Inside')
+    token = request.POST['credential']
+
+    try:
+        user_data = id_token.verify_oauth2_token(
+            token, requests.Request(), os.environ['GOOGLE_CLIENT_ID']
+        )
+    except ValueError:
+        return HttpResponse(status=403)
+
+    # In a real app, I'd also save any new user here to the database.
+    # You could also authenticate the user here using the details from Google (https://docs.djangoproject.com/en/4.2/topics/auth/default/#how-to-log-a-user-in)
+    request.session['user_data'] = user_data
+
+    return redirect('main:index')
+
+
+class CustomPasswordResetView(SuccessMessageMixin, PasswordResetView):
+    template_name = 'users/password_reset_form.html'
+    email_template_name = 'users/password_reset_email.html'
+    # html_email_template_name = 'users/password_reset_email.html'
+    # success_message = "An email with instructions to reset your password has been sent to %(email)s."
+    subject_template_name = 'users/password_reset_subject.txt'
+    success_url = reverse_lazy('users:password_reset_done')
 
 
 def login(request):
@@ -46,9 +88,14 @@ def registration(request):
         if form.is_valid():
             form.save()
             user = form.instance
+            user.backend = 'django.contrib.auth.backends.ModelBackend'
             auth.login(request, user)
             messages.success(request, f"{user.username}, Ви успішно зареєструвалися, заходьте в аккаунт")
             return HttpResponseRedirect(reverse("users:login"))
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field.capitalize()}: {error}")
     else:
         form = UserRegistrationForm()
     print("errors=",form.errors) 
@@ -100,19 +147,29 @@ def my_photos(request):
 
     # Створюємо URL з трансформацією, яка накладає текст "Фотостудія RMS"
     photos_with_text = []
+    photos_with_overlay = []
     for photo in my_photos:
         url_with_text = CloudinaryImage(photo.public_id).build_url(transformation=[
   {'width': 500, 'crop': "scale"},
   {'color': "#FFFFFF80", 'overlay': {'font_family': "Times", 'font_size': 90, 'font_weight': "bold", 'text': "Photo RMS"}},
   {'flags': "layer_apply", 'gravity': "center", 'y': 20}
   ])
+        # Apply transparent image overlay to all public photos
+        url = CloudinaryImage(photo.public_id).build_url(transformation=[
+            {'width': 500, 'crop': 'scale'},  # Scale image
+            {'overlay': 'logo', 'opacity': 50, 'width': 0.55, 'flags': 'relative'}
+        ])
         photos_with_text.append({
             'photo': photo,
             'url_with_text': url_with_text
         })
+        photos_with_overlay.append({
+            'photo': photo,
+            'url_with_text': url
+        })
     context = {
         'title': 'My photos',
-        'photos_with_text': photos_with_text,
+        'photos_with_text': photos_with_overlay,
         
     }
     
