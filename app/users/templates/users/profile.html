@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static i18n %}
 
 {% block navbar %}
     {% include 'includes/navbar_profile.html' %}
@@ -11,41 +11,76 @@
         <!-- Профиль с данными пользователя -->
         <div class="col-md-6">
             <div class="bg-white p-4 mb-4 mx-2 rounded custom-shadow text-center">
-                <h2 class="mb-4">Інформація про користувача</h2>
+                <h2 class="mb-4">{% trans 'Information about the user' %}</h2>
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">{{ user.first_name }} {{ user.last_name }}</h4>
                         <p class="card-text">
-                            <strong>Ім'я користувача:</strong> {{ user.username }} <br>
-                            <strong>Email:</strong> {{ user.email }} <br>
+                            <strong>{% trans 'User name:' %}</strong> {{ user.username }} <br>
+                            <strong>{% trans 'Email:' %}</strong> {{ user.email }} <br>
                             {% if user.phone %}
-                            <strong>Телефон:</strong> {{ user.phone }} <br>
+                                <strong>{% trans 'Phone:' %}</strong> {{ user.phone }} <br>
                             {% else %}
-                            <strong>Телефон:</strong> Відсутній <br>
+                                <strong>{% trans 'Phone:' %}:</strong> {% trans ' Missing ' %} <br>
                             {% endif %}
                             {% if user.address %}
-                            <strong>Адреса:</strong> {{ user.address }} <br>
+                            <strong>{% trans 'Address:' %}</strong> {{ user.address }} <br>
                             {% else %}
-                            <strong>Адреса:</strong> Відсутня <br>
+                            <strong>{% trans 'Address:' %}</strong> Відсутня <br>
                             {% endif %}
                         </p>
                         <p class="card-text">
-                            <strong>Дата приєднання:</strong> {{ user.date_joined|date:"d M Y" }}
+                            <strong>{% trans 'Date of joining:' %}</strong> {{ user.date_joined|date:"d M Y" }}<strong>{% trans 'Joined date:' %}</strong> {{ user.date_joined|date:"d M Y" }}
                         </p>
                         <div class="mt-4">
-                            {% if user.image %}
-                            <img src="{{ user.image.url }}" alt="Аватар користувача"
-                                 class="img-thumbnail rounded-circle" width="150">
+                            {% if user.avatar %}
+                                <img src="{{ user.avatar }}"
+                                     alt="{% trans 'User avatar' %}"
+                                     class="avatar">
                             {% else %}
-                            <img src="{% static 'images/Not found image.png' %}" alt="Аватар за замовчуванням"
-                                 class="img-thumbnail rounded-circle" width="150">
+                                <img src="{% static 'images/Not found image.png' %}"
+                                     alt="{% trans 'Default avatar' %}"
+                                     class="avatar">
                             {% endif %}
                         </div>
+
+
+<!--                        <div class="mt-4">-->
+<!--                            {% if user.avatar %}-->
+<!--                            <img src="{{ user.image.url }}" alt="Аватар користувача"-->
+<!--                                 class="img-thumbnail rounded-circle" width="150">-->
+<!--                            {% else %}-->
+<!--                            <img src="{% static 'images/Not found image.png' %}" alt="Аватар за замовчуванням"-->
+<!--                                 class="img-thumbnail rounded-circle" width="150">-->
+<!--                            {% endif %}-->
+<!--                        </div>-->
                     </div>
                 </div>
+
+               <!-- Кнопки дій -->
+               <div class="mt-4 d-flex flex-wrap justify-content-center gap-3">
+                   <a href="{% url 'users:edit_profile' %}" class="btn btn-outline-primary px-4 text-nowrap">
+                       {% trans '🔧 Edit profile' %}
+                   </a>
+                   <a href="{% url 'users:change_password' %}" class="btn btn-outline-primary px-4 text-nowrap">
+                       {% trans '🔒 Change password' %}
+                   </a>
+                   <a href="{% url 'main:index' %}" class="btn btn-outline-secondary px-4 text-nowrap">
+                       <i class="bi bi-arrow-left"></i> {% trans 'Back' %}
+                   </a>
+               </div>
             </div>
         </div>
     </div>
 </div>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+     const el = document.querySelector('.container');
+     if (el) {
+       el.classList.add('animate-drop');
+     }
+    });
+</script>
+
 {% endblock %}
 

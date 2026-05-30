@@ -17,12 +17,12 @@
     <link rel="stylesheet" href="{% static 'css/bootstrap/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/my_css.css' %}">
     {% comment %} <!--[if lt IE 10]-->
-    <div style="background: #212121; padding: 10px 0; box-shadow: 3px 3px 5px 0 rgba(0,0,0,.3); clear: both; text-align:center; position: relative; z-index:1;">
-        <a href="http://windows.microsoft.com/en-US/internet-explorer/">
-            <img src="{% static 'images/ie8-panel/warning_bar_0000_us.jpg' %}" border="0" height="42" width="820"
-                alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today."></a>
-    </div>
-    <script src="js/html5shiv.min.js"></script>
+<!--        <div style="background: #212121; padding: 10px 0; box-shadow: 3px 3px 5px 0 rgba(0,0,0,.3); clear: both; text-align:center; position: relative; z-index:1;">-->
+<!--            <a href="http://windows.microsoft.com/en-US/internet-explorer/">-->
+<!--                <img src="{% static 'images/ie8-panel/warning_bar_0000_us.jpg' %}" border="0" height="42" width="820"-->
+<!--                    alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today."></a>-->
+<!--        </div>-->
+<!--        <script src="js/html5shiv.min.js"></script>-->
     <!--[endif]-->
     {% endcomment %}
 </head>
@@ -52,7 +52,8 @@
     </div>
 <!-- Page-->
 
-<!-- Global Mailform Output--><div class="page">
+<!-- Global Mailform Output-->
+    <div class="page">
     <!--    <a class="section section-banner"-->
     <!--       style="background-image: url({%static 'images/background-02-1920x60_mono.png' %}); background-image: -webkit-image-set( url({% static 'images/background-02-1920x60_mono.png' %}) 1x, url({% static 'images/background-02-3840x120_mono.png' %}) 2x )">-->
     <!--        <img src="{% static 'images/foreground-02-1600x60.png' %}"-->
@@ -79,9 +80,9 @@
                                 <div class="rd-navbar-brand">
                                     <a class="brand" href="{% url 'users:profile' %}">
                                         <div class="brand__name">
-                                            {% if user.image %}
-                                            <img class="rounded-circle" src="{{ user.image.url }}" alt="User avatar"
-                                                 style="width: 200px; height: 200px;">
+                                            {% if user.avatar %}
+                                            <img class="rounded-circle" src="{{ user.avatar }}" alt="User avatar"
+                                                 style="width: 100px; height: 100px;">
                                             {% else %}
                                             <img class="rounded-circle" src="{% static 'images/Not found image.png' %}"
                                                  alt="Default avatar" style="width: 100px; height: 100px;">
@@ -98,22 +99,28 @@
                                 <div class="rd-navbar-brand">
                                     <a class="brand" href="{% url 'main:index' %}">
                                     <div class="brand__name">
-                                        <img class="brand__logo-dark" src="{% static 'images/Maria_logo.png' %}"/>
+                                        <img class="brand__logo-dark" src="{% static 'images/Maria_logo1.png' %}"/>
+<!--                                        <img class="rounded-circle" src="{% static 'images/Maria_logo1.png' %}" alt="User avatar"-->
+<!--                                             style="width: 100px; height: 100px;">-->
                                         <img class="brand__logo-light" src="{% static 'images/Maria_logo_light.png' %}"/>
                                     </div>
                                     </a>
                                 </div>
                             </div>
                             {% endif %}
+
                             <!-- RD Navbar Nav-->
                             <div class="rd-navbar-nav-wrap">
                                 <div class="rd-navbar-element">
                                     <ul class="list-icons">
-                                        <li><a class="icon icon-sm fa fa-instagram icon-style-camera" href="#"><span></span><span></span><span></span><span></span></a>
+                                        <li><a class="icon icon-sm fa fa-instagram icon-style-camera"
+                                               href="#"><span></span><span></span><span></span><span></span></a>
                                         </li>
                                         <li><a class="icon icon-sm fa fa-facebook icon-style-camera"
-                                               href="#"><span></span><span></span><span></span><span></span></a></li>
-                                        <li><a class="icon icon-sm fa fa-pinterest icon-style-camera" href="#"><span></span><span></span><span></span><span></span></a>
+                                               href="#"><span></span><span></span><span></span><span></span></a>
+                                        </li>
+                                        <li><a class="icon icon-sm fa fa-pinterest icon-style-camera"
+                                               href="#"><span></span><span></span><span></span><span></span></a>
                                         </li>
                                     </ul>
                                 </div>
@@ -164,7 +171,8 @@
                         <ul class="list-icons list-inline-sm">
                             <li><a class="icon icon-sm fa fa-instagram icon-style-camera"
                                    href="#"><span></span><span></span><span></span><span></span></a></li>
-                            <li><a class="icon icon-sm fa fa-facebook icon-style-camera" href="#"><span></span><span></span><span></span><span></span></a>
+                            <li><a class="icon icon-sm fa fa-facebook icon-style-camera"
+                                   href="#"><span></span><span></span><span></span><span></span></a>
                             </li>
                             <li><a class="icon icon-sm fa fa-pinterest icon-style-camera"
                                    href="#"><span></span><span></span><span></span><span></span></a></li>

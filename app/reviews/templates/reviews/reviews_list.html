@@ -18,7 +18,7 @@
                 <div class="cell-sm-9 cell-md-6">
                     <!-- Quote boxed-->
                 <a href="{% url 'reviews:review_detail' review.id %}"> 
-                    <article class="quote-boxed"">
+                    <article class="quote-boxed">
                         <span></span><span></span><span></span><span></span>
                         <p class="quote-boxed__title">{{ review.title }}</p>
                         <div class="quote-boxed__text">
@@ -33,8 +33,8 @@
                                 <div class="unit unit-horizontal unit-middle">
                                     <div class="unit__left">
                                         <!-- Можна додати фото користувача, якщо воно є -->
-                                        {% if review.user.image %}
-                                        <img src="{{ review.user.image.url }}" alt=""
+                                        {% if review.user.avatar %}
+                                        <img src="{{ review.user.avatar }}" alt=""
                                             class="img-thumbnail rounded-circle" width="100">
                                         {% endif %}
                                         {% comment %} <img class="quote-boxed__avatar" src="{% static 'images/user-default.jpg' %}" alt=""

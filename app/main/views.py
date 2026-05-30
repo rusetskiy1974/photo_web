@@ -55,7 +55,8 @@ class PortfolioDetailView(DetailView):
         return context
 
 def index(request):
-    portfolio_items = Portfolio.objects.all()
+    # portfolio_items = Portfolio.objects.all()
+    portfolio_items = Portfolio.objects.filter(is_active=True).prefetch_related('photos')
     blogs = Blog.objects.all()
 
     context = {

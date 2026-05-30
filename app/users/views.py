@@ -1,24 +1,32 @@
 import os
 
 from google.oauth2 import id_token
+from google.auth.transport import requests as google_requests
+from django.utils.http import url_has_allowed_host_and_scheme
 import zipfile
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib import auth, messages
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_list_or_404, redirect, render
 from django.urls import reverse
-from django.contrib.auth.views import PasswordResetView
+from django.contrib.auth.views import PasswordResetView, LoginView, PasswordChangeView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
 import requests
 from traitlets import Instance
 from cloudinary import CloudinaryImage
-
+from django.views.generic.edit import CreateView
+from django.views.generic import DetailView, UpdateView
 from photo_app.models import Photo
+from .models import User
 from .utils import download_photos_as_zip as download_photos
-from .forms import ProfileForm, UserLoginForm, UserRegistrationForm
+from .forms import ProfileEditForm, UserLoginForm, UserRegistrationForm, EmailOrUsernameAuthenticationForm, \
+    CustomPasswordChangeForm
 from allauth.socialaccount.providers.google.views import OAuth2LoginView
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import get_user_model
+from django.contrib.auth import login as auth_login
 
 
 
@@ -31,21 +39,48 @@ def auth_receiver(request):
     """
     Google calls this URL after the user has signed in with their Google account.
     """
-    print('Inside')
+    if request.method != "POST":
+        return HttpResponse(status=405)
+
     token = request.POST['credential']
+    if not token:
+        return HttpResponse("Missing token", status=400)
+
 
     try:
         user_data = id_token.verify_oauth2_token(
-            token, requests.Request(), os.environ['GOOGLE_CLIENT_ID']
+            token, google_requests.Request(), os.environ['GOOGLE_CLIENT_ID']
         )
     except ValueError:
         return HttpResponse(status=403)
 
     # In a real app, I'd also save any new user here to the database.
     # You could also authenticate the user here using the details from Google (https://docs.djangoproject.com/en/4.2/topics/auth/default/#how-to-log-a-user-in)
-    request.session['user_data'] = user_data
+    email = user_data.get("email")
+    first_name = user_data.get("given_name", "")
+    last_name = user_data.get("family_name", "")
+    picture = user_data.get("picture", "")
+    User = get_user_model()
+    user, created = User.objects.get_or_create(email=email, defaults={
+        "username": email,  # or generate a unique one
+        "first_name": first_name,
+        "last_name": last_name,
+        "role": "Client",
+    })
+    if created:
+        user.set_unusable_password()
+        user.save(update_fields=["password"])
+    # if picture and (created or not user.image):
+    #     user.image = picture  # Only works if you later handle it as a URL or download it to a file
+    #     user.save(update_fields=["image"])
+    user.backend = 'django.contrib.auth.backends.ModelBackend'
+    auth_login(request, user)
 
     return redirect('main:index')
+
+def sign_out(request):
+    del request.session['user_data']
+    return redirect('users:profile')
 
 
 class CustomPasswordResetView(SuccessMessageMixin, PasswordResetView):
@@ -57,54 +92,124 @@ class CustomPasswordResetView(SuccessMessageMixin, PasswordResetView):
     success_url = reverse_lazy('users:password_reset_done')
 
 
-def login(request):
-    if request.method == "POST":
-        form = UserLoginForm(data=request.POST)
-        if form.is_valid():
-            username = request.POST["username"]
-            password = request.POST["password"]
-            user = auth.authenticate(username=username, password=password)
-            if user:
-                auth.login(request, user)
-                messages.success(request, f"{username}, Ви зайшли в аккаунт")
+class CustomLoginView(LoginView):
+    form_class = EmailOrUsernameAuthenticationForm
+    template_name = 'users/login.html'
 
-                if request.POST.get('next', None):
-                    return HttpResponseRedirect(request.POST.get('next'))
-                
-                return HttpResponseRedirect(reverse("main:index"))
-    else:
-        form = UserLoginForm()
-         
-    context = {
-        "title": "Home - Логін",
-        "form": form,
-    }
-    return render(request, "users/login.html", context=context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
 
 
-def registration(request):
-    if request.method == "POST":
-        form = UserRegistrationForm(data=request.POST)
-        if form.is_valid():
-            form.save()
-            user = form.instance
-            user.backend = 'django.contrib.auth.backends.ModelBackend'
-            auth.login(request, user)
-            messages.success(request, f"{user.username}, Ви успішно зареєструвалися, заходьте в аккаунт")
-            return HttpResponseRedirect(reverse("users:login"))
-        else:
-            for field, errors in form.errors.items():
-                for error in errors:
-                    messages.error(request, f"{field.capitalize()}: {error}")
-    else:
-        form = UserRegistrationForm()
-    print("errors=",form.errors) 
+# def login(request):
+#     if request.method == "POST":
+#         form = UserLoginForm(data=request.POST)
+#         if form.is_valid():
+#             username = request.POST["username"]
+#             password = request.POST["password"]
+#             user = auth.authenticate(username=username, password=password)
+#             if user:
+#                 auth.login(request, user)
+#                 messages.success(request, f"{username}, Ви зайшли в аккаунт")
+#
+#                 next_url = request.POST.get('next')
+#                 if next_url and url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+#                     return redirect(next_url)
+#                 return redirect("main:index")
+#     else:
+#         form = UserLoginForm()
+#
+#     context = {
+#         "title": "Home - Логін",
+#         "form": form,
+#     }
+#     return render(request, "users/login.html", context=context)
 
-    context = {
-        "title": "Home - Реєстрація",
-        "form": form,
-    }
-    return render(request, "users/registrations.html",context=context)
+
+class RegisterView(CreateView):
+    model = User
+    form_class = UserRegistrationForm
+    template_name = 'users/registrations.html'
+    success_url = reverse_lazy('users:login')
+
+
+class UserProfileView(LoginRequiredMixin, DetailView):
+    model = User
+    template_name = 'users/profile.html'
+    context_object_name = 'user_obj'
+
+    def get_object(self):
+        return self.request.user
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_page'] = 'profile'
+        context['active_menu'] = 'main'
+        return context
+
+class UserEditView(LoginRequiredMixin, UpdateView):
+    model = User
+    form_class = ProfileEditForm
+    template_name = 'users/edit_profile.html'
+    success_url = reverse_lazy('users:profile')
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def form_valid(self, form):
+        self.object = form.save()
+        avatar_file = form.cleaned_data.get('avatar_file')
+        if avatar_file:
+            self.object.upload_image(avatar_file)
+        return HttpResponseRedirect(self.get_success_url())
+        # response = super().form_valid(form)
+        # avatar_file = self.request.FILES.get('avatar_file')
+        # if avatar_file:
+        #     self.object.upload_image(avatar_file)
+        # return response
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_page'] = 'edit_profile'
+        context['active_menu'] = 'main'
+        return context
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# def registration(request):
+#     if request.method == "POST":
+#         form = UserRegistrationForm(data=request.POST)
+#         if form.is_valid():
+#             form.save()
+#             user = form.instance
+#             user.backend = 'django.contrib.auth.backends.ModelBackend'
+#             auth.login(request, user)
+#             messages.success(request, f"{user.username}, Ви успішно зареєструвалися, заходьте в аккаунт")
+#             return HttpResponseRedirect(reverse("users:login"))
+#         else:
+#             for field, errors in form.errors.items():
+#                 for error in errors:
+#                     messages.error(request, f"{field.capitalize()}: {error}")
+#     else:
+#         form = UserRegistrationForm()
+#     print("errors=",form.errors)
+#
+#     context = {
+#         "title": "Home - Реєстрація",
+#         "form": form,
+#     }
+#     return render(request, "users/registrations.html",context=context)
 
 
 @login_required
@@ -178,11 +283,11 @@ def my_photos(request):
 
 @login_required
 def add_review(request):
-    my_photos = Photo.objects.filter(owner=request.user.id)
+    user_photos = Photo.objects.filter(owner=request.user.id)
 
     # Створюємо URL з трансформацією, яка накладає текст "Фотостудія RMS"
     photos_with_text = []
-    for photo in my_photos:
+    for photo in user_photos:
         url_with_text = CloudinaryImage(photo.public_id).build_url(transformation=[
   {'width': 500, 'crop': "scale"},
   {'color': "#FFFFFF80", 'overlay': {'font_family': "Times", 'font_size': 90, 'font_weight': "bold", 'text': "Photo RMS"}},
@@ -257,3 +362,13 @@ def add_photo_public(request):
 #     # Викликаємо стандартне представлення для обробки Google OAuth2
 #     return OAuth2LoginView.as_view()(request)
 
+class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
+    form_class = CustomPasswordChangeForm
+    template_name = 'accounts/change_password.html'
+    success_url = reverse_lazy('account:password_change_done')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_page'] = 'change_password'
+        context['active_menu'] = 'main'
+        return context

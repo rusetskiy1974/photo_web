@@ -10,18 +10,95 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
-from pathlib import Path
-# from django.conf.global_settings import AUTH_USER_MODEL, LOGIN_URL, MEDIA_URL
+import base64
 import os
+import textwrap
 import logging
+from urllib.parse import urlparse
+import certifi
+
+from pathlib import Path
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
-# from cloudinary_storage.storage import RawMediaCloudinaryStorage, MediaCloudinaryStorage
 from dotenv import load_dotenv
+import dj_database_url
+from cryptography.hazmat.primitives import serialization
+from django.core.exceptions import ImproperlyConfigured
 
-load_dotenv()
-logging.basicConfig(level=logging.DEBUG)
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / '.env')
+
+LOCALE_PATHS = [BASE_DIR / "locale"]
+LOG_DIR = BASE_DIR / "logs"
+LOG_DIR.mkdir(exist_ok=True)
+
+logger = logging.getLogger(__name__)
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "%(asctime)s | %(levelname)s | %(name)s | %(process)d | %(message)s"
+        },
+    },
+    "handlers": {
+        "console": {"class": "logging.StreamHandler", "formatter": "verbose"},
+        "django_file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": str(LOG_DIR / "django.log"),
+            "maxBytes": 1024 * 1024 * 10,
+            "backupCount": 3,
+            "formatter": "verbose",
+        },
+        'ws_file': {
+            'class': 'logging.FileHandler',   # <-- замість Rotating/TimedRotating
+            'filename': str(LOG_DIR / 'ws.log'),
+            'level': 'INFO',
+            'encoding': 'utf-8',
+        },
+        "celery_file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": str(LOG_DIR / "celery.log"),
+            "maxBytes": 1024 * 1024 * 10,
+            "backupCount": 3,
+            "formatter": "verbose",
+        },
+    },
+    "loggers": {
+        # Django
+        "django": {"handlers": ["console", "django_file"], "level": "INFO"},
+        "django.request": {"handlers": ["console", "django_file"], "level": "WARNING", "propagate": False},
+
+        # Channels/WS
+        "channels": {"handlers": ["console", "ws_file"], "level": "DEBUG"},
+        "channels_redis": {"handlers": ["console", "ws_file"], "level": "DEBUG"},
+        "daphne.server": {"handlers": ["console", "ws_file"], "level": "INFO"},
+        "uvicorn.error": {"handlers": ["console", "ws_file"], "level": "INFO"},
+        "uvicorn.access": {"handlers": ["console", "ws_file"], "level": "INFO"},
+
+        # Ваш додаток
+        "noteapp.ws": {"handlers": ["console", "ws_file"], "level": "DEBUG"},
+        "noteapp.tasks": {"handlers": ["console", "celery_file"], "level": "DEBUG"},
+
+        # Celery stack
+        "celery": {"handlers": ["console", "celery_file"], "level": "INFO"},
+        "kombu": {"handlers": ["console", "celery_file"], "level": "INFO"},
+
+        # Щоб бачити помилки з asyncio
+        "asyncio": {"handlers": ["console", "ws_file"], "level": "WARNING"},
+    },
+}
+
+
+
+
+ALLOWED_HOSTS = ['*']
+
+
 
 GOOGLE_OAUTH_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID')
 if not GOOGLE_OAUTH_CLIENT_ID:
@@ -34,24 +111,15 @@ SECURE_REFERRER_POLICY = 'no-referrer-when-downgrade'
 SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"
 
 
-# Email configs for meta.ua
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.meta.ua'
-# EMAIL_PORT = 465
-# EMAIL_STARTTLS = False
-# EMAIL_USE_SSL = True
-# EMAIL_USE_TLS = False
-# EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-# EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-# DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # email configs
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = str(os.getenv('EMAIL_USER_GOOGLE'))
-EMAIL_HOST_PASSWORD = str(os.getenv('EMAIL_PASSWORD_GOOGLE'))
+EMAIL_HOST_USER = os.getenv('EMAIL_USER_GOOGLE')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD_GOOGLE')
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
 
@@ -71,20 +139,17 @@ cloudinary.config(
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-t4hdbgche&_*!uwb$im0iheqer87v5)sg!0n604j9^=rq)7sgq'
-# SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'unsafe-default-for-dev')
+# SECRET_KEY = os.environ.get('SECRET_KEY', 'unsafe-default-for-dev')
 # CSRF_TRUSTED_ORIGINS = ["*"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_DEBUG', '') == 'True'
+DEBUG = os.environ.get('DEBUG', '') == 'True'
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
@@ -94,7 +159,6 @@ ADMINS = (
 MANAGERS = ADMINS
 
 # ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,[::1]").split(",")
-ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -109,6 +173,7 @@ INSTALLED_APPS = [
     'django.contrib.sites', 
     'cloudinary',
     'cloudinary_storage',
+    'widget_tweaks',
     'main',
     'photo_app',
     'users',
@@ -128,6 +193,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -170,7 +236,7 @@ WSGI_APPLICATION = 'app.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'photo_web',
         'USER': 'postgres',
         'PASSWORD': '567234',
@@ -230,7 +296,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-SITE_ID = 2
+SITE_ID = 1
 
 TIME_ZONE = 'UTC'
 
@@ -287,23 +353,39 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend'
 ]
 
-
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
-        'SCOPE' : [
+        'SCOPE': [
             'profile',
-            'email'
+            'email',
         ],
-        'APP': {
-            'client_id': os.getenv('GOOGLE_CLIENT_ID'),
-            'secret': os.getenv('GOOGLE_CLIENT_SECRET'),
-        },
         'AUTH_PARAMS': {
-            'access_type':'online',
+            'access_type': 'online',
         },
-        'REDIRECT_URI': 'http://localhost:8000/accounts/google/login/callback/',
+        # 'APP': {
+        #      'client_id': os.getenv('GOOGLE_CLIENT_ID'),
+        #      'secret': os.getenv('GOOGLE_CLIENT_SECRET'),
+        # },
+        'OAUTH_PKCE_ENABLED': True,
     }
 }
+
+# SOCIALACCOUNT_PROVIDERS = {
+#     'google': {
+#         'SCOPE' : [
+#             'profile',
+#             'email'
+#         ],
+#         'APP': {
+#             'client_id': os.getenv('GOOGLE_CLIENT_ID'),
+#             'secret': os.getenv('GOOGLE_CLIENT_SECRET'),
+#         },
+#         'AUTH_PARAMS': {
+#             'access_type':'online',
+#         },
+#         'REDIRECT_URI': 'http://localhost:8000/accounts/google/login/callback/',
+#     }
+# }
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

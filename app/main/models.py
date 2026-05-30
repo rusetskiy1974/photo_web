@@ -7,11 +7,21 @@ from users.models import User
 from photo_app.models import Photo
 
 class Category(models.TextChoices):
+    WEDDING = 'WD', 'Wedding'
+    FAMILY = 'FM', 'Family'
+    LOVE_STORY = 'LV', 'Love Story'
     PORTRAIT = 'PT', 'Portrait'
-    LANDSCAPE = 'LS', 'Landscape'
-    WILDLIFE = 'WL', 'Wildlife'
-    ARCHITECTURE = 'AR', 'Architecture'
+    CHILDREN = 'CH', 'Children'
+    MATERNITY = 'MT', 'Maternity'
+    BUSINESS = 'BS', 'Business Portrait'
+    EVENT = 'EV', 'Event'
     FASHION = 'FS', 'Fashion'
+    LANDSCAPE = 'LS', 'Landscape'
+    ARCHITECTURE = 'AR', 'Architecture'
+    WILDLIFE = 'WL', 'Wildlife'
+    OTHER = 'OT', 'Other'
+
+
 
     # @property
     # def choices(self) -> Any:
@@ -21,11 +31,22 @@ class Category(models.TextChoices):
     @classmethod
     def get_image(cls, category_code):
         images = {
+            cls.WEDDING: 'categories/wedding.jpg',
+            cls.FAMILY: 'categories/family.jpg',
+            cls.LOVE_STORY: 'categories/love_story.jpg',
             cls.PORTRAIT: 'categories/portrait.jpg',
-            cls.LANDSCAPE: 'categories/landscape.jpg',
-            cls.WILDLIFE: 'categories/wildlife.jpg',
-            cls.ARCHITECTURE: 'categories/architecture.jpg',
+            cls.CHILDREN: 'categories/children.jpg',
+            cls.MATERNITY: 'categories/maternity.jpg',
+            cls.BUSINESS: 'categories/business.jpg',
+            cls.EVENT: 'categories/event.jpg',
             cls.FASHION: 'categories/fashion.jpg',
+            cls.LANDSCAPE: 'categories/landscape.jpg',
+            cls.ARCHITECTURE: 'categories/architecture.jpg',
+            cls.WILDLIFE: 'categories/wildlife.jpg',
+            cls.OTHER: 'categories/default.jpg',
+
+
+
         }
         return images.get(category_code, 'categories/default.jpg')  # Повертає зображення або за замовчуванням
 
@@ -37,15 +58,23 @@ class Portfolio(models.Model):
     category: models.CharField = models.CharField(
         max_length=2,
         choices=Category.choices,
-        default=Category.PORTRAIT,
+        # default=Category.PORTRAIT,
+        unique=True,
     )
+    is_active = models.BooleanField(default=True)
     photos: models.ManyToManyField = models.ManyToManyField(Photo, related_name='portfolios', blank=True)
 
     class Meta:
         verbose_name_plural = "Portfolios"
+        ordering = ['category']
+
 
     def __str__(self):
-        return self.title or "Portfolio without title"
+        return self.title or self.get_category_display()
+
+    @property
+    def category_name(self):
+        return self.get_category_display()
     
     def get_category_image(self):
         return Category.get_image(self.category)
@@ -55,5 +84,5 @@ class Portfolio(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.title:
-            self.title = Category(self.category).label
+            self.title = self.get_category_display()
         super().save(*args, **kwargs)

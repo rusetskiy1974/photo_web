@@ -11,11 +11,11 @@ export DOCKER_BUILDKIT=1
 
 .PHONY: app
 app:
-	${DC} -f ${APP_FILE} ${ENV} up --build -d
+	${DC} -f ${APP_FILE} ${ENV} up --build -d --remove-orphans
 
 .PHONY: storages
 storages:
-	${DC} -f ${STORAGES_FILE} ${ENV} up --build -d
+	${DC} -f ${STORAGES_FILE} ${ENV} up --build -d --remove-orphans
 
 .PHONY: all
 all:
@@ -53,9 +53,13 @@ test-unit:
 test-int:
 	${EXEC} ${APP_CONTAINER} pytest -m integration
 
+.PHONY: makemigrations
+makemigrations:
+	${EXEC} ${APP_CONTAINER} python app/manage.py makemigrations
+
 .PHONY: migrate
 migrate:
-	${EXEC} ${APP_CONTAINER} alembic upgrade head
+	${EXEC} ${APP_CONTAINER} python app/manage.py migrate
 
 .PHONY: migrations
 migrations:
@@ -79,6 +83,7 @@ help:
 	@echo "  make test-unit        - Run unit tests."
 	@echo "  make test-int         - Run integration tests."
 	@echo "  make test-e2e         - Run end-to-end tests."
-	@echo "  make migrate          - Apply all migrations using Alembic."
+	@echo "  make migrations       - Create a new migrations with manage.py"
+	@echo "  make migrate          - Apply all migrations"
 	@echo "  make migrations       - Create a new Alembic migration with a message."
 	@echo "  make downgrade        - Downgrade the database to a specific revision."
