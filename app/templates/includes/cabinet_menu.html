@@ -1,17 +1,36 @@
-<ul class="rd-navbar-nav cabinet-nav">
+<ul class="cabinet-nav">
+    {% if user.is_admin or user.is_staff %}
+        <li class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}">
+            <a href="{% url 'admin:index' %}">Admin panel</a>
+        </li>
+    {% endif %}
     <li class="{% if active_tab == 'profile' %}active{% endif %}">
-        <a href="{% url 'users:profile' %}">My Profile</a>
+        <a href="{% url 'users:profile' %}">
+            My Profile
+        </a>
     </li>
 
-    <li class="{% if active_tab == 'public' %}active{% endif %}">
-        <a href="{% url 'photo_app:public_list' %}">Public Photos</a>
+    <li class="{% if active_tab == 'photo_shoots' %}active{% endif %}">
+        <a href="{% url 'photo_app:public_list' %}">
+            My Photo Shoots
+        </a>
     </li>
 
     <li class="{% if active_tab == 'gallery' %}active{% endif %}">
-        <a href="#">My Gallery</a>
+        <a href="{% url 'users:my_photos' %}">
+            My Gallery
+        </a>
     </li>
 
     <li class="{% if active_tab == 'reviews' %}active{% endif %}">
-        <a href="#">My Reviews</a>
+        <a href="{% url 'reviews:reviews_list' %}">
+            My Reviews
+        </a>
+    </li>
+
+    <li class="{% if active_tab == 'settings' %}active{% endif %}">
+        <a href="#">
+            Settings
+        </a>
     </li>
 </ul>

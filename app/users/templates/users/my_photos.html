@@ -1,11 +1,9 @@
-{% extends "base.html" %}
+{% extends "users/cabinet.html" %}
 {% load static %}
 
-{% block navbar %}
-    {% include 'includes/navbar_profile.html' %}
-{% endblock %}
 
-{% block content %}
+{% block cabinet_content %}
+<!--<div class="bg-white p-4 mb-4 rounded custom-shadow">-->
 <section class="section section-md bg-white text-center">
   <div class="shell-fluid">
       <p class="heading-2">{{ title }}</p>
@@ -55,6 +53,7 @@
       </form>
   </div>
 </section>
+<!--</div>-->
 
 <!-- Додаємо JavaScript для функції "Вибрати всі" -->
 <script>

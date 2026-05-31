@@ -143,13 +143,14 @@ class UserProfileView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['active_page'] = 'profile'
+        context['active_tab'] = 'profile'
+        context['active_page'] = 'cabinet'
         context['active_menu'] = 'main'
         return context
 
 class UserCabinetView(LoginRequiredMixin, DetailView):
     model = User
-    template_name = 'users/cabinet.html'
+    template_name = 'users/profile.html'
     context_object_name = 'user_obj'
 
     def get_object(self):
@@ -158,6 +159,7 @@ class UserCabinetView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['active_page'] = 'cabinet'
+        context['active_tab'] = 'profile'
         context['active_menu'] = 'main'
         return context
 
@@ -184,7 +186,8 @@ class UserEditView(LoginRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['active_page'] = 'edit_profile'
+        context['active_tab'] = 'profile'
+        context['active_page'] = 'cabinet'
         context['active_menu'] = 'main'
         return context
 
@@ -289,6 +292,8 @@ def my_photos(request):
     context = {
         'title': 'My photos',
         'photos_with_text': photos_with_overlay,
+        'active_page': 'cabinet',
+        'active_tab': 'gallery',
         
     }
     

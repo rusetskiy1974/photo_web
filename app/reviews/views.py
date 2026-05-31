@@ -9,6 +9,8 @@ def reviews_list(request):
     context = {
         'title': 'List Reviews',
         'reviews': reviews,
+        'active_page': 'cabinet',
+        'active_tab': 'reviews',
     }
     return render(request, 'reviews/reviews_list.html', context)
 
@@ -36,7 +38,9 @@ def review_detail(request, pk):
     review = get_object_or_404(Review, pk=pk)
     context = {
         'review': review,
-        'title': 'Review detail', 
+        'title': 'Review detail',
+        'active_page': 'cabinet',
+        'active_tab': 'reviews',
         
     }
     return render(request, 'reviews/review_detail.html', context)
@@ -57,7 +61,9 @@ def review_edit(request, pk):
     context = {
         'form': form,
         'title': 'Edit review',
-        'review': review
+        'review': review,
+        'active_page': 'cabinet',
+        'active_tab': 'reviews',
         }    
 
     # Передаємо об'єкт 'review' в контекст разом з формою

@@ -81,11 +81,9 @@
                                     <a class="brand" href="{% url 'users:profile' %}">
                                         <div class="brand__name">
                                             {% if user.avatar %}
-                                            <img class="rounded-circle" src="{{ user.avatar }}" alt="User avatar"
-                                                 style="width: 100px; height: 100px;">
+                                            <img class="brand__logo-dark" src="{{ user.avatar }}" />
                                             {% else %}
-                                            <img class="rounded-circle" src="{% static 'images/Not found image.png' %}"
-                                                 alt="Default avatar" style="width: 100px; height: 100px;">
+                                            <img class="brand__logo-dark" src="{% static 'images/Not found image.png' %}" />
                                             {% endif %}
                                         </div>
                                     </a>
@@ -102,7 +100,7 @@
                                         <img class="brand__logo-dark" src="{% static 'images/Maria_logo1.png' %}"/>
 <!--                                        <img class="rounded-circle" src="{% static 'images/Maria_logo1.png' %}" alt="User avatar"-->
 <!--                                             style="width: 100px; height: 100px;">-->
-                                        <img class="brand__logo-light" src="{% static 'images/Maria_logo_light.png' %}"/>
+<!--                                        <img class="brand__logo-light" src="{% static 'images/Maria_logo_light.png' %}"/>-->
                                     </div>
                                     </a>
                                 </div>

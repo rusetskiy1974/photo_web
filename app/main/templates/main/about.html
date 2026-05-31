@@ -155,9 +155,9 @@
                             <div class="unit unit-horizontal unit-middle">
                                 <div class="unit__left">
                                     <!-- Можна додати фото користувача, якщо воно є -->
-                                    {% if review.user.image %}
-                                    <img src="{{ review.user.image.url }}" alt=""
-                                         class="img-thumbnail rounded-circle" width="100">
+                                    {% if review.user.avatar %}
+                                    <img src="{{ review.user.avatar }}" alt=""
+                                         class="brand__logo-dark">
                                     {% endif %}
                                     {% comment %} <img class="quote-boxed__avatar" src="{% static 'images/user-default.jpg' %}" alt=""
                                          width="46" height="46"/> {% endcomment %}

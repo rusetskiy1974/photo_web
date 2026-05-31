@@ -19,7 +19,7 @@
     <li class="{% if request.resolver_match.url_name == 'public_list' %}active{% endif %}">
         <a href="{% url 'photo_app:public_list' %}">Public photo</a>
     </li>
-    <li class="{% if request.resolver_match.url_name == 'cabinet' %}active{% endif %}">
+    <li class="{% if active_page == 'cabinet' %}active{% endif %}">
         <a href="{% url 'users:cabinet' %}">Cabinet</a>
     </li>
     <li>
