@@ -1,86 +1,68 @@
-{% extends "base.html" %}
+{% extends "users/cabinet.html" %}
 {% load static i18n %}
 
-{% block navbar %}
-    {% include 'includes/navbar_profile.html' %}
-{% endblock %}
+{% block cabinet_content %}
+<div class="profile-card mx-auto" style="max-width: 700px;">
+<div class="bg-white p-4 mb-4 rounded custom-shadow">
+    <h2 class="mb-4 text-center">
+        {% trans 'Information about the user' %}
+    </h2>
 
-{% block content %}
-<div class="container mt-5 d-flex justify-content-center">
-    <div class="row justify-content-center w-100">
-        <!-- Профиль с данными пользователя -->
-        <div class="col-md-6">
-            <div class="bg-white p-4 mb-4 mx-2 rounded custom-shadow text-center">
-                <h2 class="mb-4">{% trans 'Information about the user' %}</h2>
-                <div class="card">
-                    <div class="card-body">
-                        <h4 class="card-title">{{ user.first_name }} {{ user.last_name }}</h4>
-                        <p class="card-text">
-                            <strong>{% trans 'User name:' %}</strong> {{ user.username }} <br>
-                            <strong>{% trans 'Email:' %}</strong> {{ user.email }} <br>
-                            {% if user.phone %}
-                                <strong>{% trans 'Phone:' %}</strong> {{ user.phone }} <br>
-                            {% else %}
-                                <strong>{% trans 'Phone:' %}:</strong> {% trans ' Missing ' %} <br>
-                            {% endif %}
-                            {% if user.address %}
-                            <strong>{% trans 'Address:' %}</strong> {{ user.address }} <br>
-                            {% else %}
-                            <strong>{% trans 'Address:' %}</strong> Відсутня <br>
-                            {% endif %}
-                        </p>
-                        <p class="card-text">
-                            <strong>{% trans 'Date of joining:' %}</strong> {{ user.date_joined|date:"d M Y" }}<strong>{% trans 'Joined date:' %}</strong> {{ user.date_joined|date:"d M Y" }}
-                        </p>
-                        <div class="mt-4">
-                            {% if user.avatar %}
-                                <img src="{{ user.avatar }}"
-                                     alt="{% trans 'User avatar' %}"
-                                     class="avatar">
-                            {% else %}
-                                <img src="{% static 'images/Not found image.png' %}"
-                                     alt="{% trans 'Default avatar' %}"
-                                     class="avatar">
-                            {% endif %}
-                        </div>
+    <div class="card">
+        <div class="card-body text-center">
 
+            <h4 class="card-title">
+                {{ user.first_name }} {{ user.last_name }}
+            </h4>
 
-<!--                        <div class="mt-4">-->
-<!--                            {% if user.avatar %}-->
-<!--                            <img src="{{ user.image.url }}" alt="Аватар користувача"-->
-<!--                                 class="img-thumbnail rounded-circle" width="150">-->
-<!--                            {% else %}-->
-<!--                            <img src="{% static 'images/Not found image.png' %}" alt="Аватар за замовчуванням"-->
-<!--                                 class="img-thumbnail rounded-circle" width="150">-->
-<!--                            {% endif %}-->
-<!--                        </div>-->
-                    </div>
-                </div>
+            <p class="card-text text-centre">
+                <strong>{% trans 'User name:' %}</strong> {{ user.username }} <br>
+                <strong>{% trans 'Email:' %}</strong> {{ user.email }} <br>
 
-               <!-- Кнопки дій -->
-               <div class="mt-4 d-flex flex-wrap justify-content-center gap-3">
-                   <a href="{% url 'users:edit_profile' %}" class="btn btn-outline-primary px-4 text-nowrap">
-                       {% trans '🔧 Edit profile' %}
-                   </a>
-                   <a href="{% url 'users:change_password' %}" class="btn btn-outline-primary px-4 text-nowrap">
-                       {% trans '🔒 Change password' %}
-                   </a>
-                   <a href="{% url 'main:index' %}" class="btn btn-outline-secondary px-4 text-nowrap">
-                       <i class="bi bi-arrow-left"></i> {% trans 'Back' %}
-                   </a>
-               </div>
+                {% if user.phone %}
+                    <strong>{% trans 'Phone:' %}</strong> {{ user.phone }} <br>
+                {% else %}
+                    <strong>{% trans 'Phone:' %}</strong> {% trans 'Missing' %} <br>
+                {% endif %}
+
+                {% if user.address %}
+                    <strong>{% trans 'Address:' %}</strong> {{ user.address }} <br>
+                {% else %}
+                    <strong>{% trans 'Address:' %}</strong> {% trans 'Missing' %} <br>
+                {% endif %}
+
+                <strong>{% trans 'Date of joining:' %}</strong>
+                {{ user.date_joined|date:"d M Y" }}
+            </p>
+
+            <div class="mt-4">
+                {% if user.avatar %}
+                    <img src="{{ user.avatar }}"
+                         alt="{% trans 'User avatar' %}"
+                         class="avatar">
+                {% else %}
+                    <img src="{% static 'images/Not found image.png' %}"
+                         alt="{% trans 'Default avatar' %}"
+                         class="avatar">
+                {% endif %}
             </div>
+
         </div>
     </div>
+
+    <div class="mt-4 d-flex flex-wrap justify-content-center gap-3">
+        <a href="{% url 'users:edit_profile' %}" class="btn btn-outline-primary px-4 text-nowrap">
+            {% trans '🔧 Edit profile' %}
+        </a>
+
+        <a href="{% url 'users:change_password' %}" class="btn btn-outline-primary px-4 text-nowrap">
+            {% trans '🔒 Change password' %}
+        </a>
+
+        <a href="{% url 'main:index' %}" class="btn btn-outline-secondary px-4 text-nowrap">
+            {% trans 'Back' %}
+        </a>
+    </div>
 </div>
-<script>
-    window.addEventListener('DOMContentLoaded', () => {
-     const el = document.querySelector('.container');
-     if (el) {
-       el.classList.add('animate-drop');
-     }
-    });
-</script>
-
+</div>
 {% endblock %}
-

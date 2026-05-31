@@ -1,0 +1,17 @@
+<ul class="rd-navbar-nav cabinet-nav">
+    <li class="{% if active_tab == 'profile' %}active{% endif %}">
+        <a href="{% url 'users:profile' %}">My Profile</a>
+    </li>
+
+    <li class="{% if active_tab == 'public' %}active{% endif %}">
+        <a href="{% url 'photo_app:public_list' %}">Public Photos</a>
+    </li>
+
+    <li class="{% if active_tab == 'gallery' %}active{% endif %}">
+        <a href="#">My Gallery</a>
+    </li>
+
+    <li class="{% if active_tab == 'reviews' %}active{% endif %}">
+        <a href="#">My Reviews</a>
+    </li>
+</ul>

@@ -147,6 +147,20 @@ class UserProfileView(LoginRequiredMixin, DetailView):
         context['active_menu'] = 'main'
         return context
 
+class UserCabinetView(LoginRequiredMixin, DetailView):
+    model = User
+    template_name = 'users/cabinet.html'
+    context_object_name = 'user_obj'
+
+    def get_object(self):
+        return self.request.user
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['active_page'] = 'cabinet'
+        context['active_menu'] = 'main'
+        return context
+
 class UserEditView(LoginRequiredMixin, UpdateView):
     model = User
     form_class = ProfileEditForm
