@@ -8,8 +8,14 @@
 {% block content %}
 <section class="section section-md bg-white text-center">
   <div class="shell-fluid">
-      <p class="heading-2">{{ title }}</p>
 
+      <p class="heading-2">{{ title }}</p>
+      <div class="text-left mb-4">
+        <a href="javascript:history.back()" class="btn btn-dark back-btn">
+            <span>&larr;</span> Back
+        </a>
+      </div>
+      
         <div class="isotope thumb-ruby-wrap wow fadeIn" data-isotope-layout="masonry" data-isotope-group="gallery"
              data-lightgallery="group">
             <div class="row">
@@ -29,7 +35,7 @@
               {% endfor %}
             </div>
         </div>
-
+    
         <!-- Пагінація -->
         <div class="pagination-wrapper">
             <div class="pagination">
@@ -51,6 +57,6 @@
             </div>
         </div>
   </div>
+    
 </section>
-
 {% endblock %}

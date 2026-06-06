@@ -150,7 +150,7 @@ class UserProfileView(LoginRequiredMixin, DetailView):
 
 class UserCabinetView(LoginRequiredMixin, DetailView):
     model = User
-    template_name = 'users/profile.html'
+    template_name = 'users/cabinet.html'
     context_object_name = 'user_obj'
 
     def get_object(self):
@@ -159,7 +159,7 @@ class UserCabinetView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['active_page'] = 'cabinet'
-        context['active_tab'] = 'profile'
+        # context['active_tab'] = 'profile'
         context['active_menu'] = 'main'
         return context
 
