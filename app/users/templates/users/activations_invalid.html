@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block navbar %}
+    {% include 'includes/navbar_main.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+    <h1>❌ Помилка активації</h1>
+    <p>Посилання недійсне або вже використане.</p>
+    <p>Спробуйте зареєструватися ще раз.</p>
+
+    <a href="{% url 'users:register' %}" class="btn btn-danger">
+        Реєстрація
+    </a>
+</div>
+{% endblock %}

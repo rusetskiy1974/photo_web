@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block navbar %}
+    {% include 'includes/navbar_main.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+    <h1>✅ Акаунт активовано</h1>
+    <p>Ваш email успішно підтверджено.</p>
+    <p>Тепер можете увійти в систему.</p>
+
+    <a href="{% url 'users:login' %}" class="btn btn-primary">
+        Увійти
+    </a>
+</div>
+{% endblock %}

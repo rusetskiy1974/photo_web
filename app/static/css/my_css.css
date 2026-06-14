@@ -12,7 +12,7 @@
 }
 
 .custom-shadow {
-  box-shadow: 5px 5px 25px 19px #000000;
+   box-shadow: 0 8px 30px rgba(0,0,0,.15);
 }
 
 .product_id {
@@ -339,4 +339,34 @@
 
 .photo-status .badge {
     font-size: 16px; /* Зменшили шрифт мітки */
+}
+
+
+
+.select-all-btn {
+    font-size: 18px;
+    padding: 12px 30px;
+    font-weight: 600;
+    border-radius: 4px;
+    transition: all .3s ease;
+}
+
+.select-all-btn:hover {
+    transform: translateY(-2px);
+}
+
+
+
+.select-all-btn {
+    background-color: #232323;
+    border-color: #232323;
+    color: #fff !important;
+}
+
+.select-all-btn:hover,
+.select-all-btn:focus,
+.select-all-btn:active {
+    background-color: #333;
+    border-color: #333;
+    color: #fff !important;
 }

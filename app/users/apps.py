@@ -7,4 +7,4 @@ class UsersConfig(AppConfig):
 
     def ready(self):
         # Підключаємо сигнал при завантаженні додатку
-        from . import signals  # noqa: F401
+        import users.signals  # noqa: F401

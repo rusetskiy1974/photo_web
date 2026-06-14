@@ -113,6 +113,7 @@ SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"
 
 
 # email configs
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
@@ -353,6 +354,7 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend'
 ]
 
+SOCIALACCOUNT_ADAPTER = "users.adapters.CustomSocialAccountAdapter"
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'SCOPE': [

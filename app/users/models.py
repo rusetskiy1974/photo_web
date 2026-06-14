@@ -8,16 +8,17 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class Role(models.TextChoices):
-    MASTER = "master", "Master"
-    CLIENT = "client", "Client"
-
 class User(AbstractUser):
+    class Role(models.TextChoices):
+        ADMIN = "admin", "Admin"
+        CLIENT = "client", "Client"
+        PHOTOGRAPHER = "photographer", "Photographer"
+
     email = models.EmailField(unique=True, verbose_name='Email')  # ✅ Make email unique
     avatar = models.URLField(max_length=500, blank=True, null=True, verbose_name="Avatar")
     phone = models.CharField(max_length=20, blank=True, null=True, verbose_name='Phone')
     address = models.CharField(max_length=255, blank=True, null=True, verbose_name='Address')
-    role = models.CharField(max_length=10, choices=Role.choices, default=Role.CLIENT, verbose_name='Role')
+    role = models.CharField(max_length=20, choices=Role.choices, default=Role.CLIENT, verbose_name='Role')
 
     class Meta:
         db_table = 'user'
@@ -43,8 +44,17 @@ class User(AbstractUser):
             )
             self.avatar = result.get("secure_url")
             self.save(update_fields=["avatar"])
+            logger.info(f"Cloudinary upload result: {result}")
         except Exception as e:
             logger.error(f"Не вдалося завантажити аватар для користувача {self.username}: {e}")
 
     def __str__(self):
         return self.username
+
+    @property
+    def is_photographer(self):
+        return self.role == self.Role.PHOTOGRAPHER
+
+    @property
+    def is_client(self):
+        return self.role == self.Role.CLIENT

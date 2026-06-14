@@ -6,7 +6,7 @@ import hashlib
 from cloudinary.compat import to_bytes
 from cloudinary.forms import CloudinaryJsFileField, CloudinaryUnsignedJsFileField
 
-from users.models import User, Role
+from users.models import User
 from .models import Photo
 from django import forms
 from .utils.image_validator import file_validation
@@ -36,7 +36,7 @@ class PhotoUnsignedDirectForm(PhotoForm):
 
 class UploadOwner(forms.Form):
     owner: forms.ModelChoiceField = forms.ModelChoiceField(
-        queryset=User.objects.filter(role=Role.CLIENT),
+        queryset=User.objects.filter(role=User.Role.CLIENT),
         required=False,  # Не обов'язкове
         # label="Виберіть користувача",  # Текст для поля
         empty_label="Виберіть замовника",  # Текст для пустого значення

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load socialaccount %}
 {% load static i18n %}
 
 {% block navbar %}
@@ -20,6 +21,17 @@
                   {% endfor %}
                 {% endif %}
                 {% csrf_token %}
+                <!-- Role Selection -->
+                <div class="mb-4 text-center w-50 mx-auto">
+                    {{ form.role.label_tag }}
+                    {{ form.role }}
+
+                    {% if form.role.errors %}
+                        <div class="alert alert-danger mt-2">
+                            {{ form.role.errors }}
+                        </div>
+                    {% endif %}
+                </div>
                 <div class="row">
                     <!-- Ім'я користувача -->
                     <div class="col-md-6 mb-3">
@@ -74,7 +86,8 @@
                             <div class="alert alert-danger alert-dismissible fade show">{{ form.address.errors }}</div>
                         {% endif %}
                     </div>
-            
+
+
                     <!-- Пароль -->
                     <div class="col-md-6 mb-3">
                         {{ form.password1.label_tag }}
@@ -95,11 +108,22 @@
                 </div>
                     <!-- Кнопка для відправки форми -->
                 <div class="text-center">
-                    <button type="submit" class="btn btn-dark" style="width: 40%;">{% trans 'Register' %}</button>
+                    <button type="submit" class="btn btn-dark w-auto d-inline-flex align-items-center">{% trans 'Sing Up' %}</button>
                 </div>
                 
             </form>
-            
+            <hr>
+            <div class="text-center">
+                <p>{% trans 'Or sign up with' %}</p>
+            <a href="{% url 'users:google_register_client' %}" class="btn btn-dark w-auto d-inline-flex align-items-center">
+                <img class="mx-1" src="{% static 'icons/google.svg' %}" alt="Google Icon" width="16" height="16">
+                Google as Client
+            </a>
+            <a href="{% url 'users:google_register_photographer' %}" class="btn btn-dark w-auto d-inline-flex align-items-center">
+                <img class="mx-1" src="{% static 'icons/google.svg' %}" alt="Google Icon" width="16" height="16">
+                Google as  Photographer
+            </a>
+            </div>
         </div>
     </div>
 </div>

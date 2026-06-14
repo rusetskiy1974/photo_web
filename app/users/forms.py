@@ -1,7 +1,7 @@
 from django import forms
-from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm, PasswordChangeForm
-from .models import User, Role
+from .models import User
 from django.utils.translation import gettext_lazy as _
 
 
@@ -52,6 +52,11 @@ class UserLoginForm(AuthenticationForm):
 
 
 class UserRegistrationForm(UserCreationForm):
+    ROLE_CHOICES = (
+        (User.Role.PHOTOGRAPHER, 'Photographer'),
+        (User.Role.CLIENT, 'Client'),
+    )
+
     class Meta:
         model = User
         fields = (
@@ -61,6 +66,7 @@ class UserRegistrationForm(UserCreationForm):
             "email",
             "phone",
             "address",
+            "role",
             "password1",
             "password2",
         )
@@ -88,6 +94,10 @@ class UserRegistrationForm(UserCreationForm):
     address = forms.CharField(widget=forms.TextInput(attrs={
         'class': 'form-control',
         'placeholder': _('Your address')
+    }))
+    role = forms.ChoiceField(choices=ROLE_CHOICES,widget=forms.Select(attrs={
+        'class': 'form-control',
+        'placeholder': _('Select role')
     }))
     password1 = forms.CharField(widget=forms.PasswordInput(attrs={
         'class': 'form-control',
@@ -146,7 +156,7 @@ class ProfileEditForm(UserChangeForm):
         'class': 'form-control',
         'placeholder': _('Your phone')
     }))
-    address = forms.CharField(widget=forms.TextInput(attrs={
+    address = forms.CharField(required=False, widget=forms.TextInput(attrs={
         'class': 'form-control',
         'placeholder': _('Your address')
     }))

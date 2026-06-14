@@ -21,12 +21,16 @@
         <input type="hidden" name="source_page" value="handle_photos">
 
         <!-- Кнопка для вибору всіх фото -->
-        <div class="mb-3">
-            <button type="button" id="select-all-btn" class="btn btn-outline-primary">
-                <i class="fas fa-check-square"></i> Select all photos
+        <div class="mb-4">
+<!--            <button type="button" id="select-all-btn" class="btn btn-outline-primary">-->
+<!--                <i class="fas fa-check-square"></i> Select all photos-->
+<!--            </button>-->
+
+            <button type="button" id="select-all-btn" class="btn btn-dark select-all-btn"
+                    data-selected="false">
+                    <i class="fas fa-check-square"></i> Select all photos
             </button>
         </div>
-    
         <!-- Картки для вибору фото -->
         <div class="isotope thumb-ruby-wrap wow fadeIn" data-isotope-layout="masonry" data-isotope-group="gallery"
              data-lightgallery="group">
@@ -131,13 +135,11 @@
                 // Оновлюємо стан кнопки "Select all"
                 if (selectedPhotos.size === document.querySelectorAll('.photo-item').length) {
                     selectAllBtn.innerHTML = '<i class="fas fa-times"></i> Deselect all photos';
-                    selectAllBtn.classList.remove('btn-outline-primary');
-                    selectAllBtn.classList.add('btn-success');
+                    // selectAllBtn.className = 'btn btn-dark select-all-btn';
                     selectAllBtn.dataset.selected = 'true';
                 } else {
                     selectAllBtn.innerHTML = '<i class="fas fa-check-square"></i> Select all photos';
-                    selectAllBtn.classList.remove('btn-success');
-                    selectAllBtn.classList.add('btn-outline-primary');
+                    // selectAllBtn.className = 'btn btn-dark select-all-btn';
                     selectAllBtn.dataset.selected = 'false';
                 }
             });
@@ -161,10 +163,9 @@
                 });
 
                 // Оновлюємо кнопку
-                this.innerHTML = '<i class="fas fa-times"></i> Deselect all photos';
-                this.classList.remove('btn-outline-primary');
-                this.classList.add('btn-success');
-                this.dataset.selected = 'true';
+                selectAllBtn.innerHTML = '<i class="fas fa-times"></i> Deselect all photos';
+                // selectAllBtn.className = 'btn btn-dark select-all-btn';
+                selectAllBtn.dataset.selected = 'true';
             } else {
                 // Очищуємо вибір всіх фото
                 allPhotoIds.forEach(photoId => {
@@ -177,10 +178,9 @@
                 });
 
                 // Оновлюємо кнопку
-                this.innerHTML = '<i class="fas fa-check-square"></i> Select all photos';
-                this.classList.remove('btn-success');
-                this.classList.add('btn-outline-primary');
-                this.dataset.selected = 'false';
+                selectAllBtn.innerHTML = '<i class="fas fa-check-square"></i> Select all photos';
+                // selectAllBtn.className = 'btn btn-dark select-all-btn';
+                selectAllBtn.dataset.selected = 'false';
             }
 
             updateSelectedPhotosField();  // Оновлюємо поле для вибраних фото

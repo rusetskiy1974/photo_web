@@ -1,5 +1,5 @@
 <ul class="rd-navbar-nav">
-    <li class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}">
+    <li class="{% if active_page == 'index' %}active{% endif %}">
         <a href="{% url 'main:index' %}">Main</a>
     </li>
     <li class="{% if request.resolver_match.url_name == 'about' %}active{% endif %}">

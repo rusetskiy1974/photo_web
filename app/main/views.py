@@ -46,12 +46,20 @@ class PortfolioDetailView(DetailView):
             })
 
         # Додаємо фото портфоліо до контексту
-        context['photos_with_text'] = photos_with_text
-        context['title'] = f'Фото для портфоліо: {portfolio.title}'
+        # context['photos_with_text'] = photos_with_text
+        # context['title'] = f'Фото для портфоліо: {portfolio.title}'
+        #
+        #
+        #
+        # context['portfolio'] = Portfolio.objects.get(pk=self.kwargs['pk'])
+        context = {
+            'title': f'Portfolio : {portfolio.title}',
+            'photos_with_text': photos_with_text,
+            'portfolio': Portfolio.objects.get(pk=self.kwargs['pk']),
+            'active_page': 'index',
+            'active_tab': 'portfolio',
 
-
-
-        context['portfolio'] = Portfolio.objects.get(pk=self.kwargs['pk'])
+        }
         return context
 
 def index(request):
@@ -64,7 +72,8 @@ def index(request):
         'content': "Фотостудія RMS",
         'portfolio_items': portfolio_items,
         'blogs': blogs,
-        'form': ContactForm()
+        'form': ContactForm(),
+        'active_page': 'index',
         }
     if request.method == 'POST':
         context['form'] = sending_mail(request)

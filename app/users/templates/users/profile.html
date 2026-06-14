@@ -1,11 +1,13 @@
 {% extends "users/cabinet.html" %}
 {% load static i18n %}
 
+
+
 {% block cabinet_content %}
-<div class="profile-card mx-auto" style="max-width: 700px;">
+<div class="profile-card mx-auto w-100%">
 <div class="bg-white p-4 mb-4 rounded custom-shadow">
     <h1 class="mb-4 text-center">
-        {% trans 'Information about the user' %}
+        {% trans 'User profile' %}
     </h1>
 
     <div class="card">
@@ -51,15 +53,15 @@
     </div>
 
     <div class="mt-4 d-flex flex-wrap justify-content-center gap-3">
-        <a href="{% url 'users:edit_profile' %}" class="btn btn-outline-primary px-4 text-nowrap">
+        <a href="{% url 'users:edit_profile' %}" class="btn btn-dark px-4 text-nowrap">
             {% trans '🔧 Edit profile' %}
         </a>
 
-        <a href="{% url 'users:change_password' %}" class="btn btn-outline-primary px-4 text-nowrap">
+        <a href="{% url 'users:password_change' %}" class="btn btn-dark px-4 text-nowrap">
             {% trans '🔒 Change password' %}
         </a>
 
-        <a href="{% url 'main:index' %}" class="btn btn-outline-secondary px-4 text-nowrap">
+        <a href="{% url 'users:cabinet' %}" class="btn btn-outline-secondary px-4 text-nowrap">
             {% trans 'Back' %}
         </a>
     </div>
