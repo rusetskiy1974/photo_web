@@ -80,11 +80,12 @@
                                 <div class="rd-navbar-brand">
                                     <a class="brand" href="{% url 'users:profile' %}">
                                         <div class="brand__name">
-                                            {% if user.avatar %}
-                                            <img class="brand__logo-dark" src="{{ user.avatar }}" />
-                                            {% else %}
-                                            <img class="brand__logo-dark" src="{% static 'images/Not found image.png' %}" />
-                                            {% endif %}
+<!--                                            {% if user.avatar %}-->
+<!--                                            <img class="brand__logo-dark" src="{{ user.avatar }}" />-->
+<!--                                            {% else %}-->
+<!--                                            <img class="brand__logo-dark" src="{% static 'images/Not found image.png' %}" />-->
+<!--                                            {% endif %}-->
+                                            <img class="brand__logo-dark" src="{% static 'images/my_logo.png' %}" />
                                         </div>
                                     </a>
                                 </div>
@@ -97,7 +98,7 @@
                                 <div class="rd-navbar-brand">
                                     <a class="brand" href="{% url 'main:index' %}">
                                     <div class="brand__name">
-                                        <img class="brand__logo-dark" src="{% static 'images/Maria_logo1.png' %}"/>
+                                        <img class="brand__logo-dark" src="{% static 'images/my_logo.png' %}"/>
 <!--                                        <img class="rounded-circle" src="{% static 'images/Maria_logo1.png' %}" alt="User avatar"-->
 <!--                                             style="width: 100px; height: 100px;">-->
 <!--                                        <img class="brand__logo-light" src="{% static 'images/Maria_logo_light.png' %}"/>-->
@@ -176,7 +177,7 @@
                                    href="#"><span></span><span></span><span></span><span></span></a></li>
                         </ul>
                         <p class="rights"><span>&copy;&nbsp;</span><span class="copyright-year"></span>. All Rights
-                            Reserved. Design by <a href="https://www.templatemonster.com">TemplateMonster</a></p>
+                            Reserved. Design by <a href="https://www.templatemonster.com">RSA Developer</a></p>
                     </div>
                 </div>
             </div>

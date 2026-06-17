@@ -16,6 +16,7 @@ from django.utils.encoding import force_str, force_bytes
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views.generic import DetailView, UpdateView
 from django.views.generic.edit import CreateView
+from .models import ClientProfile, PhotographerProfile
 
 from cloudinary import CloudinaryImage
 
@@ -42,7 +43,8 @@ def activate(request, uidb64, token):
 
     if user is not None and account_activation_token.check_token(user, token):
         user.is_active = True
-        user.save(update_fields=['is_active'])
+        user.is_email_verified = True
+        user.save(update_fields=["is_active", "is_email_verified"])
         return render (request, 'users/activations_succes.html')
     else:
         return render(request, 'users/activations_invalid.html')
@@ -96,56 +98,88 @@ class RegisterView(CreateView):
     success_url = reverse_lazy('users:login')
 
     def form_valid(self, form):
-        user = form.save(commit=False)
-        # перший користувач = admin
-        if not User.objects.exists():
+        is_first_user = not User.objects.exists()
+
+        user = form.save()
+
+        if is_first_user:
             user.role = User.Role.ADMIN
             user.is_staff = True
             user.is_superuser = True
-            user.is_active = True  # щоб адмін не чекав email
+            user.is_active = True
+            user.is_email_verified = True
+            user.save(
+                update_fields=[
+                    "role",
+                    "is_staff",
+                    "is_superuser",
+                    "is_active",
+                    "is_email_verified",
+                ]
+            )
+
+            messages.success(
+                self.request,
+                "Admin account created successfully."
+            )
+
         else:
-            user.is_active = False  # для всіх інших підтвердження пошти
-        user.save()
+            if user.role == User.Role.CLIENT:
+                ClientProfile.objects.get_or_create(user=user)
 
-        # якщо не адмін — відправляємо лист активації
-        if user.role != User.Role.ADMIN:
-            current_site = get_current_site(self.request)
+            elif user.role == User.Role.PHOTOGRAPHER:
+                PhotographerProfile.objects.get_or_create(user=user)
 
-            message = render_to_string('users/activation_email.html', {
-                'user': user,
-                'domain': current_site.domain,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                'token': account_activation_token.make_token(user),
+            user.is_active = False
+            user.is_email_verified = False
+            user.save(update_fields=["is_active", "is_email_verified"])
+
+            activation_url = self.request.build_absolute_uri(
+                reverse(
+                    "users:activate",
+                    kwargs={
+                        "uidb64": urlsafe_base64_encode(force_bytes(user.pk)),
+                        "token": account_activation_token.make_token(user),
+                    }
+                )
+            )
+
+            message = render_to_string("users/activation_email.html", {
+                "user": user,
+                "activation_url": activation_url,
             })
 
             email = EmailMessage(
-                'Підтвердження email',
+                "Підтвердження email",
                 message,
                 to=[user.email],
             )
             email.send()
 
-        messages.success(
-            self.request,
-            "Реєстрація успішна. Перевірте пошту."
-        )
+            messages.success(
+                self.request,
+                "Реєстрація успішна. Перевірте пошту."
+            )
 
         return redirect(self.success_url)
 
-
 class UserProfileView(LoginRequiredMixin, DetailView):
     model = User
-    template_name = 'users/profile.html'
+    template_name = 'users/profile1.html'
     context_object_name = 'user_obj'
 
     def get_object(self):
-        return self.request.user
-
+        return (
+            User.objects
+            .select_related("client_profile", "photographer_profile")
+            .get(pk=self.request.user.pk)
+        )
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['active_tab'] = 'profile'
         context['active_page'] = 'cabinet'
         context['active_menu'] = 'main'
+        # context['dashboard_template'] = 'users/profile.html'
         return context
 
 class UserCabinetView(LoginRequiredMixin, DetailView):
@@ -164,8 +198,14 @@ class UserCabinetView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['active_page'] = 'cabinet'
-        # context['active_tab'] = 'profile'
+        context['active_tab'] = 'dashboard'
         context['active_menu'] = 'main'
+        if self.request.user.role == User.Role.PHOTOGRAPHER:
+            context["dashboard_template"] = "users/dashboard/photographer_dashboard.html"
+        elif self.request.user.role == User.Role.CLIENT:
+            context["dashboard_template"] = "users/dashboard/client_dashboard.html"
+        else:
+            context["dashboard_template"] = "users/dashboard/admin_dashboard.html"
         return context
 
 class UserEditView(LoginRequiredMixin, UpdateView):

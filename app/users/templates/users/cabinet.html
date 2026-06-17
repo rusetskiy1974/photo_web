@@ -1,24 +1,47 @@
 {% extends "base.html" %}
+{% load static i18n %}
 
 {% block navbar %}
     {% include 'includes/navbar_main.html' %}
 {% endblock %}
 
 {% block content %}
-<section class="section section-md bg-white">
-    <div class="container-fluid px-4">
-        <div class="row align-items-start">
+<div class="container-fluid py-4">
+    <div class="row g-4 align-items-stretch">
 
-            <aside class="col-md-3">
-                {% include 'includes/cabinet_menu.html' %}
-            </aside>
+        <!-- Sidebar -->
+        <aside class="col-12 col-lg-3 col-xl-2 d-flex">
+            <div class="bg-white rounded custom-shadow p-4 h-100">
 
-            <main class="col-md-9">
-                {% block cabinet_content %}
-                {% endblock %}
-            </main>
+                <div class="text-center mb-4">
+                    {% if user.avatar %}
+                        <img src="{{ user.avatar }}" class="avatar">
+                    {% endif %}
 
-        </div>
+                    <h5 class="fw-bold">{{ user.first_name|default:user.username }}</h5>
+                    <span class="badge bg-dark">{{ user.get_role_display }}</span>
+                </div>
+
+                {% include "users/includes/cabinet_sidebar.html" %}
+
+            </div>
+        </aside>
+
+        <!-- Dynamic Main -->
+
+            {% if  dashboard_template %}
+                <main class="col-12 col-lg-9 col-xl-10 d-flex flex-column">
+                    {% include dashboard_template %}
+                </main>
+            {% else %}
+                <main class="col-12 col-lg-9 col-xl-10 d-flex">
+                    {% block cabinet_content %}
+                    {% endblock %}
+                </main>
+            {% endif %}
+
+
+
     </div>
-</section>
+</div>
 {% endblock %}

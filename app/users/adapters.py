@@ -6,7 +6,7 @@ from django.shortcuts import redirect
 import logging
 import requests
 from django.core.files.base import ContentFile
-
+from .models import ClientProfile, PhotographerProfile, User
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -32,6 +32,7 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
         user = super().save_user(request, sociallogin, form)
 
         user.is_active = True
+        user.is_email_verified = True
 
         # Перший юзер = admin
         if not User.objects.exclude(pk=user.pk).exists():
@@ -76,4 +77,13 @@ class CustomSocialAccountAdapter(DefaultSocialAccountAdapter):
             except Exception as e:
                 logger.exception(f"Google avatar upload error for {user.email}: {e}")
         user.save()
+        if user.role == User.Role.CLIENT:
+            ClientProfile.objects.get_or_create(user=user)
+
+        elif user.role == User.Role.PHOTOGRAPHER:
+            PhotographerProfile.objects.get_or_create(user=user)
+
+        request.session.pop("google_flow", None)
+        request.session.pop("google_role", None)
+
         return user

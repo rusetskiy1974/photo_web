@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block navbar %}
+    {% include 'includes/navbar_main.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row g-4">
+
+        <!-- Sidebar -->
+        <aside class="col-12 col-lg-3 col-xl-2">
+            <div class="bg-white rounded custom-shadow p-4 h-100">
+                <div class="text-center mb-4">
+                    {% if user.avatar %}
+                        <img src="{{ user.avatar }}" class="rounded-circle mb-3" width="90" height="90" style="object-fit: cover;">
+                    {% else %}
+                        <img src="{% static 'images/default-avatar.png' %}" class="rounded-circle mb-3" width="90" height="90" style="object-fit: cover;">
+                    {% endif %}
+
+                    <h5 class="mb-1 fw-bold">
+                        {{ user.first_name|default:user.username }}
+                    </h5>
+
+                    <span class="badge bg-dark">
+                        {{ user.get_role_display }}
+                    </span>
+                </div>
+
+                <nav class="nav flex-column gap-2">
+                    <a href="{% url 'users:cabinet' %}" class="nav-link text-dark bg-light rounded px-3">
+                        Dashboard
+                    </a>
+
+                    <a href="{% url 'users:profile' %}" class="nav-link text-dark rounded px-3">
+                        Profile
+                    </a>
+
+                    {% if user.is_photographer %}
+                        <a href="{% url 'users:my_photos' %}" class="nav-link text-dark rounded px-3">
+                            My Photos
+                        </a>
+                        <a href="#" class="nav-link text-dark rounded px-3">
+                            Bookings
+                        </a>
+                        <a href="#" class="nav-link text-dark rounded px-3">
+                            Reviews
+                        </a>
+                    {% elif user.is_client %}
+                        <a href="#" class="nav-link text-dark rounded px-3">
+                            Find Photographers
+                        </a>
+                        <a href="#" class="nav-link text-dark rounded px-3">
+                            My Bookings
+                        </a>
+                        <a href="#" class="nav-link text-dark rounded px-3">
+                            Favorites
+                        </a>
+                    {% endif %}
+
+                    {% if user.has_usable_password %}
+                        <a href="{% url 'users:password_change' %}" class="nav-link text-dark rounded px-3">
+                            Change Password
+                        </a>
+                    {% endif %}
+                </nav>
+            </div>
+        </aside>
+        <!-- Dynamic Main -->
+        <main class="col-12 col-lg-9 col-xl-10">
+            {% include dashboard_template %}
+        </main>
+
+
+    </div>
+</div>
+{% endblock %}

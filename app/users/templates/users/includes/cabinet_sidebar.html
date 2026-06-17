@@ -1,0 +1,48 @@
+<ul class="cabinet-nav">
+    <li class="{% if active_tab == 'dashboard' %}active{% endif %}">
+        <a href="{% url 'users:cabinet' %}">
+            Dashboard
+        </a>
+    </li>
+
+    {% if user.is_admin or user.is_staff %}
+        <li class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}">
+            <a href="{% url 'admin:index' %}">Admin panel</a>
+        </li>
+    {% endif %}
+    <li class="{% if active_tab == 'profile' %}active{% endif %}">
+        <a href="{% url 'users:profile' %}">
+            My Profile
+        </a>
+    </li>
+
+    <li class="{% if active_tab == 'photo_shoots' %}active{% endif %}">
+        <a href="{% url 'photo_app:public_list' %}">
+            My Photo Shoots
+        </a>
+    </li>
+
+    <li class="{% if active_tab == 'gallery' %}active{% endif %}">
+        <a href="{% url 'photo_app:my_gallery' %}">
+            My Gallery
+        </a>
+    </li>
+
+    <li class="{% if active_tab == 'handle_photos' %}active{% endif %}">
+        <a href="{% url 'photo_app:handle_my_photos' %}">
+            Handle my photos
+        </a>
+    </li>
+
+    <li class="{% if active_tab == 'reviews' %}active{% endif %}">
+        <a href="{% url 'reviews:reviews_list' %}">
+            My Reviews
+        </a>
+    </li>
+
+    <li class="{% if active_tab == 'settings' %}active{% endif %}">
+        <a href="#">
+            Settings
+        </a>
+    </li>
+</ul>

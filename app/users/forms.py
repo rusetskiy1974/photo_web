@@ -91,7 +91,7 @@ class UserRegistrationForm(UserCreationForm):
         'class': 'form-control',
         'placeholder': _('Your phone')
     }))
-    address = forms.CharField(widget=forms.TextInput(attrs={
+    address = forms.CharField(required=False, widget=forms.TextInput(attrs={
         'class': 'form-control',
         'placeholder': _('Your address')
     }))

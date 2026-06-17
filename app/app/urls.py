@@ -24,10 +24,9 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include( 'allauth.urls' )),
-    # path('logout', LogoutView.as_view()),
     path('', include('main.urls', namespace='main')),
     path('photo/', include('photo_app.urls', namespace='photo_app')),
-    path('user/', include('users.urls', namespace='user')),
+    path('user/', include('users.urls', namespace='users')),
     path('blog/', include('blog.urls', namespace='blog')),
     path('review/', include('reviews.urls', namespace='review')),
 

@@ -1,0 +1,100 @@
+<!-- Header -->
+<div class="bg-white rounded custom-shadow p-4 mb-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <div>
+            <h2 class="fw-bold mb-1">
+                Welcome, {{ user.first_name|default:user.username }} 👋
+            </h2>
+            <p class="text-muted mb-0">
+                Manage your photo studio account and activity.
+            </p>
+        </div>
+
+        <a href="{% url 'users:edit_profile' %}" class="btn btn-outline-dark px-4">
+            Edit Profile
+        </a>
+    </div>
+</div>
+
+<!-- Stats -->
+<div class="row g-4 mb-4">
+    <div class="col-12 col-md-4 d-flex">
+        <div class="bg-white rounded custom-shadow p-4 w-100 h-100">
+            <p class="text-muted mb-1">Photos</p>
+            <h3 class="fw-bold mb-0">0</h3>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4 d-flex">
+        <div class="bg-white rounded custom-shadow p-4 w-100 h-100">
+            <p class="text-muted mb-1">Bookings</p>
+            <h3 class="fw-bold mb-0">0</h3>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4 d-flex">
+        <div class="bg-white rounded custom-shadow p-4 w-100 h-100">
+            <p class="text-muted mb-1">Reviews</p>
+            <h3 class="fw-bold mb-0">0</h3>
+        </div>
+    </div>
+</div>
+
+<!-- Role content -->
+<div class="flex-grow-1 d-flex">
+    {% if user.is_photographer %}
+        <div class="row g-4 w-100">
+            <div class="col-12 col-xl-8 d-flex">
+                <div class="bg-white rounded custom-shadow p-4 w-100 h-100">
+                    <h4 class="fw-bold mb-3">Photographer workspace</h4>
+                    <p class="text-muted">
+                        Upload your photos, manage client bookings and grow your portfolio.
+                    </p>
+
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="#" class="btn btn-dark">Upload Photo</a>
+                        <a href="{% url 'users:my_photos' %}" class="btn btn-outline-dark">View Gallery</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-xl-4 d-flex">
+                <div class="bg-white rounded custom-shadow p-4 w-100 h-100">
+                    <h5 class="fw-bold mb-3">Next steps</h5>
+                    <ul class="list-unstyled mb-0 text-muted">
+                        <li class="mb-2">✓ Add profile photo</li>
+                        <li class="mb-2">✓ Upload portfolio</li>
+                        <li class="mb-2">✓ Add contact details</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    {% elif user.is_client %}
+        <div class="row g-4 w-100">
+            <div class="col-12 col-xl-8 d-flex">
+                <div class="bg-white rounded custom-shadow p-4 w-100 h-100">
+                    <h4 class="fw-bold mb-3">Client dashboard</h4>
+                    <p class="text-muted">
+                        Find photographers, book sessions and manage your photo orders.
+                    </p>
+
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="#" class="btn btn-outline-dark">Find Photographer</a>
+                        <a href="#" class="btn btn-outline-dark">My Bookings</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-xl-4 d-flex">
+                <div class="bg-white rounded custom-shadow p-4 w-100 h-100">
+                    <h5 class="fw-bold mb-3">Quick tips</h5>
+                    <ul class="list-unstyled mb-0 text-muted">
+                        <li class="mb-2">✓ Complete your profile</li>
+                        <li class="mb-2">✓ Choose photographer</li>
+                        <li class="mb-2">✓ Book your session</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
