@@ -2,11 +2,10 @@
 {% load static i18n %}
 {% load widget_tweaks %}
 
-
 {% block cabinet_content %}
 
 <div class="profile-card mx-auto w-100 h-100 d-flex flex-column">
-<div class="bg-white p-4 rounded custom-shadow h-100 w-100 d-flex flex-column justify-content-center">
+    <div class="bg-white p-4 rounded custom-shadow h-100 w-100 d-flex flex-column justify-content-center">
 
         <h1 class="mb-4 text-center">
             {% trans 'Edit profile' %}
@@ -18,13 +17,15 @@
 
             {% csrf_token %}
 
-            <div class="card border-0 shadow-sm">
+            <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body">
 
+                    <h4 class="fw-bold mb-4 text-center">
+                        {% trans "Account information" %}
+                    </h4>
+
                     <div class="text-center mb-4">
-
                         <label for="id_avatar_file" style="cursor:pointer;">
-
                             {% if user.avatar %}
                                 <img src="{{ user.avatar }}"
                                      alt="{% trans 'User avatar' %}"
@@ -34,77 +35,343 @@
                                      alt="{% trans 'Default avatar' %}"
                                      class="avatar">
                             {% endif %}
-
                         </label>
 
                         {{ form.avatar_file|add_class:"d-none" }}
 
+                        {% if form.avatar_file.errors %}
+                            <div class="text-danger small mt-2">
+                                {{ form.avatar_file.errors }}
+                            </div>
+                        {% endif %}
                     </div>
 
-                    <div class="mb-3">
-                        {{ form.first_name.label_tag }}
-                        {{ form.first_name|add_class:"form-control" }}
-                    </div>
+                    <div class="row">
+                        <div class="col-12 col-md-6 mb-3">
+                            {{ form.first_name.label_tag }}
+                            {{ form.first_name }}
+                            {{ form.first_name.errors }}
+                        </div>
 
-                    <div class="mb-3">
-                        {{ form.last_name.label_tag }}
-                        {{ form.last_name|add_class:"form-control" }}
-                    </div>
+                        <div class="col-12 col-md-6 mb-3">
+                            {{ form.last_name.label_tag }}
+                            {{ form.last_name }}
+                            {{ form.last_name.errors }}
+                        </div>
 
-                    <div class="mb-3">
-                        {{ form.username.label_tag }}
-                        {{ form.username|add_class:"form-control" }}
-                    </div>
+                        <div class="col-12 col-md-6 mb-3">
+                            {{ form.phone.label_tag }}
+                            {{ form.phone }}
+                            {{ form.phone.errors }}
+                        </div>
 
-                    <div class="mb-3">
-                        {{ form.email.label_tag }}
-                        {{ form.email|add_class:"form-control" }}
-                    </div>
-
-                    <div class="mb-3">
-                        {{ form.phone.label_tag }}
-                        {{ form.phone|add_class:"form-control" }}
-                    </div>
-
-                    <div class="mb-3">
-                        {{ form.address.label_tag }}
-                        {{ form.address|add_class:"form-control" }}
+                        <div class="col-12 col-md-6 mb-3">
+                            {{ form.address.label_tag }}
+                            {{ form.address }}
+                            {{ form.address.errors }}
+                        </div>
                     </div>
 
                 </div>
             </div>
 
-            <div class="mt-4 d-flex flex-wrap justify-content-center gap-3">
+            {% if profile_form %}
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
 
-                <button type="submit"
-                        class="btn btn-dark px-4">
+                        <h4 class="fw-bold mb-4 text-center">
+                            {% if user.is_photographer %}
+                                {% trans "Photographer profile" %}
+                            {% elif user.is_client %}
+                                {% trans "Client profile" %}
+                            {% else %}
+                                {% trans "Profile details" %}
+                            {% endif %}
+                        </h4>
+
+                        {% if user.is_photographer %}
+                            <div class="col-12 col-md-6 mb-3 position-relative">
+                                    <label>{% trans "Country" %}</label>
+
+                                    <input type="text"
+                                           id="country-search"
+                                           class="form-control"
+                                           placeholder="Start typing country"
+                                           value="{% if user.photographer_profile.country %}{{ user.photographer_profile.country.name_en }}{% endif %}">
+
+                                    <input type="hidden"
+                                           name="country"
+                                           id="id_country"
+                                           value="{% if user.photographer_profile.country %}{{ user.photographer_profile.country.id }}{% endif %}">
+
+                                    <div id="country-results" class="list-group mt-1"></div>
+                                    {{ profile_form.country.errors }}
+                                </div>
+
+                                <div class="col-12 col-md-6 mb-3 position-relative">
+                                    <label>{% trans "City" %}</label>
+
+                                    <input type="text"
+                                           id="city-search"
+                                           class="form-control"
+                                           placeholder="Start typing city"
+                                           value="{% if user.photographer_profile.city %}{{ user.photographer_profile.city.name_en }}{% endif %}">
+
+                                    <input type="hidden"
+                                           name="city"
+                                           id="id_city"
+                                           value="{% if user.photographer_profile.city %}{{ user.photographer_profile.city.id }}{% endif %}">
+
+                                    <div id="city-results" class="list-group mt-1"></div>
+                                    {{ profile_form.city.errors }}
+                                </div>
+
+                                <div class="col-12 col-md-6 mb-3">
+                                    {{ profile_form.experience_years.label_tag }}
+                                    {{ profile_form.experience_years }}
+                                    {% if profile_form.experience_years.help_text %}
+                                        <div class="form-text">{{ profile_form.experience_years.help_text }}</div>
+                                    {% endif %}
+                                    {{ profile_form.experience_years.errors }}
+                                </div>
+
+                                <div class="col-12 col-md-6 mb-3">
+                                    {{ profile_form.price_per_hour.label_tag }}
+                                    {{ profile_form.price_per_hour }}
+                                    {% if profile_form.price_per_hour.help_text %}
+                                        <div class="form-text">{{ profile_form.price_per_hour.help_text }}</div>
+                                    {% endif %}
+                                    {{ profile_form.price_per_hour.errors }}
+                                </div>
+
+                                <div class="col-12 col-md-6 mb-3 d-flex align-items-center">
+                                    <div class="form-check mt-4">
+                                        {{ profile_form.is_available }}
+                                        {{ profile_form.is_available.label_tag }}
+                                        {% if profile_form.is_available.help_text %}
+                                            <div class="form-text">{{ profile_form.is_available.help_text }}</div>
+                                        {% endif %}
+                                        {{ profile_form.is_available.errors }}
+                                    </div>
+                                </div>
+                            </div>
+
+                        {% elif user.is_client %}
+                            <div class="mb-3 position-relative">
+                                <label>{% trans "Preferred country" %}</label>
+
+                                <input type="text"
+                                       id="preferred-country-search"
+                                       class="form-control"
+                                       placeholder="Start typing country"
+                                       value="{% if user.client_profile.preferred_country %}{{ user.client_profile.preferred_country.name_en }}{% endif %}">
+
+                                <input type="hidden"
+                                       name="preferred_country"
+                                       id="id_preferred_country"
+                                       value="{% if user.client_profile.preferred_country %}{{ user.client_profile.preferred_country.id }}{% endif %}">
+
+                                <div id="preferred-country-results" class="list-group mt-1"></div>
+                                {{ profile_form.preferred_country.errors }}
+                            </div>
+
+                            <div class="mb-3 position-relative">
+                                <label>{% trans "Preferred city" %}</label>
+
+                                <input type="text"
+                                       id="preferred-city-search"
+                                       class="form-control"
+                                       placeholder="Start typing city"
+                                       value="{% if user.client_profile.preferred_city %}{{ user.client_profile.preferred_city.name_en }}{% endif %}">
+
+                                <input type="hidden"
+                                       name="preferred_city"
+                                       id="id_preferred_city"
+                                       value="{% if user.client_profile.preferred_city %}{{ user.client_profile.preferred_city.id }}{% endif %}">
+
+                                <div id="preferred-city-results" class="list-group mt-1"></div>
+                                {{ profile_form.preferred_city.errors }}
+                            </div>
+
+                            <div class="mb-3">
+                                {{ profile_form.notes.label_tag }}
+                                {{ profile_form.notes }}
+                                {% if profile_form.notes.help_text %}
+                                    <div class="form-text">{{ profile_form.notes.help_text }}</div>
+                                {% endif %}
+                                {{ profile_form.notes.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+            {% endif %}
+
+            <div class="mt-4 d-flex flex-wrap justify-content-center gap-3">
+                <button type="submit" class="btn btn-dark px-4">
                     {% trans '💾 Save' %}
                 </button>
 
-<!--                <a href="{% url 'users:profile' %}"-->
-<!--                   class="btn btn-outline-secondary px-4">-->
-<!--                    {% trans 'Back' %}-->
-<!--                </a>-->
-                <a href="javascript:history.back()" class="btn btn-dark w-auto d-inline-flex align-items-center">
+                <a href="javascript:history.back()" class="btn btn-dark w-auto d-inline-flex align-items-center gap-2">
                     <span>&larr;</span> {% trans 'Back' %}
                 </a>
-
             </div>
 
         </form>
 
     </div>
-
 </div>
 
-<script>
-document.getElementById("id_avatar_file").addEventListener("change", function(event) {
-    const [file] = event.target.files;
 
-    if (file) {
-        const preview = document.querySelector("label[for='id_avatar_file'] img");
-        preview.src = URL.createObjectURL(file);
-    }
+<script>
+const avatarInput = document.getElementById("id_avatar_file");
+
+if (avatarInput) {
+    avatarInput.addEventListener("change", function(event) {
+        const [file] = event.target.files;
+
+        if (file) {
+            const preview = document.querySelector("label[for='id_avatar_file'] img");
+            preview.src = URL.createObjectURL(file);
+        }
+    });
+}
+</script>
+
+<script>
+function debounce(fn, delay = 300) {
+    let timeout;
+
+    return function (...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => fn.apply(this, args), delay);
+    };
+}
+
+function clearField(inputId, hiddenId, resultsId) {
+    const input = document.getElementById(inputId);
+    const hidden = document.getElementById(hiddenId);
+    const results = document.getElementById(resultsId);
+
+    if (input) input.value = "";
+    if (hidden) hidden.value = "";
+    if (results) results.innerHTML = "";
+}
+
+function setupAutocomplete({
+    inputId,
+    hiddenId,
+    resultsId,
+    urlBuilder,
+    resultKey,
+    minLength = 1,
+    onSelect = null,
+    onInput = null
+}) {
+    const input = document.getElementById(inputId);
+    const hidden = document.getElementById(hiddenId);
+    const results = document.getElementById(resultsId);
+
+    if (!input || !hidden || !results) return;
+
+    const runSearch = debounce(function () {
+        const q = input.value.trim();
+
+        hidden.value = "";
+        results.innerHTML = "";
+
+        if (onInput) onInput();
+
+        if (q.length < minLength) return;
+
+        fetch(urlBuilder(q))
+            .then(response => response.json())
+            .then(data => {
+                results.innerHTML = "";
+
+                data[resultKey].forEach(item => {
+                    const button = document.createElement("button");
+                    button.type = "button";
+                    button.className = "list-group-item list-group-item-action";
+                    button.textContent = item.text;
+
+                    button.addEventListener("click", function () {
+                        input.value = item.text;
+                        hidden.value = item.id;
+                        results.innerHTML = "";
+
+                        if (onSelect) onSelect(item);
+                    });
+
+                    results.appendChild(button);
+                });
+            })
+            .catch(error => {
+                console.error("Autocomplete error:", error);
+            });
+    }, 300);
+
+    input.addEventListener("input", runSearch);
+
+    document.addEventListener("click", function (event) {
+        if (!results.contains(event.target) && event.target !== input) {
+            results.innerHTML = "";
+        }
+    });
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    setupAutocomplete({
+        inputId: "country-search",
+        hiddenId: "id_country",
+        resultsId: "country-results",
+        resultKey: "results",
+        minLength: 1,
+        urlBuilder: function (q) {
+            return `/locations/search-countries/?q=${encodeURIComponent(q)}`;
+        },
+        onInput: function () {
+            clearField("city-search", "id_city", "city-results");
+        }
+    });
+
+    setupAutocomplete({
+        inputId: "city-search",
+        hiddenId: "id_city",
+        resultsId: "city-results",
+        resultKey: "results",
+        minLength: 2,
+        urlBuilder: function (q) {
+            const countryId = document.getElementById("id_country").value;
+            return `/locations/search-cities/?country_id=${countryId}&q=${encodeURIComponent(q)}`;
+        }
+    });
+
+    setupAutocomplete({
+        inputId: "preferred-country-search",
+        hiddenId: "id_preferred_country",
+        resultsId: "preferred-country-results",
+        resultKey: "results",
+        minLength: 1,
+        urlBuilder: function (q) {
+            return `/locations/search-countries/?q=${encodeURIComponent(q)}`;
+        },
+        onInput: function () {
+            clearField("preferred-city-search", "id_preferred_city", "preferred-city-results");
+        }
+    });
+
+    setupAutocomplete({
+        inputId: "preferred-city-search",
+        hiddenId: "id_preferred_city",
+        resultsId: "preferred-city-results",
+        resultKey: "results",
+        minLength: 2,
+        urlBuilder: function (q) {
+            const countryId = document.getElementById("id_preferred_country").value;
+            return `/locations/search-cities/?country_id=${countryId}&q=${encodeURIComponent(q)}`;
+        }
+    });
 });
 </script>
 

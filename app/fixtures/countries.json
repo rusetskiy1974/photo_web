@@ -1,0 +1,68 @@
+{
+    "1": {
+        "country_eng": "Austria",
+        "country_flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_Austria.svg/188px-Flag_of_Austria.svg.png",
+        "country_phone_code": "+43",
+        "country_ukr": "Австрія"
+    },
+    "10": {
+        "country_eng": "Poland",
+        "country_flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Flag_of_Poland.svg/68px-Flag_of_Poland.svg.png",
+        "country_phone_code": "+48",
+        "country_ukr": "Польша"
+    },
+    "11": {
+        "country_eng": "Ukraine",
+        "country_flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Flag_of_Ukraine.svg/188px-Flag_of_Ukraine.svg.png",
+        "country_phone_code": "+380",
+        "country_ukr": "Україна"
+    },
+    "2": {
+        "country_eng": "Belgium",
+        "country_flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Flag_of_Belgium.svg/68px-Flag_of_Belgium.svg.png",
+        "country_phone_code": "+32",
+        "country_ukr": "Бельгія"
+    },
+    "3": {
+        "country_eng": "France",
+        "country_flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Flag_of_France.svg/68px-Flag_of_France.svg.png",
+        "country_phone_code": "+33",
+        "country_ukr": "Франція"
+    },
+    "4": {
+        "country_eng": "Germany",
+        "country_flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Flag_of_Germany.svg/68px-Flag_of_Germany.svg.png",
+        "country_phone_code": "+49",
+        "country_ukr": "Німеччина"
+    },
+    "5": {
+        "country_eng": "Great Britain",
+        "country_flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Flag_of_the_United_Kingdom_%283-5%29.svg/188px-Flag_of_the_United_Kingdom_%283-5%29.svg.png",
+        "country_phone_code": "+44",
+        "country_ukr": "Великобританія"
+    },
+    "6": {
+        "country_eng": "Hungary",
+        "country_flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Flag_of_Hungary.svg/68px-Flag_of_Hungary.svg.png",
+        "country_phone_code": "+36",
+        "country_ukr": "Угорщина"
+    },
+    "7": {
+        "country_eng": "Italy",
+        "country_flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Flag_of_Italy.svg/68px-Flag_of_Italy.svg.png",
+        "country_phone_code": "+39",
+        "country_ukr": "Італія"
+    },
+    "8": {
+        "country_eng": "Spain",
+        "country_flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Flag_of_Spain.svg/68px-Flag_of_Spain.svg.png",
+        "country_phone_code": "+34",
+        "country_ukr": "Іспанія"
+    },
+    "9": {
+        "country_eng": "Switzerland",
+        "country_flag": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Flag_of_Switzerland_%28Pantone%29.svg/188px-Flag_of_Switzerland_%28Pantone%29.svg.png",
+        "country_phone_code": "+41",
+        "country_ukr": "Швейцарія"
+    }
+}

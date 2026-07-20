@@ -5,6 +5,8 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 import logging
 
+from locations .models import City, Country
+
 logger = logging.getLogger(__name__)
 
 
@@ -74,7 +76,21 @@ class ClientProfile(models.Model):
         related_name="client_profile"
     )
 
-    preferred_city = models.CharField(max_length=100, blank=True, null=True)
+    preferred_country = models.ForeignKey(
+        Country,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="client_preferred_profiles"
+    )
+
+    preferred_city = models.ForeignKey(
+        City,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="client_preferred_profiles"
+    )
     notes = models.TextField(blank=True, null=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -96,7 +112,21 @@ class PhotographerProfile(models.Model):
     )
 
     bio = models.TextField(blank=True, null=True)
-    city = models.CharField(max_length=100, blank=True, null=True)
+    country = models.ForeignKey(
+        Country,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="photographer_profiles"
+    )
+
+    city = models.ForeignKey(
+        City,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="photographer_profiles"
+    )
     experience_years = models.PositiveIntegerField(default=0)
     price_per_hour = models.DecimalField(
         max_digits=8,
@@ -116,3 +146,25 @@ class PhotographerProfile(models.Model):
 
     def __str__(self):
         return f"Photographer: {self.user.username}"
+
+
+class FavoritePhotographer(models.Model):
+    client = models.ForeignKey(
+        ClientProfile,
+        on_delete=models.CASCADE,
+        related_name="favorite_photographers"
+    )
+
+    photographer = models.ForeignKey(
+        PhotographerProfile,
+        on_delete=models.CASCADE,
+        related_name="favorited_by_clients"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("client", "photographer")
+
+    def __str__(self):
+        return f"{self.client.user.username} likes {self.photographer.user.username}"

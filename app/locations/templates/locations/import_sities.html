@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="bg-white p-4 rounded custom-shadow">
+
+        <h2 class="mb-4">Import cities</h2>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label>Country code</label>
+                <input type="text" name="country_code" class="form-control" placeholder="pl">
+            </div>
+
+            <div class="mb-3">
+                <label>Country name EN</label>
+                <input type="text" name="country_name_en" class="form-control" placeholder="Poland">
+            </div>
+
+            <div class="mb-3">
+                <label>Country name UA</label>
+                <input type="text" name="country_name_ua" class="form-control" placeholder="Польща">
+            </div>
+
+            <div class="mb-3">
+                <label>JSON file</label>
+                <input type="file" name="json_file" class="form-control">
+            </div>
+
+            <button class="btn btn-dark">Import</button>
+        </form>
+
+    </div>
+</div>
+{% endblock %}

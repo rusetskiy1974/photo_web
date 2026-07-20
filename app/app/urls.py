@@ -29,6 +29,8 @@ urlpatterns = [
     path('user/', include('users.urls', namespace='users')),
     path('blog/', include('blog.urls', namespace='blog')),
     path('review/', include('reviews.urls', namespace='review')),
+    path("bookings/", include("bookings.urls")),
+    path("locations/", include("locations.urls")),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 # static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -1,97 +1,95 @@
-<!-- Header -->
-            <div class="bg-white rounded custom-shadow p-4 mb-4">
-                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                    <div>
-                        <h2 class="fw-bold mb-1">
-                            Welcome, {{ user.first_name|default:user.username }} 👋
-                        </h2>
-                        <p class="text-muted mb-0">
-                            Manage your photo studio account and activity.
-                        </p>
-                    </div>
+<div class="bg-white rounded custom-shadow p-4 mb-4">
+    <h2 class="fw-bold mb-2">Admin dashboard</h2>
+    <p class="text-muted mb-0">
+        Manage CRM data, users, locations and system settings.
+    </p>
+</div>
 
-                    <a href="{% url 'users:edit_profile' %}" class="btn btn-dark px-4">
-                        Edit Profile
-                    </a>
-                </div>
+<div class="row g-4">
+    <div class="col-12 col-md-4">
+
+    <div class="bg-white rounded custom-shadow p-4">
+        <h5 class="fw-bold">Locations import</h5>
+        <p class="text-muted">
+            Import countries and cities from JSON fixtures.
+        </p>
+
+        <button id="startImportBtn" class="btn btn-outline-dark">
+            Import countries and cities
+        </button>
+
+        <div class="progress mt-4" style="height: 24px;">
+            <div id="importProgressBar"
+                 class="progress-bar progress-bar-striped progress-bar-animated bg-dark"
+                 role="progressbar"
+                 style="width: 0%;">
+                0%
             </div>
+        </div>
 
-            <!-- Stats -->
-            <div class="row g-4 mb-4">
-                <div class="col-12 col-md-4">
-                    <div class="bg-white rounded custom-shadow p-4">
-                        <p class="text-muted mb-1">Photos</p>
-                        <h3 class="fw-bold mb-0">0</h3>
-                    </div>
-                </div>
+        <p id="importMessage" class="text-muted mt-3 mb-0">
+            Waiting...
+        </p>
+    </div>
+    </div>
 
-                <div class="col-12 col-md-4">
-                    <div class="bg-white rounded custom-shadow p-4">
-                        <p class="text-muted mb-1">Bookings</p>
-                        <h3 class="fw-bold mb-0">0</h3>
-                    </div>
-                </div>
+    <div class="col-12 col-md-4">
+        <div class="bg-white rounded custom-shadow p-4 h-100">
+            <h5 class="fw-bold mb-2">Users</h5>
+            <p class="text-muted">
+                Manage clients, photographers and administrators.
+            </p>
 
-                <div class="col-12 col-md-4">
-                    <div class="bg-white rounded custom-shadow p-4">
-                        <p class="text-muted mb-1">Reviews</p>
-                        <h3 class="fw-bold mb-0">0</h3>
-                    </div>
-                </div>
-            </div>
+            <a href="/admin/users/user/"
+               class="btn btn-outline-dark w-100">
+                Open users admin
+            </a>
+        </div>
+    </div>
 
-            {% if user.is_photographer %}
-                <div class="row g-4">
-                    <div class="col-12 col-xl-8">
-                        <div class="bg-white rounded custom-shadow p-4">
-                            <h4 class="fw-bold mb-3">Photographer workspace</h4>
-                            <p class="text-muted">
-                                Upload your photos, manage client bookings and grow your portfolio.
-                            </p>
+    <div class="col-12 col-md-4">
+        <div class="bg-white rounded custom-shadow p-4 h-100">
+            <h5 class="fw-bold mb-2">Photos</h5>
+            <p class="text-muted">
+                Review public photos and uploaded content.
+            </p>
 
-                            <div class="d-flex flex-wrap gap-2">
-                                <a href="#" class="btn btn-dark">Upload Photo</a>
-                                <a href="{% url 'users:my_photos' %}" class="btn btn-outline-dark">View Gallery</a>
-                            </div>
-                        </div>
-                    </div>
+            <a href="/admin/photo_app/photo/"
+               class="btn btn-outline-dark w-100">
+                Open photos admin
+            </a>
+        </div>
+    </div>
 
-                    <div class="col-12 col-xl-4">
-                        <div class="bg-white rounded custom-shadow p-4">
-                            <h5 class="fw-bold mb-3">Next steps</h5>
-                            <ul class="list-unstyled mb-0 text-muted">
-                                <li class="mb-2">✓ Add profile photo</li>
-                                <li class="mb-2">✓ Upload portfolio</li>
-                                <li class="mb-2">✓ Add contact details</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            {% elif user.is_client %}
-                <div class="row g-4">
-                    <div class="col-12 col-xl-8">
-                        <div class="bg-white rounded custom-shadow p-4">
-                            <h4 class="fw-bold mb-3">Client dashboard</h4>
-                            <p class="text-muted">
-                                Find photographers, book sessions and manage your photo orders.
-                            </p>
+</div>
 
-                            <div class="d-flex flex-wrap gap-2">
-                                <a href="#" class="btn btn-dark">Find Photographer</a>
-                                <a href="#" class="btn btn-outline-dark">My Bookings</a>
-                            </div>
-                        </div>
-                    </div>
+<script>
+const startBtn = document.getElementById("startImportBtn");
+const progressBar = document.getElementById("importProgressBar");
+const message = document.getElementById("importMessage");
 
-                    <div class="col-12 col-xl-4">
-                        <div class="bg-white rounded custom-shadow p-4">
-                            <h5 class="fw-bold mb-3">Quick tips</h5>
-                            <ul class="list-unstyled mb-0 text-muted">
-                                <li class="mb-2">✓ Complete your profile</li>
-                                <li class="mb-2">✓ Choose photographer</li>
-                                <li class="mb-2">✓ Book your session</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
+startBtn.addEventListener("click", function () {
+    startBtn.disabled = true;
+    message.textContent = "Starting import...";
+
+    fetch("{% url 'locations:seed_locations_start' %}")
+        .then(response => response.json())
+        .then(() => {
+            const interval = setInterval(() => {
+                fetch("{% url 'locations:seed_locations_progress' %}")
+                    .then(response => response.json())
+                    .then(data => {
+                        progressBar.style.width = data.percent + "%";
+                        progressBar.textContent = data.percent + "%";
+                        message.textContent = data.message;
+
+                        if (data.status === "done") {
+                            clearInterval(interval);
+                            progressBar.classList.remove("progress-bar-animated");
+                            startBtn.disabled = false;
+                        }
+                    });
+            }, 700);
+        });
+});
+</script>

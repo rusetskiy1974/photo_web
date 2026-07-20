@@ -2,7 +2,7 @@ from enum import IntEnum
 from django.db import models
 from cloudinary import uploader
 
-from users.models import User
+from users.models import User, PhotographerProfile
 
 class RatingChoices(IntEnum):
     ONE = 1
@@ -27,6 +27,13 @@ class Photo(models.Model):
         null=True,   
         blank=True,   
         related_name='photos',  # Це дозволяє доступ до фотографій через user.photos.all()
+    )
+    photographer = models.ForeignKey(
+        PhotographerProfile,
+        on_delete=models.CASCADE,
+        related_name="photos",
+        null=True,
+        blank=True,
     )
     is_public: models.BooleanField = models.BooleanField(default=False, verbose_name="Публічне фото")
     

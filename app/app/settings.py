@@ -181,6 +181,8 @@ INSTALLED_APPS = [
     'blog',
     'services',
     'reviews',
+    'bookings',
+    'locations',
     # all auth configurations
     'allauth',
     'allauth.account',

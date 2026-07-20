@@ -9,14 +9,14 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_list_or_404, redirect, render
+from django.shortcuts import get_list_or_404, redirect, render, get_object_or_404
 from django.template.loader import render_to_string
 from django.urls import reverse, reverse_lazy
 from django.utils.encoding import force_str, force_bytes
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.views.generic import DetailView, UpdateView
 from django.views.generic.edit import CreateView
-from .models import ClientProfile, PhotographerProfile
+from .models import ClientProfile, PhotographerProfile, FavoritePhotographer
 
 from cloudinary import CloudinaryImage
 
@@ -25,7 +25,7 @@ from .forms import (
     ProfileEditForm,
     UserRegistrationForm,
     EmailOrUsernameAuthenticationForm,
-    CustomPasswordChangeForm,
+    CustomPasswordChangeForm, PhotographerProfileEditForm, ClientProfileEditForm,
 )
 from .tokens import account_activation_token
 from .utils import download_photos_as_zip as download_photos
@@ -33,6 +33,7 @@ from .utils import download_photos_as_zip as download_photos
 logger = logging.getLogger(__name__)
 
 User = get_user_model()
+
 
 def activate(request, uidb64, token):
     try:
@@ -217,62 +218,78 @@ class UserEditView(LoginRequiredMixin, UpdateView):
     def get_object(self, queryset=None):
         return self.request.user
 
-    def form_valid(self, form):
-        self.object = form.save()
-        avatar_file = form.cleaned_data.get('avatar_file')
-        if avatar_file:
-            self.object.upload_image(avatar_file)
-        messages.success(self.request, "Profile successfully updated")
-        return HttpResponseRedirect(self.get_success_url())
-        # response = super().form_valid(form)
-        # avatar_file = self.request.FILES.get('avatar_file')
-        # if avatar_file:
-        #     self.object.upload_image(avatar_file)
-        # return response
+    def get_profile_form_class(self):
+        if self.request.user.role == User.Role.PHOTOGRAPHER:
+            return PhotographerProfileEditForm
+
+        elif self.request.user.role == User.Role.CLIENT:
+            return ClientProfileEditForm
+
+        return None
+
+    def get_profile_instance(self):
+        if self.request.user.role == User.Role.PHOTOGRAPHER:
+            return self.request.user.photographer_profile
+
+        elif self.request.user.role == User.Role.CLIENT:
+            return self.request.user.client_profile
+
+        return None
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['active_tab'] = 'profile'
-        context['active_page'] = 'cabinet'
-        context['active_menu'] = 'main'
+
+        ProfileForm = self.get_profile_form_class()
+        profile_instance = self.get_profile_instance()
+
+        if ProfileForm and profile_instance:
+            if self.request.method == "POST":
+                context["profile_form"] = ProfileForm(
+                    self.request.POST,
+                    instance=profile_instance
+                )
+            else:
+                context["profile_form"] = ProfileForm(
+                    instance=profile_instance
+                )
+        else:
+            context["profile_form"] = None
+
+        context["active_tab"] = "profile"
+        context["active_page"] = "cabinet"
+        context["active_menu"] = "main"
+
         return context
 
+    def form_valid(self, form):
+        ProfileForm = self.get_profile_form_class()
+        profile_instance = self.get_profile_instance()
+
+        profile_form = None
+
+        if ProfileForm and profile_instance:
+            profile_form = ProfileForm(
+                self.request.POST,
+                instance=profile_instance
+            )
+
+            if not profile_form.is_valid():
+                return self.form_invalid(form)
+
+        self.object = form.save()
+
+        avatar_file = form.cleaned_data.get("avatar_file")
+        if avatar_file:
+            self.object.upload_image(avatar_file)
+
+        if profile_form:
+            profile_form.save()
+
+        messages.success(self.request, "Profile successfully updated")
+        return HttpResponseRedirect(self.get_success_url())
 
 
 
-
-
-
-
-
-
-
-
-
-
-# def registration(request):
-#     if request.method == "POST":
-#         form = UserRegistrationForm(data=request.POST)
-#         if form.is_valid():
-#             form.save()
-#             user = form.instance
-#             user.backend = 'django.contrib.auth.backends.ModelBackend'
-#             auth.login(request, user)
-#             messages.success(request, f"{user.username}, Ви успішно зареєструвалися, заходьте в аккаунт")
-#             return HttpResponseRedirect(reverse("users:login"))
-#         else:
-#             for field, errors in form.errors.items():
-#                 for error in errors:
-#                     messages.error(request, f"{field.capitalize()}: {error}")
-#     else:
-#         form = UserRegistrationForm()
-#     print("errors=",form.errors)
-#
-#     context = {
-#         "title": "Home - Реєстрація",
-#         "form": form,
-#     }
-#     return render(request, "users/registrations.html",context=context)
 
 
 @login_required
@@ -426,3 +443,20 @@ def password_change_done(request):
         'active_tab': 'profile',
     }
     return render(request, 'users/password_change_done.html', context)
+
+
+@login_required
+def favorite_photographer(request, pk):
+    photographer = get_object_or_404(PhotographerProfile, pk=pk)
+
+    if not request.user.is_client:
+        messages.error(request, "Only clients can favorite photographers.")
+        return redirect("main:index")
+
+    FavoritePhotographer.objects.get_or_create(
+        client=request.user.client_profile,
+        photographer=photographer,
+    )
+
+    messages.success(request, "Photographer added to favorites.")
+    return redirect("main:index")

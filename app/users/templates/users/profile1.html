@@ -68,6 +68,11 @@
 
                 {% if user.is_photographer and user.photographer_profile %}
                     <p class="mb-2">
+                        <strong>{% trans "Country:" %}</strong>
+                        {{ user.photographer_profile.country|default:_("Missing") }}
+                    </p>
+
+                    <p class="mb-2">
                         <strong>{% trans "City:" %}</strong>
                         {{ user.photographer_profile.city|default:_("Missing") }}
                     </p>
@@ -97,6 +102,12 @@
                     </p>
 
                 {% elif user.is_client and user.client_profile %}
+
+                    <p class="mb-2">
+                        <strong>{% trans "Preferred country:" %}</strong>
+                        {{ user.client_profile.preferred_country|default:_("Missing") }}
+                    </p>
+                
                     <p class="mb-2">
                         <strong>{% trans "Preferred city:" %}</strong>
                         {{ user.client_profile.preferred_city|default:_("Missing") }}

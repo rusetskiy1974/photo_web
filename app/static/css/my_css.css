@@ -370,3 +370,12 @@
     border-color: #333;
     color: #fff !important;
 }
+
+
+.list-group {
+    max-height: 220px;
+    overflow-y: auto;
+    position: absolute;
+    width: 100%;
+    z-index: 1000;
+}

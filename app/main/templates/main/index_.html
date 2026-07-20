@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+{% load static %}
+{% load cloudinary %}  
+
+{% block navbar %}
+    {% include 'includes/navbar_main.html' %}
+{% endblock %}
+
+{% block content %}
+<!-- My Best Photos-->
+{% comment %}
+<!--<section class="section bg-white text-center">-->
+<!--    &lt;!&ndash; Slick Carousel&ndash;&gt;-->
+<!--    <div class="slick-wrap">-->
+<!--        <div class="slick-slider slick-style-1" data-arrows="true" data-autoplay="false" data-loop="true"-->
+<!--             data-dots="true" data-swipe="true" data-xs-swipe="true" data-sm-swipe="false" data-items="1"-->
+<!--             data-sm-items="3" data-md-items="3" data-lg-items="3" data-center-mode="true"-->
+<!--             data-lightgallery="group-slick">-->
+<!--            &lt;!&ndash; -&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; begin block photo -&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45;&#45; &ndash;&gt;-->
+<!--            <div class="item">-->
+<!--                <div class="slick-slide-inner">-->
+<!--                    <div class="slick-slide-caption"><a class="thumb-ann thumb-mixed_large"-->
+<!--                                                        href="{% static 'images/group-image-4-1200x800-original.jpg' %}"-->
+<!--                                                        data-lightgallery="item"><img class="thumb-ann__image"-->
+<!--                                                                                      src="{% static 'images/home1-1-961x664.jpg' %}"-->
+<!--                                                                                      alt="" width="961" height="664"/>-->
+<!--                        <div class="thumb-ann__caption">-->
+<!--                            <p class="thumb-ann__title heading-3">Philip &amp; Gloria</p>-->
+<!--                            <p class="thumb-ann__text">With the experience of more than 10 years, I am glad to offer you-->
+<!--                                a wide variety of love story photography services at affordable prices.</p>-->
+<!--                        </div>-->
+<!--                    </a>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="item">-->
+<!--                <div class="slick-slide-inner">-->
+<!--                    <div class="slick-slide-caption"><a class="thumb-ann thumb-mixed_large"-->
+<!--                                                        href="{% static 'images/group-image-3-1200x800-original.jpg' %}"-->
+<!--                                                        data-lightgallery="item"><img class="thumb-ann__image"-->
+<!--                                                                                      src="{% static 'images/home1-2-961x664.jpg' %}"-->
+<!--                                                                                      alt="" width="961" height="664"/>-->
+<!--                        <div class="thumb-ann__caption">-->
+<!--                            <p class="thumb-ann__title heading-3">Ronald &amp; Karen</p>-->
+<!--                            <p class="thumb-ann__text">With the experience of more than 10 years, I am glad to offer you-->
+<!--                                a wide variety of love story photography services at affordable prices.</p>-->
+<!--                        </div>-->
+<!--                    </a>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="item">-->
+<!--                <div class="slick-slide-inner">-->
+<!--                    <div class="slick-slide-caption"><a class="thumb-ann thumb-mixed_large"-->
+<!--                                                        href="{% static 'images/home1-4-1200x695-original.jpg' %}"-->
+<!--                                                        data-lightgallery="item"><img class="thumb-ann__image"-->
+<!--                                                                                      src="{% static 'images/home1-3-961x664.jpg' %}"-->
+<!--                                                                                      alt="" width="961" height="664"/>-->
+<!--                        <div class="thumb-ann__caption">-->
+<!--                            <p class="thumb-ann__title heading-3">Eric &amp; Amanda</p>-->
+<!--                            <p class="thumb-ann__text">With the experience of more than 10 years, I am glad to offer you-->
+<!--                                a wide variety of love story photography services at affordable prices.</p>-->
+<!--                        </div>-->
+<!--                    </a>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="item">-->
+<!--                <div class="slick-slide-inner">-->
+<!--                    <div class="slick-slide-caption"><a class="thumb-ann thumb-mixed_large"-->
+<!--                                                        href="{%static 'images/group-image-2-1200x800-original.jpg' %}"-->
+<!--                                                        data-lightgallery="item"><img class="thumb-ann__image"-->
+<!--                                                                                      src="{% static 'images/home1-4-961x664.jpg' %}"-->
+<!--                                                                                      alt="" width="961" height="664"/>-->
+<!--                        <div class="thumb-ann__caption">-->
+<!--                            <p class="thumb-ann__title heading-3">Harold &amp; Mary</p>-->
+<!--                            <p class="thumb-ann__text">With the experience of more than 10 years, I am glad to offer you-->
+<!--                                a wide variety of love story photography services at affordable prices.</p>-->
+<!--                        </div>-->
+<!--                    </a>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</section>-->
+{% endcomment %}
+
+<section class="section section-md bg-white text-center">
+    <div class="shell-fluid">
+        <p class="heading-1">Portfolio</p>
+        {% comment %} <div class="isotope thumb-ruby-wrap wow fadeIn" data-isotope-layout="masonry" data-isotope-group="gallery"
+             data-lightgallery="group"> {% endcomment %}
+            <div class="row">
+                
+                {% for portfolio in portfolio_items %}
+                    <div class="col-xs-12 col-sm-6 col-md-4 col-lg-3 isotope-item">
+                        <a class="thumb-ruby thumb-mixed_height-2 thumb-mixed_md" href="{% url 'main:portfolio_detail' portfolio.id %}" data-lightgallery="portfolio">
+                            <img class="thumb-ruby__image" src="{% static portfolio.get_category_image %}" alt="{{ portfolio.title }}" width="440" height="327"/>
+                            <div class="thumb-ruby__caption">
+                                <p class="thumb-ruby__title heading-3">{{ portfolio.title }}</p>
+                                <p class="thumb-ruby__text">{{ portfolio.description }}</p>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+                                
+            </div>
+        {% comment %} </div> {% endcomment %}
+    </div>
+</section>
+
+<!-- Awards-->
+{% comment %}
+
+<section class="section parallax-container bg-image-dark"
+         data-parallax-img="{% static 'images/bg-image-7-1920x1244.jpg' %}">
+    <div class="parallax-content">
+        <div class="section-md text-center">
+            <div class="shell">
+                <div class="range range-50 range-lg-bottom">
+                    <div class="cell-xs-6 cell-md-3 wow fadeIn">
+                        <!-- Box award-->
+                        <article class="box-award"><img class="box-award__image"
+                                                        src="{% static 'images/award-1-134x98-inverse.png' %}" alt=""
+                                                        width="134" height="98"/>
+                            <h3 class="box-award__title">Best photo of the year</h3>
+                            <div class="box-award__divider"></div>
+                            <time class="box-award__time" datetime="2010">2010</time>
+                        </article>
+                    </div>
+                    <div class="cell-xs-6 cell-md-3 wow fadeIn" data-wow-delay=".1s">
+                        <!-- Box award-->
+                        <article class="box-award"><img class="box-award__image"
+                                                        src="{% static 'images/award-2-115x117-inverse.png' %}" alt=""
+                                                        width="115" height="117"/>
+                            <h3 class="box-award__title">Best couple photo</h3>
+                            <div class="box-award__divider"></div>
+                            <time class="box-award__time" datetime="2014">2014</time>
+                        </article>
+                    </div>
+                    <div class="cell-xs-6 cell-md-3 wow fadeIn" data-wow-delay=".2s">
+                        <!-- Box award-->
+                        <article class="box-award"><img class="box-award__image"
+                                                        src="{% static 'images/award-3-116x103-inverse.png' %}" alt=""
+                                                        width="116" height="103"/>
+                            <h3 class="box-award__title">Best love story photo</h3>
+                            <div class="box-award__divider"></div>
+                            <time class="box-award__time" datetime="2015">2015</time>
+                        </article>
+                    </div>
+                    <div class="cell-xs-6 cell-md-3 wow fadeIn" data-wow-delay=".3s">
+                        <!-- Box award-->
+                        <article class="box-award"><img class="box-award__image"
+                                                        src="{% static 'images/award-4-131x96-inverse.png' %}" alt=""
+                                                        width="131" height="96"/>
+                            <h3 class="box-award__title">Best photo shoot</h3>
+                            <div class="box-award__divider"></div>
+                            <time class="box-award__time" datetime="2016">2016</time>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endcomment %}
+
+<!-- Blog-->
+{% if blogs %}
+<section class="section section-md bg-gray-lighter text-center">
+    <div class="shell">
+<!--        {% if blogs %}-->
+        <p class="heading-1">My Blogs</p>
+<!--        {% endif %}-->
+        <div class="range range-around range-30" >
+            {% for blog in blogs %}
+            <div class="cell-sm-6 cell-md-4 wow fadeInLeftSmall">
+                <!-- Post boxed-->
+                <article class="post-boxed">
+                    <ul class="post-boxed__meta">
+                        <li>
+                            <time datetime="{{ blog.created_at|date:'Y-m-d' }}">{{ blog.created_at|date:'M d, Y' }}</time>
+                        </li>
+                        <li><a href="{{ blog.get_absolute_url }}">{{ blog.posts.count }} comments</a></li>
+                    </ul>
+                    <div class="post-boxed__main">
+                        <h3 class="post-boxed__title"><a href="{{ blog.get_absolute_url }}">{{ blog.title }}</a></h3>
+                        <p>{{ blog.description|truncatewords:20 }}</p>
+                    </div>
+                    <div class="post-boxed__aside">
+                        <div class="unit unit-horizontal unit-middle unit-spacing-xs">
+                            <div class="unit__left">
+                                <img class="post-boxed__avatar" src="{% static 'images/user-6-46x46.jpg' %}" alt="" width="46" height="46"/>
+                            </div>
+                            <div class="unit__body">
+                                <h6 class="text-uppercase">by {{ blog.created_by.username }}</h6>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+
+<!-- Book Your Photo Shoot-->
+<section class="section section-md bg-white">
+    <div class="shell">
+        <div class="range range-50 range-sm-center range-md-left range-md-reverse range-md-middle">
+            <div class="cell-sm-10 cell-md-6 wow fadeInRight">
+                <div class="box-width-4 box-centered">
+                    <p class="heading-1">Book Your <br> Photo Shoot</p>
+                    <p>I will appreciate as many details about your particular wedding venue, dates, theme and other
+                        aspects, as you’d be willing to share. I will be giving you my feedback immediately!</p>
+                </div>
+            </div>
+<!--            <div class="cell-sm-10 cell-md-6 wow fadeInLeft">-->
+
+                        <!-- RD Mailform-->
+
+                        {% block mailform %}
+                        {% include 'includes/mailform.html' %}
+                        {% endblock %}
+
+<!--            </div>-->
+        </div>
+    </div>
+</section>
+{% endblock %}
